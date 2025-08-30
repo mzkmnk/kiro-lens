@@ -1,0 +1,47 @@
+{
+    "name": "kiro-lens",
+    "version": "1.0.0",
+    "description": "Figma MCPから取得したUIデザインを基に構築されたローカル開発ツール",
+    "type": "module",
+    "workspaces": [
+        "packages/frontend",
+        "packages/backend",
+        "packages/shared"
+    ],
+    "scripts": {
+        "dev": "tsx bin/kiro-lens.ts",
+        "dev:frontend": "npm run dev --workspace=packages/frontend",
+        "dev:backend": "npm run dev --workspace=packages/backend",
+        "build": "npm run build --workspaces",
+        "build:frontend": "npm run build --workspace=packages/frontend",
+        "build:backend": "npm run build --workspace=packages/backend",
+        "test": "npm run test --workspaces",
+        "test:unit": "vitest run",
+        "test:e2e": "playwright test",
+        "clean": "npm run clean --workspaces"
+    },
+    "bin": {
+        "kiro-lens": "./bin/kiro-lens.js"
+    },
+    "keywords": [
+        "figma",
+        "mcp",
+        "dashboard",
+        "file-manager",
+        "development-tool"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "tsx": "^4.20.4",
+        "typescript": "^5.7.2",
+        "concurrently": "^9.1.0",
+        "commander": "^12.1.0",
+        "vitest": "^2.1.8",
+        "@playwright/test": "^1.49.1"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
