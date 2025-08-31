@@ -14,8 +14,7 @@
 
 ## TDD実装タスク
 
-- [ ] 2. 共通型定義とポート管理型実装（TDD）
-
+- [x] 2. 共通型定義とポート管理型実装（TDD）
   - PortConfiguration、CLIOptions、PortValidationResult型のテスト作成と実装
   - shared パッケージでポート、ヘルスチェック、API の型定義を作成
   - 基本的なバリデーション関数とエラー型（FoundationErrorType）実装
