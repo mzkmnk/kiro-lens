@@ -17,6 +17,7 @@ export {
   createPortConfiguration,
   isValidPortNumber,
 } from './utils/portUtils';
+export { PortManager } from './utils/portManager';
 
 // ヘルスチェック関連型定義
 export type {
