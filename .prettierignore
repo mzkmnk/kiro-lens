@@ -58,3 +58,24 @@ playwright-report/
 *.min.css
 *.bundle.js
 *.chunk.js
+
+# 既存ファイル（フォーマット適用前）
+.kiro/specs/kiro-lens-foundation/
+.kiro/specs/kiro-lens-full/
+.kiro/steering/
+bin/kiro-lens.ts
+packages/backend/src/server.ts
+packages/frontend/src/App.tsx
+packages/frontend/src/main.tsx
+packages/frontend/src/test/setup.ts
+packages/shared/src/index.ts
+
+# 既存設定ファイル
+packages/*/package.json
+packages/*/tsconfig.json
+packages/*/vitest.config.ts
+packages/frontend/postcss.config.js
+packages/frontend/tailwind.config.js
+packages/frontend/vite.config.ts
+tsconfig.json
+vitest.config.ts
