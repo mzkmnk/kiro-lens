@@ -62,22 +62,26 @@ kiro-lens/
 ## 設計原則
 
 ### コンポーネント設計
+
 - **単一責任**: 各コンポーネントは明確な責任を持つ
 - **再利用性**: 共通UIコンポーネントは汎用的に設計
 - **型安全性**: すべてのpropsとstateに適切な型定義
 
 ### API設計
+
 - **RESTful**: 標準的なHTTPメソッドとステータスコード使用
 - **WebSocket**: リアルタイム通信にはSocket.io使用
 - **エラーハンドリング**: 統一されたエラーレスポンス形式
 
 ### ファイル命名規則
+
 - **コンポーネント**: PascalCase (例: `Dashboard.tsx`)
 - **フック**: camelCase with `use` prefix (例: `useFiles.ts`)
 - **サービス**: camelCase with service suffix (例: `fileService.ts`)
 - **型定義**: 各パッケージの`types/`ディレクトリに配置
 
 ### インポート規則
+
 - **相対パス**: 同一パッケージ内は相対パス使用
 - **絶対パス**: 他パッケージからは`@shared/types`等のエイリアス使用
 - **型インポート**: `import type`を使用して型のみインポート

@@ -26,7 +26,7 @@ AWS開発のKiro IDEで作成される.kiro配下のファイル（スペック�
 1. WHEN ダッシュボードが起動 THEN システムは.kiroディレクトリのファイル構造を読み込み、サイドバーに階層表示する
 2. WHEN .kiro配下でファイルが作成・削除・変更される THEN システムはchokidarを使用してファイル変更を検知し、WebSocket経由でブラウザに通知する
 3. WHEN ファイル変更通知を受信 THEN ブラウザは自動的にファイル一覧とコンテンツを更新する
-4. WHEN .mdファイル（requirements.md、design.md、tasks.md、steering/*.md等）が選択される THEN システムはgray-matterを使用してフロントマターを解析し、適切にレンダリングする
+4. WHEN .mdファイル（requirements.md、design.md、tasks.md、steering/\*.md等）が選択される THEN システムはgray-matterを使用してフロントマターを解析し、適切にレンダリングする
 5. WHEN .jsonファイル（mcp.json、settings等）にアクセス THEN システムはJSON形式で適切にフォーマットして表示する
 
 ### 要件3：Kiro専用ダッシュボード実装

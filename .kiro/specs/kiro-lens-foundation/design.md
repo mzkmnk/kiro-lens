@@ -13,20 +13,20 @@ graph TB
     CLI[CLI - kiro-lens] --> |ポート検出| PortManager[Port Manager]
     PortManager --> |起動| Frontend[Vite Dev Server :XXXX]
     PortManager --> |起動| Backend[Fastify Server :XXXX+1]
-    
+
     Frontend --> |HTTP| Backend
     Backend --> |ヘルスチェック| HealthCheck[Health Check API]
-    
+
     subgraph "Frontend (Vite + React)"
         UI[Basic Dashboard UI]
         State[Basic State Management]
     end
-    
+
     subgraph "Backend (Fastify)"
         API[Basic REST API]
         Health[Health Check Endpoint]
     end
-    
+
     subgraph "Shared"
         Types[Foundation TypeScript Types]
         PortTypes[Port Configuration Types]
@@ -36,6 +36,7 @@ graph TB
 ### 技術スタック
 
 **フロントエンド**
+
 - React: `18.3.1`
 - TypeScript: `5.7.2`
 - Vite: `6.0.1`
@@ -43,15 +44,18 @@ graph TB
 - shadcn/ui: 最新版 (UIコンポーネントライブラリ)
 
 **バックエンド**
+
 - Fastify: `5.1.0`
 - TypeScript: `5.7.2`
 
 **開発ツール**
+
 - tsx: `4.20.4` (TypeScript実行)
 - Concurrently: `9.1.0` (並行実行)
 - Commander.js: `12.1.0` (CLI)
 
 **UIフレームワーク**
+
 - Tailwind CSS v4: 最新のユーティリティファーストCSSフレームワーク
 - shadcn/ui: アクセシブルで再利用可能なコンポーネントライブラリ
 - 日本語フォント: Noto Sans JP対応
@@ -113,11 +117,11 @@ kiro-lens/
 
 ```typescript
 interface CLIOptions {
-  port?: number;              // -p, --port
-  frontendPort?: number;      // -f, --frontend-port
-  backendPort?: number;       // -b, --backend-port
-  noOpen?: boolean;          // --no-open
-  verbose?: boolean;         // -v, --verbose
+  port?: number; // -p, --port
+  frontendPort?: number; // -f, --frontend-port
+  backendPort?: number; // -b, --backend-port
+  noOpen?: boolean; // --no-open
+  verbose?: boolean; // -v, --verbose
 }
 
 // Commander.js設定
@@ -128,7 +132,7 @@ program
   .option('-p, --port <number>', 'Frontend port (backend will be port+1)')
   .option('-f, --frontend-port <number>', 'Frontend port')
   .option('-b, --backend-port <number>', 'Backend port')
-  .option('--no-open', 'Don\'t open browser automatically')
+  .option('--no-open', "Don't open browser automatically")
   .option('-v, --verbose', 'Verbose logging')
   .action(async (options: CLIOptions) => {
     await startKiroLens(options);
@@ -151,24 +155,24 @@ class PortManager {
       // 両方指定済み
       return await this.validatePorts(options.frontendPort, options.backendPort);
     }
-    
+
     if (options.port) {
       // フロントエンドのみ指定
       const frontend = options.port;
       const backend = await this.findAvailablePort(frontend + 1);
       return { frontend, backend, autoDetected: false };
     }
-    
+
     // 完全自動検出（デフォルト）
     const frontend = await this.findAvailablePort(8000);
     const backend = await this.findAvailablePort(frontend + 1);
     return { frontend, backend, autoDetected: true };
   }
-  
+
   private async findAvailablePort(startPort: number): Promise<number> {
     // 指定ポートから順番に利用可能ポートを検索
   }
-  
+
   private async validatePorts(frontend: number, backend: number): Promise<PortConfig> {
     // 指定ポートの利用可能性をチェック
   }
@@ -178,6 +182,7 @@ class PortManager {
 ### フロントエンド コンポーネント設計
 
 #### Dashboard.tsx (メインコンポーネント)
+
 ```typescript
 interface DashboardProps {
   projectName: string;
@@ -185,7 +190,7 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
   const { isHealthy, isLoading } = useHealth();
-  
+
   return (
     <div className="h-screen flex flex-col">
       <Header projectName={projectName} isHealthy={isHealthy} />
@@ -199,6 +204,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
 ```
 
 #### Header.tsx (ヘッダー)
+
 ```typescript
 import { Badge } from "@/components/ui/badge"
 
@@ -222,6 +228,7 @@ const Header: React.FC<HeaderProps> = ({ projectName, isHealthy }) => {
 ```
 
 #### Sidebar.tsx (基本サイドバー)
+
 ```typescript
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FolderIcon, AlertCircleIcon } from "lucide-react"
@@ -276,9 +283,9 @@ export async function healthRoutes(fastify: FastifyInstance) {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       version: '1.0.0',
-      uptime: process.uptime()
+      uptime: process.uptime(),
     };
-    
+
     return response;
   });
 }
@@ -299,13 +306,13 @@ export async function projectRoutes(fastify: FastifyInstance) {
     const projectName = path.basename(process.cwd());
     const kiroPath = path.join(process.cwd(), '.kiro');
     const hasKiroDir = await fs.pathExists(kiroPath);
-    
+
     const response: ProjectResponse = {
       name: projectName,
       hasKiroDir,
-      kiroPath: hasKiroDir ? kiroPath : undefined
+      kiroPath: hasKiroDir ? kiroPath : undefined,
     };
-    
+
     return response;
   });
 }
@@ -367,7 +374,7 @@ enum FoundationErrorType {
   PORT_PERMISSION_DENIED = 'PORT_PERMISSION_DENIED',
   KIRO_DIR_NOT_FOUND = 'KIRO_DIR_NOT_FOUND',
   SERVER_START_FAILED = 'SERVER_START_FAILED',
-  INVALID_PROJECT_DIR = 'INVALID_PROJECT_DIR'
+  INVALID_PROJECT_DIR = 'INVALID_PROJECT_DIR',
 }
 
 interface FoundationError {
@@ -398,7 +405,7 @@ describe('Dashboard', () => {
     render(<Dashboard projectName="test-project" />);
     expect(screen.getByText(/test-project/)).toBeInTheDocument();
   });
-  
+
   test('ヘルスチェック状態が表示される', () => {
     // テスト実装
   });
@@ -418,10 +425,8 @@ describe('useHealth', () => {
 // API エンドポイントテスト (Vitest + Supertest)
 describe('Health API', () => {
   test('GET /api/health - 正常なレスポンスを返す', async () => {
-    const response = await request(app)
-      .get('/api/health')
-      .expect(200);
-      
+    const response = await request(app).get('/api/health').expect(200);
+
     expect(response.body.status).toBe('healthy');
   });
 });
@@ -442,7 +447,7 @@ describe('CLI Integration', () => {
   test('npx kiro-lens でサーバーが起動する', async () => {
     // テスト実装
   });
-  
+
   test('ポート指定オプションが正しく動作する', async () => {
     // テスト実装
   });

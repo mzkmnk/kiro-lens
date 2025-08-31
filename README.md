@@ -44,6 +44,45 @@ npm run build
 npm test
 ```
 
+### コード品質管理
+
+このプロジェクトではESLintとPrettierを使用してコード品質を管理しています。
+
+```bash
+# リンティング実行
+npm run lint
+
+# リンティングエラーの自動修正
+npm run lint:fix
+
+# コードフォーマット実行
+npm run format
+
+# フォーマットチェック（CI用）
+npm run format:check
+
+# リンティング + フォーマットチェック
+npm run quality
+
+# リンティング + フォーマット修正
+npm run quality:fix
+```
+
+#### 設定ファイル
+
+- **ESLint**: `eslint.config.js` - Flat Config形式でパッケージ別ルール設定
+- **Prettier**: `.prettierrc.js` - 統一されたフォーマットルール
+- **除外設定**: `.prettierignore` - フォーマット対象外ファイル
+
+#### エディタ統合
+
+VS Codeを使用している場合、以下の拡張機能を推奨します：
+
+- ESLint (`ms-vscode.vscode-eslint`)
+- Prettier (`esbenp.prettier-vscode`)
+
+保存時の自動フォーマットを有効にするには、`.vscode/settings.json`を参照してください。
+
 ## プロジェクト構造
 
 ```

@@ -12,23 +12,23 @@ kiro-lensは、AWS開発のKiro IDEで作成される.kiro配下のファイル�
 graph TB
     CLI[CLI - kiro-lens] --> |起動| Frontend[Vite Dev Server :3000]
     CLI --> |起動| Backend[Fastify Server :3001]
-    
+
     Frontend --> |HTTP/WebSocket| Backend
     Backend --> |.kiro監視| KiroFS[.kiro Directory]
     Backend --> |WebSocket通知| Frontend
-    
+
     subgraph "Frontend (Vite + React)"
         UI[Dashboard UI]
         State[React Query State]
         WS[WebSocket Client]
     end
-    
+
     subgraph "Backend (Fastify)"
         API[REST API]
         WSS[WebSocket Server]
         KiroWatcher[Chokidar .kiro Watcher]
     end
-    
+
     subgraph "Shared"
         KiroTypes[Kiro-specific TypeScript Types]
     end
@@ -37,6 +37,7 @@ graph TB
 ### 技術スタック（最新安定版）
 
 **フロントエンド**
+
 - React: `18.3.1` (最新安定版)
 - TypeScript: `5.7.2` (最新安定版)
 - Vite: `6.0.1` (最新安定版)
@@ -45,6 +46,7 @@ graph TB
 - Socket.io Client: `4.8.1`
 
 **バックエンド**
+
 - Fastify: `5.1.0` (最新安定版)
 - TypeScript: `5.7.2`
 - Socket.io: `4.8.1`
@@ -52,6 +54,7 @@ graph TB
 - Gray-matter: `4.0.3`
 
 **開発ツール**
+
 - tsx: `4.20.4` (TypeScript実行)
 - Concurrently: `9.1.0` (並行実行)
 - Commander.js: `12.1.0` (CLI)
@@ -120,6 +123,7 @@ kiro-lens/
 ### フロントエンド コンポーネント設計
 
 #### Dashboard.tsx (メインコンポーネント)
+
 ```typescript
 interface DashboardProps {
   projectName: string;
@@ -129,10 +133,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
   // WebSocket接続管理
   // ファイル状態管理
   // レイアウト制御
-}
+};
 ```
 
 #### Sidebar.tsx (.kiroファイルツリー)
+
 ```typescript
 interface SidebarProps {
   kiroFiles: KiroFileTreeNode[];
@@ -152,6 +157,7 @@ interface KiroFileTreeNode {
 ```
 
 #### MainContent.tsx (.kiroファイル表示・編集)
+
 ```typescript
 interface MainContentProps {
   selectedFile: KiroFileContent | null;
@@ -311,7 +317,7 @@ enum KiroErrorType {
   WEBSOCKET_CONNECTION_FAILED = 'WEBSOCKET_CONNECTION_FAILED',
   KIRO_FILE_CONFLICT = 'KIRO_FILE_CONFLICT',
   NETWORK_ERROR = 'NETWORK_ERROR',
-  INVALID_FRONTMATTER = 'INVALID_FRONTMATTER'
+  INVALID_FRONTMATTER = 'INVALID_FRONTMATTER',
 }
 
 interface KiroAppError {
