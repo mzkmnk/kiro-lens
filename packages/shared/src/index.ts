@@ -1,4 +1,11 @@
-// 共通型定義のエクスポート
-export * from './types/file.js';
-export * from './types/websocket.js';
-export * from './types/api.js';
+// 共通型定義のエクスポート（最低限）
+export interface FileTreeNode {
+    name: string;
+    path: string;
+    type: 'file' | 'folder';
+}
+
+export interface ApiResponse<T = any> {
+    success: boolean;
+    data?: T;
+}
