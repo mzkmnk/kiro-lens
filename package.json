@@ -20,7 +20,7 @@
         "clean": "npm run clean --workspaces"
     },
     "bin": {
-        "kiro-lens": "./bin/kiro-lens.js"
+        "kiro-lens": "./bin/kiro-lens.ts"
     },
     "keywords": [
         "figma",
