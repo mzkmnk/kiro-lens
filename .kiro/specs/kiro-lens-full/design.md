@@ -2,7 +2,7 @@
 
 ## 概要
 
-Figma MCPダッシュボードは、Vite + React + TypeScript（フロントエンド）とFastify + TypeScript（バックエンド）を使用したモノレポ構成のローカル開発ツールです。WebSocketを使用したリアルタイム通信により、ファイルシステムの変更を即座にブラウザに反映し、開発者に優れたユーザー体験を提供します。
+kiro-lensは、AWS開発のKiro IDEで作成される.kiro配下のファイル（スペック、ステアリング、設定等）をブラウザ上で管理・編集するためのローカル開発ツールです。Vite + React + TypeScript（フロントエンド）とFastify + TypeScript（バックエンド）を使用したモノレポ構成で、WebSocketを使用したリアルタイム通信により、.kiro配下のファイルシステム変更を即座にブラウザに反映し、Kiro IDE利用者に優れた開発体験を提供します。
 
 ## アーキテクチャ
 
@@ -14,7 +14,7 @@ graph TB
     CLI --> |起動| Backend[Fastify Server :3001]
     
     Frontend --> |HTTP/WebSocket| Backend
-    Backend --> |ファイル監視| FS[File System]
+    Backend --> |.kiro監視| KiroFS[.kiro Directory]
     Backend --> |WebSocket通知| Frontend
     
     subgraph "Frontend (Vite + React)"
@@ -26,11 +26,11 @@ graph TB
     subgraph "Backend (Fastify)"
         API[REST API]
         WSS[WebSocket Server]
-        FileWatcher[Chokidar File Watcher]
+        KiroWatcher[Chokidar .kiro Watcher]
     end
     
     subgraph "Shared"
-        Types[TypeScript Types]
+        KiroTypes[Kiro-specific TypeScript Types]
     end
 ```
 
@@ -93,8 +93,8 @@ kiro-lens/
 │   │   │   │   ├── files.ts
 │   │   │   │   └── websocket.ts
 │   │   │   ├── services/
-│   │   │   │   ├── fileService.ts
-│   │   │   │   ├── fileWatcher.ts
+│   │   │   │   ├── kiroFileService.ts
+│   │   │   │   ├── kiroWatcher.ts
 │   │   │   │   └── markdownService.ts
 │   │   │   ├── types/
 │   │   │   │   └── index.ts
@@ -108,7 +108,7 @@ kiro-lens/
 │   └── shared/                    # 共通型定義
 │       ├── src/
 │       │   └── types/
-│       │       ├── file.ts
+│       │       ├── kiroFile.ts
 │       │       ├── websocket.ts
 │       │       └── api.ts
 │       ├── package.json
@@ -132,38 +132,41 @@ const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
 }
 ```
 
-#### Sidebar.tsx (ファイルツリー)
+#### Sidebar.tsx (.kiroファイルツリー)
 ```typescript
 interface SidebarProps {
-  files: FileTreeNode[];
+  kiroFiles: KiroFileTreeNode[];
   selectedFile: string | null;
   onFileSelect: (path: string) => void;
   onFolderToggle: (path: string) => void;
 }
 
-interface FileTreeNode {
+interface KiroFileTreeNode {
   name: string;
   path: string;
   type: 'file' | 'folder';
-  children?: FileTreeNode[];
+  kiroType?: 'spec' | 'steering' | 'settings' | 'hooks';
+  children?: KiroFileTreeNode[];
   isExpanded?: boolean;
 }
 ```
 
-#### MainContent.tsx (ファイル表示・編集)
+#### MainContent.tsx (.kiroファイル表示・編集)
 ```typescript
 interface MainContentProps {
-  selectedFile: FileContent | null;
+  selectedFile: KiroFileContent | null;
   isEditing: boolean;
   onEdit: (content: string) => void;
   onSave: () => void;
 }
 
-interface FileContent {
+interface KiroFileContent {
   path: string;
   content: string;
-  type: 'markdown' | 'text' | 'json' | 'other';
+  type: 'markdown' | 'json' | 'text';
+  kiroType: 'spec' | 'steering' | 'settings' | 'hooks';
   lastModified: Date;
+  frontMatter?: Record<string, any>; // Markdownファイルの場合
 }
 ```
 
@@ -172,30 +175,35 @@ interface FileContent {
 #### REST API エンドポイント
 
 ```typescript
-// GET /api/files - ファイルツリー取得
-interface GetFilesResponse {
-  files: FileTreeNode[];
+// GET /api/kiro/files - .kiroファイルツリー取得
+interface GetKiroFilesResponse {
+  files: KiroFileTreeNode[];
   projectName: string;
+  kiroVersion?: string;
 }
 
-// GET /api/files/:path - ファイル内容取得
-interface GetFileResponse {
+// GET /api/kiro/files/:path - .kiroファイル内容取得
+interface GetKiroFileResponse {
   path: string;
   content: string;
-  type: string;
+  type: 'markdown' | 'json' | 'text';
+  kiroType: 'spec' | 'steering' | 'settings' | 'hooks';
   lastModified: string;
   size: number;
+  frontMatter?: Record<string, any>;
 }
 
-// PUT /api/files/:path - ファイル内容更新
-interface UpdateFileRequest {
+// PUT /api/kiro/files/:path - .kiroファイル内容更新
+interface UpdateKiroFileRequest {
   content: string;
   lastModified?: string;
+  preserveFrontMatter?: boolean;
 }
 
-interface UpdateFileResponse {
+interface UpdateKiroFileResponse {
   success: boolean;
   lastModified: string;
+  kiroType: 'spec' | 'steering' | 'settings' | 'hooks';
 }
 ```
 
@@ -204,47 +212,50 @@ interface UpdateFileResponse {
 ```typescript
 // クライアント → サーバー
 interface ClientEvents {
-  'file:watch': (path: string) => void;
-  'file:unwatch': (path: string) => void;
-  'file:edit:start': (path: string) => void;
-  'file:edit:end': (path: string) => void;
+  'kiro:watch': (path: string) => void;
+  'kiro:unwatch': (path: string) => void;
+  'kiro:edit:start': (path: string) => void;
+  'kiro:edit:end': (path: string) => void;
 }
 
 // サーバー → クライアント
 interface ServerEvents {
-  'file:changed': (data: FileChangeEvent) => void;
-  'file:created': (data: FileCreateEvent) => void;
-  'file:deleted': (data: FileDeleteEvent) => void;
-  'file:conflict': (data: FileConflictEvent) => void;
+  'kiro:changed': (data: KiroFileChangeEvent) => void;
+  'kiro:created': (data: KiroFileCreateEvent) => void;
+  'kiro:deleted': (data: KiroFileDeleteEvent) => void;
+  'kiro:conflict': (data: KiroFileConflictEvent) => void;
 }
 
-interface FileChangeEvent {
+interface KiroFileChangeEvent {
   path: string;
   content: string;
   lastModified: string;
   changeType: 'content' | 'rename' | 'move';
+  kiroType: 'spec' | 'steering' | 'settings' | 'hooks';
 }
 ```
 
 ## データモデル
 
-### ファイルシステム抽象化
+### .kiroファイルシステム抽象化
 
 ```typescript
-interface FileSystemNode {
+interface KiroFileSystemNode {
   name: string;
   path: string;
   type: 'file' | 'directory';
+  kiroType: 'spec' | 'steering' | 'settings' | 'hooks';
   size?: number;
   lastModified: Date;
   isHidden: boolean;
-  children?: FileSystemNode[];
+  children?: KiroFileSystemNode[];
 }
 
-interface FileMetadata {
+interface KiroFileMetadata {
   path: string;
   encoding: string;
   mimeType: string;
+  kiroType: 'spec' | 'steering' | 'settings' | 'hooks';
   isReadable: boolean;
   isWritable: boolean;
   stats: {
@@ -253,18 +264,29 @@ interface FileMetadata {
     modified: Date;
     accessed: Date;
   };
+  frontMatter?: Record<string, any>; // Markdownファイルの場合
 }
 ```
 
-### Markdown 処理
+### Kiro Markdown 処理
 
 ```typescript
-interface MarkdownFile {
+interface KiroMarkdownFile {
   frontMatter: Record<string, any>;
   content: string;
   rawContent: string;
   htmlContent: string;
+  kiroType: 'spec' | 'steering';
   tableOfContents?: TOCItem[];
+  taskList?: TaskItem[]; // tasks.mdの場合
+}
+
+interface TaskItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  level: number;
+  children?: TaskItem[];
 }
 
 interface TOCItem {
@@ -280,31 +302,38 @@ interface TOCItem {
 ### エラー分類と処理戦略
 
 ```typescript
-enum ErrorType {
-  FILE_NOT_FOUND = 'FILE_NOT_FOUND',
+enum KiroErrorType {
+  KIRO_DIR_NOT_FOUND = 'KIRO_DIR_NOT_FOUND',
+  KIRO_FILE_NOT_FOUND = 'KIRO_FILE_NOT_FOUND',
   PERMISSION_DENIED = 'PERMISSION_DENIED',
   FILE_TOO_LARGE = 'FILE_TOO_LARGE',
-  INVALID_FILE_TYPE = 'INVALID_FILE_TYPE',
+  INVALID_KIRO_FILE_TYPE = 'INVALID_KIRO_FILE_TYPE',
   WEBSOCKET_CONNECTION_FAILED = 'WEBSOCKET_CONNECTION_FAILED',
-  FILE_CONFLICT = 'FILE_CONFLICT',
-  NETWORK_ERROR = 'NETWORK_ERROR'
+  KIRO_FILE_CONFLICT = 'KIRO_FILE_CONFLICT',
+  NETWORK_ERROR = 'NETWORK_ERROR',
+  INVALID_FRONTMATTER = 'INVALID_FRONTMATTER'
 }
 
-interface AppError {
-  type: ErrorType;
+interface KiroAppError {
+  type: KiroErrorType;
   message: string;
   details?: any;
   timestamp: Date;
   recoverable: boolean;
+  kiroContext?: {
+    fileType: 'spec' | 'steering' | 'settings' | 'hooks';
+    operation: 'read' | 'write' | 'watch';
+  };
 }
 ```
 
 ### エラー処理フロー
 
-1. **ファイル操作エラー**: ファイルアクセス権限、存在確認、サイズ制限
-2. **ネットワークエラー**: WebSocket再接続、API リトライ機構
-3. **競合エラー**: ファイル編集競合の検出と解決オプション提示
-4. **バリデーションエラー**: ファイル形式、内容の妥当性チェック
+1. **.kiroディレクトリエラー**: .kiroディレクトリの存在確認、アクセス権限チェック
+2. **.kiroファイル操作エラー**: ファイルアクセス権限、存在確認、サイズ制限
+3. **ネットワークエラー**: WebSocket再接続、API リトライ機構
+4. **競合エラー**: .kiroファイル編集競合の検出と解決オプション提示
+5. **バリデーションエラー**: Markdownフロントマター、JSON設定ファイルの妥当性チェック
 
 ## テスト戦略
 
@@ -313,14 +342,14 @@ interface AppError {
 ```typescript
 // コンポーネントテスト (Vitest + React Testing Library)
 describe('Dashboard', () => {
-  test('ファイル選択時にメインコンテンツが更新される', () => {
+  test('.kiroファイル選択時にメインコンテンツが更新される', () => {
     // テスト実装
   });
 });
 
 // カスタムフックテスト
-describe('useFiles', () => {
-  test('ファイル一覧を正しく取得する', () => {
+describe('useKiroFiles', () => {
+  test('.kiroファイル一覧を正しく取得する', () => {
     // テスト実装
   });
 });
@@ -330,15 +359,15 @@ describe('useFiles', () => {
 
 ```typescript
 // API エンドポイントテスト (Vitest + Supertest)
-describe('Files API', () => {
-  test('GET /api/files - ファイル一覧を返す', async () => {
+describe('Kiro Files API', () => {
+  test('GET /api/kiro/files - .kiroファイル一覧を返す', async () => {
     // テスト実装
   });
 });
 
 // サービス層テスト
-describe('FileService', () => {
-  test('ファイル内容を正しく読み込む', () => {
+describe('KiroFileService', () => {
+  test('.kiroファイル内容を正しく読み込む', () => {
     // テスト実装
   });
 });
@@ -348,8 +377,8 @@ describe('FileService', () => {
 
 ```typescript
 // Playwright を使用したE2Eテスト
-describe('ファイル編集フロー', () => {
-  test('ファイル選択から編集、保存まで', async ({ page }) => {
+describe('.kiroファイル編集フロー', () => {
+  test('.kiroファイル選択から編集、保存まで', async ({ page }) => {
     // テスト実装
   });
 });
@@ -366,19 +395,20 @@ describe('ファイル編集フロー', () => {
 
 ### バックエンド最適化
 
-1. **ファイル監視最適化**: chokidar の ignoreInitial、ignored オプション
-2. **メモリ管理**: 大きなファイルのストリーミング処理
+1. **.kiro監視最適化**: chokidar の .kiro ディレクトリ特化設定、ignoreInitial、ignored オプション
+2. **メモリ管理**: 大きな.kiroファイルのストリーミング処理
 3. **WebSocket最適化**: 接続プール、メッセージバッファリング
-4. **キャッシュ戦略**: ファイルメタデータのメモリキャッシュ
+4. **キャッシュ戦略**: .kiroファイルメタデータとフロントマターのメモリキャッシュ
 
 ## セキュリティ考慮事項
 
-### ファイルアクセス制御
+### .kiroファイルアクセス制御
 
-1. **パストラバーサル防止**: path.resolve() による正規化
-2. **ファイルタイプ制限**: 実行可能ファイルへのアクセス制限
-3. **サイズ制限**: 大きなファイルの読み込み制限
-4. **権限チェック**: ファイル読み書き権限の事前確認
+1. **.kiroディレクトリ制限**: .kiro配下のファイルのみアクセス許可
+2. **パストラバーサル防止**: path.resolve() による正規化と.kiro配下チェック
+3. **ファイルタイプ制限**: .md、.json、.txt ファイルのみ編集許可
+4. **サイズ制限**: 大きな.kiroファイルの読み込み制限
+5. **権限チェック**: .kiroファイル読み書き権限の事前確認
 
 ### ネットワークセキュリティ
 
