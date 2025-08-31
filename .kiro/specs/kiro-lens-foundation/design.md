@@ -39,7 +39,8 @@ graph TB
 - React: `18.3.1`
 - TypeScript: `5.7.2`
 - Vite: `6.0.1`
-- Tailwind CSS: `3.4.15`
+- Tailwind CSS: `v4` (最新版、スタイリング)
+- shadcn/ui: 最新版 (UIコンポーネントライブラリ)
 
 **バックエンド**
 - Fastify: `5.1.0`
@@ -49,6 +50,11 @@ graph TB
 - tsx: `4.20.4` (TypeScript実行)
 - Concurrently: `9.1.0` (並行実行)
 - Commander.js: `12.1.0` (CLI)
+
+**UIフレームワーク**
+- Tailwind CSS v4: 最新のユーティリティファーストCSSフレームワーク
+- shadcn/ui: アクセシブルで再利用可能なコンポーネントライブラリ
+- 日本語フォント: Noto Sans JP対応
 
 ## コンポーネントとインターフェース
 
@@ -194,6 +200,8 @@ const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
 
 #### Header.tsx (ヘッダー)
 ```typescript
+import { Badge } from "@/components/ui/badge"
+
 interface HeaderProps {
   projectName: string;
   isHealthy: boolean;
@@ -201,12 +209,12 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ projectName, isHealthy }) => {
   return (
-    <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold">kiro-lens - {projectName}</h1>
+    <header className="border-b bg-background px-6 py-4 flex justify-between items-center">
+      <h1 className="text-xl font-semibold">kiro-lens - {projectName}</h1>
       <div className="flex items-center gap-2">
-        <span className={`text-sm ${isHealthy ? 'text-green-400' : 'text-red-400'}`}>
-          {isHealthy ? '✅ Connected' : '❌ Disconnected'}
-        </span>
+        <Badge variant={isHealthy ? "default" : "destructive"}>
+          {isHealthy ? 'Connected' : 'Disconnected'}
+        </Badge>
       </div>
     </header>
   );
@@ -215,24 +223,34 @@ const Header: React.FC<HeaderProps> = ({ projectName, isHealthy }) => {
 
 #### Sidebar.tsx (基本サイドバー)
 ```typescript
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { FolderIcon, AlertCircleIcon } from "lucide-react"
+
 interface SidebarProps {
   hasKiroDir: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ hasKiroDir }) => {
   return (
-    <aside className="w-64 bg-gray-100 border-r border-gray-300 p-4">
-      <h2 className="text-lg font-semibold mb-4">Project Files</h2>
-      {hasKiroDir ? (
-        <div className="flex items-center gap-2">
-          <span>📁</span>
-          <span>.kiro</span>
-        </div>
-      ) : (
-        <div className="text-gray-500 text-sm">
-          No .kiro directory found
-        </div>
-      )}
+    <aside className="w-64 border-r bg-muted/50 p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Project Files</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {hasKiroDir ? (
+            <div className="flex items-center gap-2">
+              <FolderIcon className="h-4 w-4" />
+              <span>.kiro</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-muted-foreground text-sm">
+              <AlertCircleIcon className="h-4 w-4" />
+              <span>No .kiro directory found</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </aside>
   );
 };
