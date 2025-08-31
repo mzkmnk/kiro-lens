@@ -1,32 +1,32 @@
 {
-    "name": "@kiro-lens/shared",
-    "version": "1.0.0",
-    "description": "Kiro Lens共通型定義パッケージ",
-    "type": "module",
-    "main": "./src/index.ts",
-    "types": "./src/index.ts",
-    "exports": {
-        ".": {
-            "types": "./src/index.ts",
-            "import": "./src/index.ts"
-        },
-        "./types/*": {
-            "types": "./src/types/*.ts",
-            "import": "./src/types/*.ts"
-        }
+  "name": "@kiro-lens/shared",
+  "version": "1.0.0",
+  "description": "Kiro Lens共通型定義パッケージ",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
     },
-    "scripts": {
-        "build": "tsc",
-        "dev": "tsc --watch",
-        "clean": "rm -rf dist",
-        "test": "vitest run",
-        "test:watch": "vitest"
-    },
-    "devDependencies": {
-        "typescript": "^5.7.2",
-        "vitest": "^2.1.8"
-    },
-    "files": [
-        "dist/**/*"
-    ]
+    "./types/*": {
+      "types": "./src/types/*.ts",
+      "import": "./src/types/*.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "files": [
+    "dist/**/*"
+  ]
 }
