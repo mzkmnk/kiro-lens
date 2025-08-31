@@ -32,10 +32,3 @@ export type { ApiErrorType, ApiError, ApiResponse } from './types/api';
 
 // プロジェクト関連型定義
 export type { ProjectInfo, ProjectResponse } from './types/project';
-
-// 既存の型定義（後方互換性のため保持）
-export interface FileTreeNode {
-  name: string;
-  path: string;
-  type: 'file' | 'folder';
-}
