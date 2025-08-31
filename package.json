@@ -1,46 +1,68 @@
 {
-    "name": "kiro-lens",
-    "version": "1.0.0",
-    "type": "module",
-    "workspaces": [
-        "packages/frontend",
-        "packages/backend",
-        "packages/shared"
-    ],
-    "scripts": {
-        "dev": "tsx bin/kiro-lens.ts",
-        "dev:frontend": "npm run dev --workspace=packages/frontend",
-        "dev:backend": "npm run dev --workspace=packages/backend",
-        "build": "npm run build --workspaces",
-        "build:frontend": "npm run build --workspace=packages/frontend",
-        "build:backend": "npm run build --workspace=packages/backend",
-        "test": "npm run test --workspaces",
-        "test:unit": "vitest run",
-        "test:e2e": "playwright test",
-        "clean": "npm run clean --workspaces"
-    },
-    "bin": {
-        "kiro-lens": "./bin/kiro-lens.ts"
-    },
-    "keywords": [
-        "figma",
-        "mcp",
-        "dashboard",
-        "file-manager",
-        "development-tool"
-    ],
-    "author": "",
-    "license": "MIT",
-    "devDependencies": {
-        "@types/node": "^22.10.2",
-        "tsx": "^4.20.4",
-        "typescript": "^5.7.2",
-        "concurrently": "^9.1.0",
-        "commander": "^12.1.0",
-        "vitest": "^2.1.8",
-        "@playwright/test": "^1.49.1"
-    },
-    "engines": {
-        "node": ">=18.0.0"
-    }
+  "name": "kiro-lens",
+  "version": "1.0.0",
+  "type": "module",
+  "workspaces": [
+    "packages/frontend",
+    "packages/backend",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev": "tsx bin/kiro-lens.ts",
+    "dev:frontend": "npm run dev --workspace=packages/frontend",
+    "dev:backend": "npm run dev --workspace=packages/backend",
+    "build": "npm run build --workspaces",
+    "build:frontend": "npm run build --workspace=packages/frontend",
+    "build:backend": "npm run build --workspace=packages/backend",
+    "test": "npm run test --workspaces",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "clean": "npm run clean --workspaces",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx --cache --cache-location .eslintcache",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix --cache --cache-location .eslintcache",
+    "lint:workspaces": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:workspaces": "npm run format --workspaces --if-present",
+    "quality": "concurrently \"npm run lint\" \"npm run format:check\"",
+    "quality:fix": "npm run lint:fix && npm run format",
+    "precommit": "npm run quality",
+    "prepare": "npm run build"
+  },
+  "bin": {
+    "kiro-lens": "./bin/kiro-lens.ts"
+  },
+  "keywords": [
+    "figma",
+    "mcp",
+    "dashboard",
+    "file-manager",
+    "development-tool"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "commander": "^12.1.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.4",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
