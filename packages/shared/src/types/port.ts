@@ -70,15 +70,10 @@ export interface CLIOptions {
  * ポート検証結果
  *
  * 指定されたポートが利用可能かどうかの検証結果を表します。
- * 利用不可能な場合は、競合プロセス情報や代替ポートの提案を含みます。
  */
 export interface PortValidationResult {
   /** ポートが利用可能かどうか */
   readonly isAvailable: boolean;
-  /** 競合しているプロセス情報 */
-  readonly conflictingProcess?: string;
-  /** 代替ポート提案 */
-  readonly suggestedAlternative?: number;
 }
 
 /**
@@ -102,7 +97,6 @@ export type FoundationErrorType =
  * Foundation エラー
  *
  * kiro-lens-foundationで発生するエラーの詳細情報を表します。
- * 復旧可能性や推奨アクションを含み、ユーザーフレンドリーなエラー処理を支援します。
  */
 export interface FoundationError {
   /** エラータイプ */
@@ -113,10 +107,6 @@ export interface FoundationError {
   readonly details?: unknown;
   /** エラー発生時刻 */
   readonly timestamp: Date;
-  /** 復旧可能かどうか */
-  readonly recoverable: boolean;
-  /** ユーザーへの推奨アクション */
-  readonly suggestedAction?: string;
 }
 
 /**
@@ -130,120 +120,4 @@ export interface PortConfigurationValidationResult {
   readonly isValid: boolean;
   /** エラーメッセージ一覧 */
   readonly errors: readonly string[];
-}
-
-/**
- * ポート番号が有効な範囲内かどうかを検証する
- *
- * @param port - 検証するポート番号
- * @returns ポート番号が有効かどうか
- */
-export function isValidPortNumber(port: number): boolean {
-  return Number.isInteger(port) && port >= PORT_RANGE.MIN && port <= PORT_RANGE.MAX;
-}
-
-/**
- * ポート番号が特権ポート範囲かどうかを検証する
- *
- * @param port - 検証するポート番号
- * @returns 特権ポート範囲かどうか
- */
-export function isPrivilegedPort(port: number): boolean {
-  return port < PORT_RANGE.SAFE_MIN;
-}
-
-/**
- * ポート設定を検証する
- *
- * PortConfigurationの妥当性を包括的に検証します。
- * ポート番号の範囲、重複、特権ポートの使用などをチェックします。
- *
- * @param config - 検証するポート設定
- * @returns 検証結果
- */
-export function validatePortConfiguration(
-  config: PortConfiguration
-): PortConfigurationValidationResult {
-  const errors: string[] = [];
-
-  // ポート番号の範囲チェック
-  if (!isValidPortNumber(config.frontend)) {
-    errors.push(
-      `フロントエンドポートは${PORT_RANGE.MIN}-${PORT_RANGE.MAX}の範囲で指定してください`
-    );
-  }
-
-  if (!isValidPortNumber(config.backend)) {
-    errors.push(`バックエンドポートは${PORT_RANGE.MIN}-${PORT_RANGE.MAX}の範囲で指定してください`);
-  }
-
-  // 同じポート番号の使用チェック
-  if (config.frontend === config.backend) {
-    errors.push('フロントエンドとバックエンドで同じポートは使用できません');
-  }
-
-  // 特権ポートの警告（エラーではなく警告として扱う）
-  if (isPrivilegedPort(config.frontend)) {
-    errors.push(
-      `フロントエンドポート${config.frontend}は特権ポートです。管理者権限が必要な場合があります`
-    );
-  }
-
-  if (isPrivilegedPort(config.backend)) {
-    errors.push(
-      `バックエンドポート${config.backend}は特権ポートです。管理者権限が必要な場合があります`
-    );
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors: Object.freeze(errors),
-  };
-}
-
-/**
- * 安全なランダムポート番号を生成する
- *
- * @returns 特権ポート範囲を避けたランダムポート番号
- */
-export function generateRandomPort(): number {
-  const range = PORT_RANGE.MAX - PORT_RANGE.RANDOM_MIN;
-  return Math.floor(Math.random() * range) + PORT_RANGE.RANDOM_MIN;
-}
-
-/**
- * CLIオプションからポート設定を作成する
- *
- * CLIで指定されたオプションに基づいて、適切なPortConfigurationを生成します。
- * 優先順位: 個別ポート指定 > フロントエンドポート指定 > 自動検出
- *
- * @param options - CLIオプション
- * @returns 生成されたポート設定
- */
-export function createPortConfiguration(options: CLIOptions): PortConfiguration {
-  // 個別ポート指定がある場合
-  if (options.frontendPort && options.backendPort) {
-    return Object.freeze({
-      frontend: options.frontendPort,
-      backend: options.backendPort,
-      autoDetected: false,
-    });
-  }
-
-  // フロントエンドポートのみ指定がある場合
-  if (options.port) {
-    return Object.freeze({
-      frontend: options.port,
-      backend: options.port + 1,
-      autoDetected: false,
-    });
-  }
-
-  // オプション未指定時はランダムポートを生成
-  const randomPort = generateRandomPort();
-  return Object.freeze({
-    frontend: randomPort,
-    backend: randomPort + 1,
-    autoDetected: true,
-  });
 }

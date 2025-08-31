@@ -69,18 +69,3 @@ export interface ApiResponse<T = unknown> {
   /** エラー情報（失敗時のみ） */
   readonly error?: ApiError;
 }
-
-/**
- * プロジェクト情報レスポンス
- *
- * GET /api/project エンドポイントのレスポンス形式を定義します。
- * 現在のプロジェクトの基本情報と.kiroディレクトリの存在状況を含みます。
- */
-export interface ProjectResponse {
-  /** プロジェクト名 */
-  readonly name: string;
-  /** .kiroディレクトリが存在するかどうか */
-  readonly hasKiroDir: boolean;
-  /** .kiroディレクトリのパス（存在する場合のみ） */
-  readonly kiroPath?: string;
-}
