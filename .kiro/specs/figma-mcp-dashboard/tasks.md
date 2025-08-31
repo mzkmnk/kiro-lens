@@ -6,7 +6,7 @@
   - TypeScript設定ファイル（ルートとパッケージ別）の作成
   - _要件: 1.1, 1.2, 5.1_
 
-- [ ] 2. 共通型定義とインターフェース実装
+- [x] 2. 共通型定義とインターフェース実装
   - shared パッケージでファイルシステム、API、WebSocket の型定義を作成
   - FileTreeNode、FileContent、API レスポンス型の実装
   - WebSocket イベント型とエラー型の定義
