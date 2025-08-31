@@ -32,11 +32,13 @@ kiro-lens/
 ### ESLint設定コンポーネント
 
 #### 基本設定
+
 - **TypeScript**: `@typescript-eslint/parser`と`@typescript-eslint/eslint-plugin`
 - **共通ルール**: コード品質、セキュリティ、パフォーマンス関連
 - **インポート管理**: `eslint-plugin-import`による依存関係チェック
 
 #### パッケージ別特化設定
+
 - **Frontend**: React専用ルール（`eslint-plugin-react`, `eslint-plugin-react-hooks`）
 - **Backend**: Node.js専用ルール（`eslint-plugin-node`）
 - **Shared**: 純粋TypeScript環境向けルール
@@ -44,6 +46,7 @@ kiro-lens/
 ### Prettier設定コンポーネント
 
 #### フォーマット設定
+
 - **インデント**: 2スペース（既存コードベースに合わせる）
 - **行幅**: 100文字（可読性とモニタ幅のバランス）
 - **セミコロン**: 必須（TypeScriptベストプラクティス）
@@ -51,6 +54,7 @@ kiro-lens/
 - **末尾カンマ**: ES5準拠（互換性重視）
 
 #### ファイル対象
+
 - TypeScript/JavaScript: `.ts`, `.tsx`, `.js`, `.jsx`
 - 設定ファイル: `.json`, `.md`, `.yml`, `.yaml`
 - 除外対象: `node_modules`, `dist`, `build`
@@ -102,15 +106,15 @@ interface PackageDependencies {
     '@typescript-eslint/parser': '^8.41.0';
     '@typescript-eslint/eslint-plugin': '^8.41.0';
     'eslint-plugin-import': '^2.31.0';
-    
+
     // React専用（frontend）
     'eslint-plugin-react'?: '^7.37.2';
     'eslint-plugin-react-hooks'?: '^5.0.0';
     'eslint-plugin-jsx-a11y'?: '^6.10.2';
-    
+
     // Node.js専用（backend）
     'eslint-plugin-node'?: '^11.1.0';
-    
+
     // Prettier関連（最新安定版）
     prettier: '^3.6.2';
     'eslint-config-prettier': '^9.1.0';
