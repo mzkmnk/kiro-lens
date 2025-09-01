@@ -49,7 +49,7 @@ const INFO_MESSAGES = {
  * ログ出力のユーティリティ
  */
 const logger = {
-  error: (message: string, details?: any) => {
+  error: (message: string, details?: unknown) => {
     console.error(`❌ ${message}`);
     if (details) {
       console.error(details);
