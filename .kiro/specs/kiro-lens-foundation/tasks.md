@@ -59,14 +59,14 @@
   - _要件: 1.1, 1.2, 4.1_
   - **注記**: 既存実装（packages/shared/src/utils/portUtils.ts）で完了済み
 
-- [ ] 4. CLI エントリーポイント（TDD）
+- [-] 4. CLI エントリーポイント（TDD）
 
-- [ ] 4.1 CLI基本構造テスト作成（Red）
+- [x] 4.1 CLI基本構造テスト作成（Red）
   - Commander.jsプログラム初期化のテスト作成
   - 基本コマンド登録のテスト作成
   - _要件: 1.1, 1.2_
 
-- [ ] 4.2 CLI基本構造実装（Green）
+- [x] 4.2 CLI基本構造実装（Green）
   - bin/kiro-lens.tsファイル作成
   - Commander.jsプログラム初期化実装
   - 基本的なコマンド構造実装
