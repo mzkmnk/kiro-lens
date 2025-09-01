@@ -51,7 +51,7 @@ export default [
 
   // Backend専用（Node.js環境）
   {
-    files: ['packages/backend/**/*.ts'],
+    files: ['packages/backend/**/*.ts', 'bin/**/*.ts', 'bin/**/*.test.ts'],
     languageOptions: {
       globals: {
         ...globals.node, // Node.js専用のグローバル変数
