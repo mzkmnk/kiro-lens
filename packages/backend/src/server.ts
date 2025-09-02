@@ -1,15 +1,26 @@
-// 最低限のFastifyサーバー
-import Fastify from 'fastify';
+import Fastify, { FastifyInstance } from 'fastify';
+import { corsPlugin } from './plugins/cors.js';
+import { healthRoutes } from './routes/health.js';
+
+export function createServer(): FastifyInstance {
+  const fastify = Fastify({
+    logger: {
+      level: process.env.NODE_ENV === 'production' ? 'warn' : 'info',
+    },
+    disableRequestLogging: process.env.NODE_ENV === 'test',
+  });
+
+  // プラグイン登録
+  fastify.register(corsPlugin);
+
+  // ルート登録
+  fastify.register(healthRoutes);
+
+  return fastify;
+}
 
 const start = async () => {
-  const fastify = Fastify({
-    logger: true,
-  });
-
-  // ヘルスチェック
-  fastify.get('/health', async () => {
-    return { status: 'ok' };
-  });
+  const fastify = createServer();
 
   try {
     const port = 3001;
@@ -21,4 +32,7 @@ const start = async () => {
   }
 };
 
-start();
+// 直接実行時のみサーバーを起動
+if (import.meta.url === `file://${process.argv[1]}`) {
+  start();
+}
