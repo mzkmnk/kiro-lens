@@ -48,3 +48,89 @@ describe('CLI基本機能', () => {
     }).rejects.toThrow('Frontend and backend ports must be different');
   });
 });
+
+describe('CLIヘルプ・バージョン機能', () => {
+  test('--helpオプションでヘルプメッセージが表示される', async () => {
+    const program = createProgram();
+
+    // ヘルプ出力をキャプチャするためのモック
+    let helpOutput = '';
+    const originalWrite = process.stdout.write;
+    process.stdout.write = (chunk: string | Uint8Array) => {
+      helpOutput += chunk.toString();
+      return true;
+    };
+
+    try {
+      await program.parseAsync(['node', 'kiro-lens', '--help']);
+    } catch (_error) {
+      // Commander.jsは--helpでプロセスを終了しようとするため、エラーをキャッチ
+    } finally {
+      process.stdout.write = originalWrite;
+    }
+
+    expect(helpOutput).toContain('Usage:');
+    expect(helpOutput).toContain('kiro-lens');
+    expect(helpOutput).toContain('Options:');
+    expect(helpOutput).toContain('-p, --port');
+    expect(helpOutput).toContain('-f, --frontend-port');
+    expect(helpOutput).toContain('-b, --backend-port');
+    expect(helpOutput).toContain('--no-open');
+    expect(helpOutput).toContain('-v, --verbose');
+  });
+
+  test('--versionオプションでバージョンが表示される', async () => {
+    const program = createProgram();
+
+    // バージョン出力をキャプチャするためのモック
+    let versionOutput = '';
+    const originalWrite = process.stdout.write;
+    process.stdout.write = (chunk: string | Uint8Array) => {
+      versionOutput += chunk.toString();
+      return true;
+    };
+
+    try {
+      await program.parseAsync(['node', 'kiro-lens', '--version']);
+    } catch (_error) {
+      // Commander.jsは--versionでプロセスを終了しようとするため、エラーをキャッチ
+    } finally {
+      process.stdout.write = originalWrite;
+    }
+
+    expect(versionOutput).toContain('1.0.0');
+  });
+
+  test('package.jsonからバージョンを取得する', () => {
+    const program = createProgram();
+
+    // プログラムのバージョンがpackage.jsonと一致することを確認
+    expect(program.version()).toBe('1.0.0');
+  });
+
+  test('ヘルプメッセージに使用例が含まれる', async () => {
+    const program = createProgram();
+
+    let helpOutput = '';
+    const originalWrite = process.stdout.write;
+    process.stdout.write = (chunk: string | Uint8Array) => {
+      helpOutput += chunk.toString();
+      return true;
+    };
+
+    try {
+      await program.parseAsync(['node', 'kiro-lens', '--help']);
+    } catch (_error) {
+      // Commander.jsは--helpでプロセスを終了しようとするため、エラーをキャッチ
+    } finally {
+      process.stdout.write = originalWrite;
+    }
+
+    // 使用例が含まれることを確認
+    expect(helpOutput).toContain('Examples:');
+    expect(helpOutput).toContain('npx kiro-lens');
+    expect(helpOutput).toContain('npx kiro-lens --port 3000');
+    expect(helpOutput).toContain('Notes:');
+    expect(helpOutput).toContain('automatically detected');
+  });
+});
