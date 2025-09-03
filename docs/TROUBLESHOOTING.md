@@ -12,7 +12,7 @@
 
 ```bash
 # eslint-import-resolver-typescriptの再インストール
-npm install --save-dev eslint-import-resolver-typescript
+pnpm add -D eslint-import-resolver-typescript
 
 # 設定ファイルの確認
 # eslint.config.js の import/resolver 設定を確認
@@ -40,7 +40,7 @@ ls -la tsconfig.json packages/*/tsconfig.json
 
 ```bash
 # 自動修正可能なエラーを修正
-npm run lint:fix
+pnpm run lint:fix
 
 # 一時的に警告レベルに変更（eslint.config.js）
 '@typescript-eslint/no-unused-vars': 'warn'
@@ -121,7 +121,7 @@ npx prettier --check --debug-check path/to/file
 
 ```bash
 # キャッシュの有効化確認
-npm run lint -- --cache --cache-location .eslintcache
+pnpm run lint -- --cache --cache-location .eslintcache
 
 # 除外設定の確認（eslint.config.js）
 # node_modules, dist, build が除外されているか確認
@@ -133,7 +133,7 @@ npm run lint -- --cache --cache-location .eslintcache
 
 ```bash
 # 対象ファイルの絞り込み
-npm run format -- --ignore-path .prettierignore
+pnpm run format -- --ignore-path .prettierignore
 
 # .prettierignore の確認
 # 不要なファイルが除外されているか確認
@@ -148,8 +148,8 @@ npm run format -- --ignore-path .prettierignore
 1. ローカルでの再現確認
 
    ```bash
-   npm ci
-   npm run quality
+   pnpm install --frozen-lockfile
+   pnpm run quality
    ```
 
 2. Node.jsバージョンの確認
@@ -158,9 +158,9 @@ npm run format -- --ignore-path .prettierignore
 
 3. 依存関係の確認
    ```bash
-   # package-lock.jsonの更新
-   npm install
-   git add package-lock.json
+   # pnpm-lock.yamlの更新
+   pnpm install
+   git add pnpm-lock.yaml
    ```
 
 ### 緊急時の対処

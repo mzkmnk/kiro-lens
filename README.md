@@ -32,16 +32,16 @@ npx kiro-lens
 
 ```bash
 # 依存関係のインストール
-npm install
+pnpm install
 
 # 開発サーバー起動
-npm run dev
+pnpm run dev
 
 # ビルド
-npm run build
+pnpm run build
 
 # テスト実行
-npm test
+pnpm test
 ```
 
 ### コード品質管理
@@ -50,22 +50,22 @@ npm test
 
 ```bash
 # リンティング実行
-npm run lint
+pnpm run lint
 
 # リンティングエラーの自動修正
-npm run lint:fix
+pnpm run lint:fix
 
 # コードフォーマット実行
-npm run format
+pnpm run format
 
 # フォーマットチェック（CI用）
-npm run format:check
+pnpm run format:check
 
 # リンティング + フォーマットチェック
-npm run quality
+pnpm run quality
 
 # リンティング + フォーマット修正
-npm run quality:fix
+pnpm run quality:fix
 ```
 
 #### 設定ファイル

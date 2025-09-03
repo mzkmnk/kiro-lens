@@ -2,33 +2,27 @@
   "name": "kiro-lens",
   "version": "1.0.0",
   "type": "module",
-  "workspaces": [
-    "packages/frontend",
-    "packages/backend",
-    "packages/shared"
-  ],
   "scripts": {
     "dev": "tsx bin/kiro-lens.ts",
-    "dev:frontend": "npm run dev --workspace=packages/frontend",
-    "dev:backend": "npm run dev --workspace=packages/backend",
-    "build": "npm run build --workspace=packages/shared && npm run build --workspace=packages/backend && npm run build --workspace=packages/frontend",
-    "build:frontend": "npm run build --workspace=packages/frontend",
-    "build:shared": "npm run build --workspace=packages/shared",
-    "build:backend": "npm run build --workspace=packages/backend",
-    "test": "npm run test --workspaces",
-    "test:unit": "vitest run",
+    "dev:frontend": "pnpm --filter=frontend dev",
+    "dev:backend": "pnpm --filter=backend dev",
+    "build": "pnpm --filter=shared build && pnpm --filter=backend build && pnpm --filter=frontend build",
+    "build:frontend": "pnpm --filter=frontend build",
+    "build:shared": "pnpm --filter=shared build",
+    "build:backend": "pnpm --filter=backend build",
+    "test": "pnpm --filter=\"*\" test",
     "test:e2e": "playwright test",
-    "clean": "npm run clean --workspaces",
+    "clean": "pnpm --filter=\"*\" clean",
     "lint": "eslint . --cache --cache-location .eslintcache",
     "lint:fix": "eslint . --fix --cache --cache-location .eslintcache",
-    "lint:workspaces": "npm run lint --workspaces --if-present",
+    "lint:workspaces": "pnpm --filter=\"*\" lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
-    "format:workspaces": "npm run format --workspaces --if-present",
-    "quality": "concurrently \"npm run lint\" \"npm run format:check\"",
-    "quality:fix": "npm run lint:fix && npm run format",
-    "precommit": "npm run quality",
-    "prepare": "npm run build"
+    "format:workspaces": "pnpm --filter=\"*\" format",
+    "quality": "concurrently \"pnpm run lint\" \"pnpm run format:check\"",
+    "quality:fix": "pnpm run lint:fix && pnpm run format",
+    "precommit": "pnpm run quality",
+    "prepare": "pnpm run build"
   },
   "bin": {
     "kiro-lens": "./bin/kiro-lens.ts"
@@ -43,6 +37,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.34.0",
     "@playwright/test": "^1.49.1",
     "@types/node": "^22.10.2",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
@@ -61,8 +56,7 @@
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
     "tsx": "^4.20.4",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "typescript": "^5.7.2"
   },
   "engines": {
     "node": ">=18.0.0"

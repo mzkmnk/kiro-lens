@@ -168,9 +168,9 @@ interface PackageDependencies {
 ### 統合テスト
 
 1. **コマンドライン実行**
-   - `npm run lint`での全パッケージチェック
-   - `npm run format`での全パッケージフォーマット
-   - `npm run lint:fix`での自動修正確認
+   - `pnpm run lint`での全パッケージチェック
+   - `pnpm run format`での全パッケージフォーマット
+   - `pnpm run lint:fix`での自動修正確認
 
 2. **エディタ統合テスト**
    - VS Codeでの保存時自動フォーマット
