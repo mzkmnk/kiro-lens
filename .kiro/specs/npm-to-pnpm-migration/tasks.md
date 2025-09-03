@@ -6,24 +6,24 @@
 
 ## 実装タスク
 
-- [ ] 1. 移行前環境確認
+- [x] 1. 移行前環境確認
   - 現在のnpm環境の動作確認
   - 依存関係の現状把握
   - Gitワーキングディレクトリのクリーン確認
   - _要件: 1.1_
 
-- [ ] 2. npm環境の完全削除
+- [x] 2. npm環境の完全削除
   - package-lock.jsonファイル削除
   - 全node_modulesディレクトリ削除
   - npmキャッシュクリア
   - _要件: 1.1_
 
-- [ ] 3. pnpm workspace設定作成
+- [x] 3. pnpm workspace設定作成
   - pnpm-workspace.yamlファイル作成
   - packages配下の3パッケージ定義
   - _要件: 1.3_
 
-- [ ] 4. package.jsonスクリプト更新
+- [x] 4. package.jsonスクリプト更新
   - ルートpackage.jsonのworkspacesフィールド削除
   - npmコマンドをpnpmコマンドに変換
   - --workspace=を--filter=に変更
