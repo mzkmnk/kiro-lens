@@ -43,36 +43,36 @@ npx kiro-lens
 
 ```bash
 # フロントエンド開発サーバー
-npm run dev:frontend
+pnpm run dev:frontend
 
 # バックエンド開発サーバー
-npm run dev:backend
+pnpm run dev:backend
 ```
 
 ### ビルド
 
 ```bash
 # 全体ビルド
-npm run build
+pnpm run build
 
 # フロントエンドのみ
-npm run build:frontend
+pnpm run build:frontend
 
 # バックエンドのみ
-npm run build:backend
+pnpm run build:backend
 ```
 
 ### テスト
 
 ```bash
 # 全テスト実行
-npm test
+pnpm test
 
 # ユニットテスト
-npm run test:unit
+pnpm run test:unit
 
 # E2Eテスト
-npm run test:e2e
+pnpm run test:e2e
 ```
 
 ## UIコンポーネント
@@ -97,6 +97,6 @@ npm run test:e2e
 
 ## パッケージ管理
 
-- **ワークスペース**: npm workspaces使用
+- **ワークスペース**: pnpm workspaces使用
 - **パッケージ構成**: frontend、backend、shared の3パッケージ
 - **型共有**: sharedパッケージで共通型定義を管理
