@@ -182,6 +182,7 @@ export async function startKiroLens(options: CLIOptions): Promise<void> {
 
     if (options.verbose) {
       logger.verbose('Starting kiro-lens with options', options);
+      logger.verbose('Project root directory', process.cwd());
     }
 
     // CLIオプションからポート設定を作成

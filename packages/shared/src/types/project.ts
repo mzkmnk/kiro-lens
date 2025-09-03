@@ -9,10 +9,8 @@
 export interface ProjectInfo {
   /** プロジェクト名（通常はディレクトリ名） */
   readonly name: string;
-  /** プロジェクトの絶対パス */
-  readonly path: string;
   /** .kiroディレクトリが存在するかどうか */
-  readonly hasKiroDirectory: boolean;
+  readonly hasKiroDir: boolean;
   /** .kiroディレクトリの絶対パス（存在する場合のみ） */
   readonly kiroPath?: string;
 }

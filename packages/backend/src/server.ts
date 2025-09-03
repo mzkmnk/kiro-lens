@@ -1,6 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import { corsPlugin } from './plugins/cors.js';
 import { healthRoutes } from './routes/health.js';
+import { projectRoutes } from './routes/project.js';
 
 export function createServer(): FastifyInstance {
   const fastify = Fastify({
@@ -15,6 +16,7 @@ export function createServer(): FastifyInstance {
 
   // ルート登録
   fastify.register(healthRoutes);
+  fastify.register(projectRoutes);
 
   return fastify;
 }
