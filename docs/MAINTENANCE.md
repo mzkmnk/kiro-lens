@@ -14,44 +14,44 @@
 
 ```bash
 # 古い依存関係の確認
-npm outdated
+pnpm outdated
 
 # セキュリティ脆弱性の確認
-npm audit
+pnpm audit
 ```
 
 #### 2. パッチ更新
 
 ```bash
 # パッチバージョンのみ更新
-npm update
+pnpm update
 
 # セキュリティ修正の適用
-npm audit fix
+pnpm audit --fix
 ```
 
 #### 3. マイナー/メジャー更新
 
 ```bash
 # 特定パッケージの更新
-npm install package-name@latest
+pnpm add package-name@latest
 
 # 全体更新（注意深く実行）
-npx npm-check-updates -u
-npm install
+pnpm dlx npm-check-updates -u
+pnpm install
 ```
 
 #### 4. 更新後の検証
 
 ```bash
 # ビルド確認
-npm run build
+pnpm run build
 
 # テスト実行
-npm test
+pnpm test
 
 # リンティング確認
-npm run quality
+pnpm run quality
 
 # 型チェック
 npx tsc --noEmit
@@ -94,7 +94,7 @@ npx eslint-config-prettier path/to/file.ts
 
 ```bash
 # 型定義の再生成
-npm run build:types
+pnpm run build:types
 
 # TypeScriptキャッシュクリア
 npx tsc --build --clean
