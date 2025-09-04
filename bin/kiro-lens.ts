@@ -32,16 +32,19 @@ export async function startKiroLens(options: CLIOptions): Promise<void> {
     const concurrentlyCommand = [
       'concurrently',
       '--kill-others',
-      '--prefix-colors', 'cyan,magenta',
-      '--prefix', '[{name}]',
-      '--names', 'frontend,backend',
+      '--prefix-colors',
+      'cyan,magenta',
+      '--prefix',
+      '[{name}]',
+      '--names',
+      'frontend,backend',
       `"${frontendCommand}"`,
-      `"${backendCommand}"`
+      `"${backendCommand}"`,
     ];
 
     const child = spawn('npx', concurrentlyCommand, {
       stdio: 'inherit',
-      shell: true
+      shell: true,
     });
 
     // プロセス終了時のクリーンアップ
@@ -55,7 +58,7 @@ export async function startKiroLens(options: CLIOptions): Promise<void> {
       process.exit(0);
     });
 
-    child.on('exit', (code) => {
+    child.on('exit', code => {
       process.exit(code || 0);
     });
 
@@ -65,7 +68,7 @@ export async function startKiroLens(options: CLIOptions): Promise<void> {
         try {
           const { default: open } = await import('open');
           await open('http://localhost:3002');
-        } catch (error) {
+        } catch (_error) {
           console.log('Frontend available at http://localhost:3002');
         }
       }, 3000);
