@@ -5,10 +5,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [
-    react({
-      // JSX の自動インポート（必要に応じて）
-      jsxImportSource: undefined,
-    }),
+    react(),
     tailwindcss(),
   ],
   resolve: {
