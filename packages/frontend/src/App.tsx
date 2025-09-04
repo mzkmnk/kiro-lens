@@ -1,9 +1,9 @@
 function App() {
   return (
-    <div>
+    <main>
       <h1>Kiro Lens</h1>
       <p>最低限の実装</p>
-    </div>
+    </main>
   );
 }
 

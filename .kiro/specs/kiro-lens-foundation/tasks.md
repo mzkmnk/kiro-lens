@@ -210,22 +210,22 @@
   - キャッシュ機能の追加
   - _要件: 3.2, 3.4_
 
-- [ ] 9. Vite設定（TDD）
+- [x] 9. Vite設定（TDD）
 
-- [ ] 9.1 Vite設定ファイル実装
+- [x] 9.1 Vite設定ファイル実装
   - packages/frontend/vite.config.tsファイル作成
   - 基本的なVite設定実装
   - TypeScript統合設定実装
   - _要件: 2.2_
 
-- [ ] 10. React基本セットアップ（TDD）
+- [x] 10. React基本セットアップ（TDD）
 
-- [ ] 10.1 React基本セットアップテスト作成（Red）
+- [x] 10.1 React基本セットアップテスト作成（Red）
   - Reactコンポーネントのテスト作成
   - App.tsxの基本構造テスト作成
   - _要件: 2.2, 3.1_
 
-- [ ] 10.2 React基本セットアップ実装（Green）
+- [x] 10.2 React基本セットアップ実装（Green）
   - packages/frontend/src/App.tsxファイル作成
   - packages/frontend/src/main.tsxファイル作成
   - 最小限のReactアプリケーション実装

@@ -18,23 +18,10 @@ export default defineConfig({
         target: 'http://localhost:3001',
         changeOrigin: true,
       },
-      '/socket.io': {
-        target: 'http://localhost:3001',
-        ws: true,
-      },
     },
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          query: ['@tanstack/react-query'],
-          socket: ['socket.io-client'],
-        },
-      },
-    },
   },
 });
