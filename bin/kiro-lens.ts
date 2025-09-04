@@ -23,10 +23,10 @@ interface CLIOptions {
 export async function startKiroLens(options: CLIOptions): Promise<void> {
   try {
     console.log('Starting kiro-lens...');
-    console.log('Frontend will start on port: 3002');
+    console.log('Frontend will start on port: 3000');
     console.log('Backend will start on port: 3001');
 
-    const frontendCommand = 'pnpm --filter=frontend dev --port 3002';
+    const frontendCommand = 'pnpm --filter=frontend dev';
     const backendCommand = 'pnpm --filter=backend dev';
 
     const concurrentlyCommand = [

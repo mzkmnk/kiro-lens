@@ -18,7 +18,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: parseInt(process.env.FRONTEND_PORT || '3000', 10),
+    port: 3000,
     host: 'localhost',
     // HMR の最適化
     hmr: {
@@ -30,7 +30,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: `http://localhost:${process.env.BACKEND_PORT || '3001'}`,
+        target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
       },
@@ -59,7 +59,7 @@ export default defineConfig({
   },
   // プレビューサーバー設定
   preview: {
-    port: parseInt(process.env.FRONTEND_PORT || '3000', 10),
+    port: 3000,
     host: 'localhost',
   },
 });
