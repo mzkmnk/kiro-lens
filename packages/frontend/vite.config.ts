@@ -1,9 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      // JSX の自動インポート（必要に応じて）
+      jsxImportSource: undefined,
+    }),
+    tailwindcss(),
+  ],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
@@ -11,17 +18,48 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: parseInt(process.env.FRONTEND_PORT || '3000', 10),
     host: 'localhost',
+    // HMR の最適化
+    hmr: {
+      overlay: true,
+    },
+    // 開発サーバーの起動時間短縮
+    warmup: {
+      clientFiles: ['./src/main.tsx', './src/App.tsx'],
+    },
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: `http://localhost:${process.env.BACKEND_PORT || '3001'}`,
         changeOrigin: true,
+        secure: false,
       },
     },
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
+    // チャンク分割の最適化
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          utils: ['@shared'],
+        },
+      },
+    },
+    // ビルドパフォーマンスの最適化
+    target: 'esnext',
+    minify: 'esbuild',
+  },
+  // 依存関係の事前バンドル最適化
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+    exclude: ['@shared'],
+  },
+  // プレビューサーバー設定
+  preview: {
+    port: parseInt(process.env.FRONTEND_PORT || '3000', 10),
+    host: 'localhost',
   },
 });
