@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 
 function App() {
-
   return (
     <main>
       <h1 className='text-2xl font-bold'>Kiro Lens</h1>
