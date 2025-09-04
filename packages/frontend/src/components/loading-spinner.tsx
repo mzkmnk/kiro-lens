@@ -9,10 +9,10 @@ interface LoadingSpinnerProps {
 /**
  * ローディングスピナーコンポーネント
  */
-export function LoadingSpinner({ 
-  size = 'md', 
-  className, 
-  text = 'Loading...' 
+export function LoadingSpinner({
+  size = 'md',
+  className,
+  text = 'Loading...',
 }: LoadingSpinnerProps) {
   const sizeClasses = {
     sm: 'w-4 h-4',
@@ -28,9 +28,7 @@ export function LoadingSpinner({
           sizeClasses[size]
         )}
       />
-      {text && (
-        <p className="text-sm text-muted-foreground">{text}</p>
-      )}
+      {text && <p className='text-sm text-muted-foreground'>{text}</p>}
     </div>
   );
 }
@@ -40,8 +38,8 @@ export function LoadingSpinner({
  */
 export function LoadingOverlay({ text = 'Loading...' }: { text?: string }) {
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-      <LoadingSpinner size="lg" text={text} />
+    <div className='fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center'>
+      <LoadingSpinner size='lg' text={text} />
     </div>
   );
 }
