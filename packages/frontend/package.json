@@ -13,30 +13,22 @@
   },
   "dependencies": {
     "@kiro-lens/shared": "workspace:*",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@tanstack/react-query": "^5.62.2",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.542.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "socket.io-client": "^4.8.1",
-    "tailwind-merge": "^3.3.1"
+    "@tanstack/react-query": "^5.62.2",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
-    "@shadcn/ui": "^0.0.4",
-    "@tailwindcss/vite": "^4.0.0-alpha.26",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.1.0",
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
-    "jsdom": "^25.0.1",
-    "shadcn-ui": "^0.9.5",
-    "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2",
     "vite": "^6.3.5",
-    "vitest": "^3.2.4"
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0-alpha.26",
+    "vitest": "^3.2.4",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "jsdom": "^25.0.1"
   }
 }

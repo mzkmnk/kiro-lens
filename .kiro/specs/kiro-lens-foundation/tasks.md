@@ -252,15 +252,15 @@
   - 日本語フォント（Noto Sans JP）設定実装
   - _要件: 2.2, 3.1_
 
-- [x] 13. shadcn/uiセットアップ（TDD）
+- [ ] 13. shadcn/uiセットアップ（TDD）
 
-- [x] 13.1 shadcn/uiセットアップ実装
+- [ ] 13.1 shadcn/uiセットアップ実装
   - shadcn/ui初期化実装
   - 基本コンポーネント（Button、Card、Badge等）のインストール
   - TypeScript型定義の統合実装
   - _要件: 2.2, 3.1_
 
-- [x] 13.2 UI設定リファクタリング（Refactor）
+- [ ] 13.2 UI設定リファクタリング（Refactor）
   - Tailwind CSS v4とshadcn/uiの統合最適化
   - カスタムテーマとコンポーネントの一貫性確保
   - アクセシビリティ設定の強化
