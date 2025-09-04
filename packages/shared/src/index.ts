@@ -1,23 +1,5 @@
 // 共通型定義のエクスポート
 
-// ポート関連型定義
-export type {
-  PortConfiguration,
-  CLIOptions,
-  PortValidationResult,
-  FoundationErrorType,
-  FoundationError,
-  PortConfigurationValidationResult,
-} from './types/port';
-export { PORT_RANGE } from './types/port';
-
-// ポート関連ユーティリティ
-export {
-  validatePortConfiguration,
-  createPortConfiguration,
-  isValidPortNumber,
-} from './utils/portUtils';
-
 // ヘルスチェック関連型定義
 export type {
   HealthStatus,
