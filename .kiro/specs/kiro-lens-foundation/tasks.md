@@ -266,14 +266,14 @@
   - アクセシビリティ設定の強化
   - _要件: 2.2, 3.1_
 
-- [ ] 14. 基本API通信（TDD）
+- [x] 14. 基本API通信（TDD）
 
-- [ ] 14.1 API通信ラッパーテスト作成（Red）
+- [x] 14.1 API通信ラッパーテスト作成（Red）
   - fetch APIラッパーのテスト作成
   - 基本的なHTTPメソッドのテスト作成
   - _要件: 2.4_
 
-- [ ] 14.2 API通信ラッパー実装（Green）
+- [x] 14.2 API通信ラッパー実装（Green）
   - packages/frontend/src/services/api.tsファイル作成
   - 基本的なfetch APIラッパー実装
   - 型安全なAPI通信実装
