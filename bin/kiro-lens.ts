@@ -67,13 +67,13 @@ export async function startKiroLens(options: CLIOptions): Promise<void> {
       setTimeout(async () => {
         try {
           const { default: open } = await import('open');
-          await open('http://localhost:3002');
+          await open('http://localhost:3000');
         } catch (_error) {
-          console.log('Frontend available at http://localhost:3002');
+          console.log('Frontend available at http://localhost:3000');
         }
       }, 3000);
     } else {
-      console.log('Frontend available at http://localhost:3002');
+      console.log('Frontend available at http://localhost:3000');
       console.log('Backend available at http://localhost:3001');
     }
   } catch (error) {
