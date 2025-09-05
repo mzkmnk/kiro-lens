@@ -21,8 +21,8 @@ export const MainContent: React.FC<MainContentProps> = ({ hasKiroDir }) => {
  */
 const WelcomeContent: React.FC = () => {
   return (
-    <div className='max-w-4xl mx-auto'>
-      <div className='text-center py-12'>
+    <div className='w-full h-full'>
+      <div className='text-center py-8'>
         <div className='mb-8'>
           <h1 className="text-4xl font-bold text-gray-900 mb-4 font-['Noto_Sans_JP']">
             ようこそ kiro-lens ダッシュボードへ
@@ -33,7 +33,7 @@ const WelcomeContent: React.FC = () => {
           </p>
         </div>
 
-        <div className='grid md:grid-cols-2 gap-6 mb-8'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8 px-4'>
           <FeatureCard
             title='プロジェクト管理'
             description='左側のサイドバーから.kiroディレクトリの内容を確認できます。'
@@ -52,9 +52,18 @@ const WelcomeContent: React.FC = () => {
             textColor='text-green-900'
             descColor='text-green-700'
           />
+          <FeatureCard
+            title='ファイル管理'
+            description='設定ファイルやスペックファイルを効率的に管理・編集できます。'
+            icon='📝'
+            bgColor='bg-purple-50'
+            borderColor='border-purple-200'
+            textColor='text-purple-900'
+            descColor='text-purple-700'
+          />
         </div>
 
-        <div className='bg-gray-100 border border-gray-200 rounded-lg p-6'>
+        <div className='bg-gray-100 border border-gray-200 rounded-lg p-6 mx-4'>
           <h3 className='text-lg font-semibold text-gray-800 mb-2'>🚀 始めましょう</h3>
           <p className='text-gray-600 text-sm'>
             サイドバーから管理したいファイルを選択して、プロジェクトの設定を開始してください。
@@ -70,52 +79,54 @@ const WelcomeContent: React.FC = () => {
  */
 const NoKiroDirContent: React.FC = () => {
   return (
-    <div className='max-w-2xl mx-auto text-center py-12'>
-      <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-8 shadow-sm'>
-        <div className='text-yellow-600 mb-6'>
-          <div className='w-20 h-20 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center'>
-            <svg className='w-12 h-12' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z'
-              />
-            </svg>
+    <div className='w-full h-full flex items-center justify-center'>
+      <div className='max-w-2xl w-full mx-4'>
+        <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-8 shadow-sm text-center'>
+          <div className='text-yellow-600 mb-6'>
+            <div className='w-20 h-20 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center'>
+              <svg className='w-12 h-12' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z'
+                />
+              </svg>
+            </div>
           </div>
-        </div>
 
-        <h2 className="text-3xl font-bold text-yellow-800 mb-4 font-['Noto_Sans_JP']">
-          .kiroディレクトリが見つかりません
-        </h2>
+          <h2 className="text-3xl font-bold text-yellow-800 mb-4 font-['Noto_Sans_JP']">
+            .kiroディレクトリが見つかりません
+          </h2>
 
-        <p className='text-yellow-700 mb-8 text-lg'>
-          このプロジェクトのルートディレクトリに.kiroディレクトリが存在しません。
-        </p>
-
-        <div className='bg-white border border-yellow-300 rounded-lg p-6 text-left shadow-sm'>
-          <h3 className='font-semibold text-yellow-800 mb-4 flex items-center'>
-            <span className='mr-2'>💡</span>
-            解決方法
-          </h3>
-          <div className='space-y-3'>
-            <SolutionStep
-              number='1'
-              text='プロジェクトのルートディレクトリで実行していることを確認してください'
-            />
-            <SolutionStep
-              number='2'
-              text='.kiroディレクトリを作成してKiro IDEの設定ファイルを配置してください'
-            />
-          </div>
-        </div>
-
-        <div className='mt-6 text-sm text-yellow-600'>
-          <p>
-            詳細については、
-            <span className='font-semibold'>Kiro IDEのドキュメント</span>
-            を参照してください。
+          <p className='text-yellow-700 mb-8 text-lg'>
+            このプロジェクトのルートディレクトリに.kiroディレクトリが存在しません。
           </p>
+
+          <div className='bg-white border border-yellow-300 rounded-lg p-6 text-left shadow-sm'>
+            <h3 className='font-semibold text-yellow-800 mb-4 flex items-center'>
+              <span className='mr-2'>💡</span>
+              解決方法
+            </h3>
+            <div className='space-y-3'>
+              <SolutionStep
+                number='1'
+                text='プロジェクトのルートディレクトリで実行していることを確認してください'
+              />
+              <SolutionStep
+                number='2'
+                text='.kiroディレクトリを作成してKiro IDEの設定ファイルを配置してください'
+              />
+            </div>
+          </div>
+
+          <div className='mt-6 text-sm text-yellow-600'>
+            <p>
+              詳細については、
+              <span className='font-semibold'>Kiro IDEのドキュメント</span>
+              を参照してください。
+            </p>
+          </div>
         </div>
       </div>
     </div>
