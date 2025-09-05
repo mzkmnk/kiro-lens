@@ -20,7 +20,7 @@
     "incremental": true,
     "sourceMap": true,
     "paths": {
-      "@shared/*": ["../shared/dist/*"]
+      "@shared/*": ["../shared/src/*"]
     }
   },
   "include": ["src/**/*"],

@@ -1,4 +1,4 @@
-import { FileItem } from '@/shared/types/file-tree';
+import { FileItem } from '@shared/types/file-tree';
 
 /**
  * ファイルツリーに関する型定義

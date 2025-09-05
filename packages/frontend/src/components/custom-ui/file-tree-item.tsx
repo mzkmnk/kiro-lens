@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronRight, File, Folder, FolderOpen } from 'lucide-react';
 import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import type { FileTreeItemProps } from '@/types/file-tree';
+import type { FileItem } from '@shared/types/file-tree';
 
 /**
  * ファイルツリーの個別アイテムコンポーネント
@@ -63,7 +64,7 @@ export function FileTreeItem({ item, onFileSelect, onFolderToggle }: FileTreeIte
       {/* 子要素の再帰表示 */}
       {item.type === 'folder' && isOpen && item.children && (
         <div className='ml-4 border-l border-border/50 pl-2'>
-          {item.children.map(child => (
+          {item.children.map((child: FileItem) => (
             <FileTreeItem
               key={child.id}
               item={child}
