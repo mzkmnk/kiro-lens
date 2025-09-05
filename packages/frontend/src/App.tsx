@@ -74,13 +74,13 @@ function App() {
                     <div className='p-6 border border-border rounded-lg bg-card'>
                       <h2 className='text-xl font-semibold mb-3'>プロジェクト概要</h2>
                       <p className='text-muted-foreground'>
-                        Kiro Lensは、開発者向けの統合開発環境です。
+                        Kiro Lensは、AWS Kiro IDEユーザー向けの.kiro配下管理ツールです。
                       </p>
                     </div>
                     <div className='p-6 border border-border rounded-lg bg-card'>
-                      <h2 className='text-xl font-semibold mb-3'>ファイル管理</h2>
+                      <h2 className='text-xl font-semibold mb-3'>.kiroディレクトリ管理</h2>
                       <p className='text-muted-foreground'>
-                        左側のサイドバーからプロジェクトファイルを管理できます。
+                        左側のサイドバーから.kiro配下のファイルを管理できます。
                       </p>
                     </div>
                     <div className='p-6 border border-border rounded-lg bg-card'>
