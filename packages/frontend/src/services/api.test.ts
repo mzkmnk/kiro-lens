@@ -5,7 +5,7 @@ describe('ApiClient', () => {
   let apiClient: ApiClient;
 
   beforeEach(() => {
-    apiClient = new ApiClient('http://localhost:3001');
+    apiClient = new ApiClient();
     // fetchのモックをリセット
     vi.restoreAllMocks();
   });
@@ -128,15 +128,15 @@ describe('ApiClient', () => {
     });
   });
 
-  describe('ベースURL処理', () => {
-    test('末尾スラッシュなしのベースURLを正しく処理する', () => {
-      const client = new ApiClient('http://localhost:3001');
-      expect(client.baseUrl).toBe('http://localhost:3001');
+  describe('環境変数設定', () => {
+    test('環境変数からベースURLを取得する', () => {
+      // 環境変数が設定されていることを確認
+      expect(import.meta.env.VITE_API_BASE_URL).toBeDefined();
     });
 
-    test('末尾スラッシュありのベースURLを正しく処理する', () => {
-      const client = new ApiClient('http://localhost:3001/');
-      expect(client.baseUrl).toBe('http://localhost:3001');
+    test('ApiClientが正常にインスタンス化される', () => {
+      const client = new ApiClient();
+      expect(client).toBeInstanceOf(ApiClient);
     });
   });
 });

@@ -5,16 +5,14 @@
  * 基本的なHTTPメソッド（GET、POST、PUT、DELETE）をサポートします。
  */
 export class ApiClient {
-  public readonly baseUrl: string;
+  /** APIのベースURL（環境変数から取得、フォールバック付き） */
+  private static readonly BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
   /**
    * ApiClientのコンストラクタ
-   *
-   * @param baseUrl - APIのベースURL（末尾のスラッシュは自動で削除されます）
    */
-  constructor(baseUrl: string) {
-    // 末尾のスラッシュを削除
-    this.baseUrl = baseUrl.replace(/\/$/, '');
+  constructor() {
+    // 環境変数から自動取得
   }
 
   /**
@@ -68,7 +66,7 @@ export class ApiClient {
    * @returns レスポンスデータ
    */
   private async request<T>(method: string, path: string, data?: unknown): Promise<T> {
-    const url = `${this.baseUrl}${path}`;
+    const url = `${ApiClient.BASE_URL}${path}`;
 
     const options: {
       method: string;
