@@ -14,3 +14,12 @@ export type { ApiErrorType, ApiError, ApiResponse } from './types/api';
 
 // プロジェクト関連型定義
 export type { ProjectInfo, ProjectResponse } from './types/project';
+
+// ファイルツリー関連型定義
+export type { FileItem } from './types/file-tree';
+
+/**
+ * ダミー定数
+ * tscがJSファイルを生成することを保証するために追加
+ */
+export const DUMMY_CONST = 'dummy';

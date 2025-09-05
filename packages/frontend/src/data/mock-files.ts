@@ -1,4 +1,4 @@
-import type { FileItem } from '@/types/file-tree';
+import type { FileItem } from '@shared/types/file-tree';
 
 /**
  * .kiroディレクトリの構造を模擬したモックデータ
