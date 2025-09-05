@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/sidebar';
 import { FileTree } from '@/components/custom-ui/file-tree';
 import { ErrorBoundary } from '@/components/custom-ui/error-boundary';
+import { MainContent } from './MainContent';
 import { mockFiles } from '@/data/mock-files';
 
 interface DashboardProps {
@@ -24,6 +25,15 @@ interface DashboardProps {
  * @param projectName - 現在のプロジェクト名
  */
 export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
+  const [hasKiroDir, setHasKiroDir] = useState<boolean>(true); // デフォルトでtrueに設定
+
+  // 実際の実装では、APIからプロジェクト情報を取得してhasKiroDirを設定
+  useEffect(() => {
+    // TODO: プロジェクト情報APIを呼び出してhasKiroDirを設定
+    // 現在はモックデータとしてtrueを設定
+    setHasKiroDir(true);
+  }, []);
+
   return (
     <div data-testid='dashboard-container'>
       <ErrorBoundary>
@@ -98,47 +108,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
 
               {/* Main Content Area */}
               <ErrorBoundary>
-                <main className='flex-1 p-6 overflow-auto bg-white'>
-                  <div className='w-full'>
-                    <h2 className='text-3xl font-bold mb-6 text-black leading-tight'>
-                      Welcome to Kiro Lens
-                    </h2>
-                    <p className='text-[14px] text-[#4a4459] mb-6 leading-relaxed'>
-                      Kiro IDEユーザー向けの.kiro配下ファイル管理ツールです。
-                    </p>
-
-                    <div className='bg-[#f9f9f9] p-4 rounded-lg border border-[#79747e]/20 mb-6'>
-                      <p className='text-[12px] text-[#4a4459] font-medium'>
-                        プロジェクト: <span className='font-bold'>{projectName}</span>
-                      </p>
-                    </div>
-
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6'>
-                      <div className='p-6 border border-[#79747e]/20 rounded-lg bg-white shadow-sm'>
-                        <h3 className='text-xl font-semibold mb-3 text-[#4a4459]'>
-                          プロジェクト概要
-                        </h3>
-                        <p className='text-[#4a4459]/80'>
-                          Kiro Lensは、AWS Kiro IDEユーザー向けの.kiro配下管理ツールです。
-                        </p>
-                      </div>
-                      <div className='p-6 border border-[#79747e]/20 rounded-lg bg-white shadow-sm'>
-                        <h3 className='text-xl font-semibold mb-3 text-[#4a4459]'>
-                          .kiroディレクトリ管理
-                        </h3>
-                        <p className='text-[#4a4459]/80'>
-                          左側のサイドバーから.kiro配下のファイルを管理できます。
-                        </p>
-                      </div>
-                      <div className='p-6 border border-[#79747e]/20 rounded-lg bg-white shadow-sm'>
-                        <h3 className='text-xl font-semibold mb-3 text-[#4a4459]'>設定</h3>
-                        <p className='text-[#4a4459]/80'>
-                          右上の設定ボタンから環境設定を変更できます。
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </main>
+                <MainContent hasKiroDir={hasKiroDir} />
               </ErrorBoundary>
             </div>
           </div>

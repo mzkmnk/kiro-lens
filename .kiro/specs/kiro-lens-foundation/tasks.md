@@ -358,21 +358,21 @@
   - 将来の拡張性を考慮した構造改善
   - _要件: 3.3, 3.4_
 
-- [ ] 19. MainContent コンポーネント（TDD）
+- [x] 19. MainContent コンポーネント（TDD）
 
-- [ ] 19.1 MainContentテスト作成（Red）
+- [x] 19.1 MainContentテスト作成（Red）
   - 基本コンテンツ表示のテスト作成
   - ウェルカムメッセージ表示のテスト作成
   - .kiroディレクトリ未存在時のメッセージテスト作成
   - _要件: 3.1, 3.4_
 
-- [ ] 19.2 MainContent実装（Green）
+- [x] 19.2 MainContent実装（Green）
   - packages/frontend/src/components/MainContent.tsxファイル作成
   - 基本的なウェルカムメッセージ表示実装
   - 条件分岐による表示切り替え実装
   - _要件: 3.1, 3.4_
 
-- [ ] 19.3 MainContentリファクタリング（Refactor）
+- [x] 19.3 MainContentリファクタリング（Refactor）
   - コンテンツレイアウトの改善
   - 情報表示の充実
   - 将来の機能拡張を考慮した構造改善

@@ -16,8 +16,8 @@ describe('Dashboard', () => {
     const projectName = 'my-test-project';
     render(<Dashboard projectName={projectName} />);
 
-    // プロジェクト名がサイドバーのh1要素に表示されることを確認
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(projectName);
+    // プロジェクト名がサイドバーに表示されることを確認（titleで特定）
+    expect(screen.getByTitle(projectName)).toHaveTextContent(projectName);
   });
 
   test('レスポンシブデザインのクラスが適用される', () => {
