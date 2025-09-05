@@ -6,8 +6,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { FileTree } from '@/components/file-tree';
-import { ErrorBoundary } from '@/components/error-boundary';
+import { FileTree } from '@/components/custom-ui/file-tree';
+import { ErrorBoundary } from '@/components/custom-ui/error-boundary';
 import { mockFiles } from '@/data/mock-files';
 
 function App() {
