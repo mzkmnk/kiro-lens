@@ -13,8 +13,13 @@
   },
   "dependencies": {
     "@kiro-lens/shared": "workspace:*",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-scroll-area": "^1.2.10",
+    "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@tanstack/react-query": "^5.62.2",
+    "lucide-react": "^0.542.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "socket.io-client": "^4.8.1",
@@ -27,13 +32,13 @@
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "jsdom": "^25.0.1",
+    "tailwind-merge": "^2.5.4",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2",
     "vite": "^6.3.5",
-    "vitest": "^3.2.4",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.4",
-    "class-variance-authority": "^0.7.1"
+    "vitest": "^3.2.4"
   }
 }
