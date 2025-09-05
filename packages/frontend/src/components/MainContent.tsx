@@ -11,7 +11,7 @@ interface MainContentProps {
 export const MainContent: React.FC<MainContentProps> = ({ hasKiroDir }) => {
   return (
     <main className='flex-1 p-6 overflow-auto bg-white'>
-      <div className='h-full flex items-center justify-center'>
+      <div className='w-full h-full flex items-center justify-center'>
         {hasKiroDir ? <WelcomeContent /> : <NoKiroDirContent />}
       </div>
     </main>
@@ -23,7 +23,7 @@ export const MainContent: React.FC<MainContentProps> = ({ hasKiroDir }) => {
  */
 const WelcomeContent: React.FC = () => {
   return (
-    <div className='text-center'>
+    <div className='w-full text-center'>
       <h1 className="text-3xl font-bold text-gray-900 mb-4 font-['Noto_Sans_JP']">
         ようこそ kiro-lens ダッシュボードへ
       </h1>
@@ -37,7 +37,7 @@ const WelcomeContent: React.FC = () => {
  */
 const NoKiroDirContent: React.FC = () => {
   return (
-    <div className='text-center max-w-md'>
+    <div className='w-full text-center max-w-md mx-auto'>
       <div className='text-yellow-600 mb-4'>
         <svg className='w-16 h-16 mx-auto' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
           <path
