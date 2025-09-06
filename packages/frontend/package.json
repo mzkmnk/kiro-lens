@@ -4,6 +4,7 @@
   "description": "Kiro Lens フロントエンドアプリケーション",
   "type": "module",
   "scripts": {
+    "dev:msw": "vite --mode msw",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
