@@ -8,8 +8,8 @@
 
 - **React**: 18.3.1 (最新安定版)
 - **TypeScript**: 5.7.2 (最新安定版)
-- **Vite**: 6.0.1 (最新安定版、開発サーバー・ビルドツール)
-- **Tailwind CSS**: v4 (最新版、スタイリング)
+- **Vite**: 6.3.5 (最新安定版、開発サーバー・ビルドツール)
+- **Tailwind CSS**: 4.1.13 (最新版、スタイリング)
 - **shadcn/ui**: 最新版 (UIコンポーネントライブラリ)
 - **React Query**: 5.62.2 (TanStack Query、サーバー状態管理)
 - **Socket.io Client**: 4.8.1 (WebSocket通信)
@@ -30,13 +30,18 @@
 - **Vitest**: テスト実行
 - **React Testing Library**: コンポーネントテスト
 - **Playwright**: E2Eテスト
+- **MSW**: 2.11.1 (Mock Service Worker、API モック)
 
 ## 共通コマンド
 
 ### 開発環境起動
 
 ```bash
-npx kiro-lens
+# 通常の開発環境
+pnpm run dev
+
+# MSW有効化での開発（APIモック使用）
+pnpm run dev:msw
 ```
 
 ### 開発用サーバー起動（個別）
@@ -100,3 +105,12 @@ pnpm run test:e2e
 - **ワークスペース**: pnpm workspaces使用
 - **パッケージ構成**: frontend、backend、shared の3パッケージ
 - **型共有**: sharedパッケージで共通型定義を管理
+
+## 開発環境設定
+
+### MSW統合
+
+- **API モック**: 開発環境でバックエンドに依存しないフロントエンド開発
+- **環境変数制御**: `VITE_ENABLE_MSW`でMSWの有効/無効を切り替え
+- **ハンドラー管理**: モジュラー構造でAPIエンドポイント別にハンドラーを分離
+- **型安全性**: TypeScriptによる型安全なモックデータ管理

@@ -16,32 +16,37 @@ Kiro Lensは、AWS Kiro IDEを利用している開発者向けのローカル�
 
 ## 技術スタック
 
-- **フロントエンド**: React 18.3.1 + TypeScript 5.7.2 + Vite 6.0.1 + Tailwind CSS 3.4.15
+- **フロントエンド**: React 18.3.1 + TypeScript 5.7.2 + Vite 6.3.5 + Tailwind CSS 4.1.13
 - **バックエンド**: Fastify 5.1.0 + TypeScript 5.7.2 + Socket.io 4.8.1
-- **開発ツール**: tsx 4.20.4 + Concurrently 9.1.0 + Commander.js 12.1.0
+- **開発ツール**: tsx 4.20.4 + Concurrently 9.1.0 + MSW 2.11.1
 
 ## 使用方法
 
 ### 起動
 
 ```bash
-npx kiro-lens
-```
+# リポジトリをクローン
+git clone https://github.com/mzkmnk/kiro-lens.git
+cd kiro-lens
 
-### 開発環境
-
-```bash
 # 依存関係のインストール
 pnpm install
 
 # 開発サーバー起動
 pnpm run dev
+```
 
+### 開発環境
+
+```bash
 # ビルド
 pnpm run build
 
 # テスト実行
 pnpm test
+
+# MSW有効化での開発（APIモック使用）
+pnpm run dev:msw
 ```
 
 ### コード品質管理
