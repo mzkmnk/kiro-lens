@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx bin/kiro-lens.ts",
-    "dev:msw:frontend": "pnpm --filter=frontend dev:msw",
+    "dev": "concurrently \"pnpm run dev:frontend\" \"pnpm run dev:backend\"",
     "dev:frontend": "pnpm --filter=frontend dev",
     "dev:backend": "pnpm --filter=backend dev",
     "build": "pnpm --filter=shared build && pnpm --filter=backend build && pnpm --filter=frontend build",
@@ -16,17 +15,11 @@
     "clean": "pnpm --filter=\"*\" clean",
     "lint": "eslint . --cache --cache-location .eslintcache",
     "lint:fix": "eslint . --fix --cache --cache-location .eslintcache",
-    "lint:workspaces": "pnpm --filter=\"*\" lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
-    "format:workspaces": "pnpm --filter=\"*\" format",
     "quality": "concurrently \"pnpm run lint\" \"pnpm run format:check\"",
     "quality:fix": "pnpm run lint:fix && pnpm run format",
-    "precommit": "pnpm run quality",
-    "prepare": "pnpm run build"
-  },
-  "bin": {
-    "kiro-lens": "./bin/kiro-lens.ts"
+    "precommit": "pnpm run quality"
   },
   "keywords": [
     "figma",
@@ -38,18 +31,16 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "concurrently": "^9.1.0",
     "@eslint/js": "^9.34.0",
     "@playwright/test": "^1.49.1",
     "@types/node": "^22.10.2",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
-    "commander": "^12.1.0",
-    "concurrently": "^9.1.0",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.31.0",
-    "open": "^10.1.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.2.1",
@@ -57,8 +48,8 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
-    "tsx": "^4.20.4",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=18.0.0"
