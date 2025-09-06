@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"pnpm run dev:frontend\" \"pnpm run dev:backend\"",
+    "dev": "pnpm run dev:frontend && pnpm run dev:backend",
     "dev:frontend": "pnpm --filter=frontend dev",
     "dev:backend": "pnpm --filter=backend dev",
     "build": "pnpm --filter=shared build && pnpm --filter=backend build && pnpm --filter=frontend build",
@@ -18,8 +18,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "quality": "concurrently \"pnpm run lint\" \"pnpm run format:check\"",
-    "quality:fix": "pnpm run lint:fix && pnpm run format",
-    "precommit": "pnpm run quality"
+    "quality:fix": "pnpm run lint:fix && pnpm run format"
   },
   "keywords": [
     "figma",
@@ -48,10 +47,9 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
-    "typescript": "^5.7.2",
-    "vitest": "^3.2.4"
+    "typescript": "^5.7.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   }
 }
