@@ -35,10 +35,16 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jsdom": "^25.0.1",
+    "msw": "^2.11.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2",
     "vite": "^6.3.5",
     "vitest": "^3.2.4"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

@@ -6,7 +6,7 @@
 
 ## 実装タスク
 
-- [ ] 1. MSWライブラリのインストールと基本設定
+- [x] 1. MSWライブラリのインストールと基本設定
   - フロントエンドパッケージにmswをdevDependenciesとして追加
   - MSW Service Workerファイル（mockServiceWorker.js）をpublicディレクトリに配置
   - TypeScript型定義の設定
