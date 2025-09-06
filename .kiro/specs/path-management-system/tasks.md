@@ -12,7 +12,7 @@
   - API リクエスト/レスポンス型（AddProjectRequest、ProjectListResponse等）を定義
   - _要件: 1.1, 2.1, 3.1, 5.1_
 
-- [ ] 2. 設定管理関数の実装
+- [x] 2. 設定管理関数の実装
   - packages/backend/src/services/configService.tsを作成
   - ユーザーホームディレクトリの.kiro-lensフォルダ管理関数を実装
   - 設定ファイル（config.json）の読み書き関数を実装
