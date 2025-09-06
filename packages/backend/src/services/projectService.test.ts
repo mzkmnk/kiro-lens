@@ -11,10 +11,21 @@ import {
 } from './projectService';
 import * as configService from './configService';
 import * as fileSystemService from './fileSystemService';
+import {
+  MOCK_DEFAULT_CONFIG,
+  MOCK_PROJECT,
+  MOCK_INVALID_PROJECT,
+  MOCK_CONFIG_WITH_PROJECT,
+  MOCK_CONFIG_WITH_SELECTED_PROJECT,
+  MOCK_DIRECTORY_PERMISSIONS,
+  MOCK_UUID,
+  MOCK_DATE,
+  MOCK_PATHS,
+} from '../test/constants';
 
 // モック設定
 vi.mock('crypto', () => ({
-  randomUUID: vi.fn(() => 'test-uuid-123'),
+  randomUUID: vi.fn(() => MOCK_UUID),
 }));
 
 vi.mock('./configService');
@@ -24,35 +35,10 @@ const mockConfigService = vi.mocked(configService);
 const mockFileSystemService = vi.mocked(fileSystemService);
 
 describe('ProjectService', () => {
-  const mockConfig: AppConfig = {
-    version: '1.0.0',
-    projects: [],
-    settings: {
-      theme: 'system',
-      autoSave: true,
-      maxRecentProjects: 10,
-    },
-    metadata: {
-      createdAt: '2024-01-01T00:00:00.000Z',
-      updatedAt: '2024-01-01T00:00:00.000Z',
-      configPath: '/home/test/.kiro-lens/config.json',
-    },
-  };
-
-  const mockProject: ProjectInfo = {
-    id: 'test-project-id',
-    name: 'test-project',
-    path: '/absolute/path/to/project',
-    kiroPath: '/absolute/path/to/project/.kiro',
-    hasKiroDir: true,
-    isValid: true,
-    addedAt: '2024-01-01T00:00:00.000Z',
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
-    vi.setSystemTime(new Date('2024-01-01T00:00:00.000Z'));
+    vi.setSystemTime(new Date(MOCK_DATE));
   });
 
   afterEach(() => {
@@ -62,54 +48,50 @@ describe('ProjectService', () => {
 
   describe('validateProjectPath', () => {
     test('有効なプロジェクトパスの場合は成功を返す', async () => {
-      mockFileSystemService.resolvePath.mockReturnValue('/absolute/path/to/project');
+      mockFileSystemService.resolvePath.mockReturnValue(MOCK_PATHS.VALID_ABSOLUTE);
       mockFileSystemService.checkDirectoryExists.mockResolvedValue(true);
       mockFileSystemService.checkKiroDirectory.mockResolvedValue(true);
-      mockFileSystemService.checkDirectoryPermissions.mockResolvedValue({
-        readable: true,
-        writable: true,
-        executable: true,
-      });
+      mockFileSystemService.checkDirectoryPermissions.mockResolvedValue(
+        MOCK_DIRECTORY_PERMISSIONS.FULL_ACCESS
+      );
 
-      const result = await validateProjectPath('/absolute/path/to/project');
+      const result = await validateProjectPath(MOCK_PATHS.VALID_ABSOLUTE);
 
       expect(result.isValid).toBe(true);
-      expect(result.validatedPath).toBe('/absolute/path/to/project');
+      expect(result.validatedPath).toBe(MOCK_PATHS.VALID_ABSOLUTE);
       expect(result.error).toBeUndefined();
     });
 
     test('ディレクトリが存在しない場合はエラーを返す', async () => {
-      mockFileSystemService.resolvePath.mockReturnValue('/absolute/path/to/nonexistent');
+      mockFileSystemService.resolvePath.mockReturnValue(MOCK_PATHS.NON_EXISTENT);
       mockFileSystemService.checkDirectoryExists.mockResolvedValue(false);
 
-      const result = await validateProjectPath('/absolute/path/to/nonexistent');
+      const result = await validateProjectPath(MOCK_PATHS.NON_EXISTENT);
 
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('指定されたディレクトリが存在しません');
     });
 
     test('.kiroディレクトリが存在しない場合はエラーを返す', async () => {
-      mockFileSystemService.resolvePath.mockReturnValue('/absolute/path/to/project');
+      mockFileSystemService.resolvePath.mockReturnValue(MOCK_PATHS.VALID_ABSOLUTE);
       mockFileSystemService.checkDirectoryExists.mockResolvedValue(true);
       mockFileSystemService.checkKiroDirectory.mockResolvedValue(false);
 
-      const result = await validateProjectPath('/absolute/path/to/project');
+      const result = await validateProjectPath(MOCK_PATHS.VALID_ABSOLUTE);
 
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('.kiroディレクトリが存在しません');
     });
 
     test('読み取り権限がない場合はエラーを返す', async () => {
-      mockFileSystemService.resolvePath.mockReturnValue('/absolute/path/to/project');
+      mockFileSystemService.resolvePath.mockReturnValue(MOCK_PATHS.VALID_ABSOLUTE);
       mockFileSystemService.checkDirectoryExists.mockResolvedValue(true);
       mockFileSystemService.checkKiroDirectory.mockResolvedValue(true);
-      mockFileSystemService.checkDirectoryPermissions.mockResolvedValue({
-        readable: false,
-        writable: true,
-        executable: true,
-      });
+      mockFileSystemService.checkDirectoryPermissions.mockResolvedValue(
+        MOCK_DIRECTORY_PERMISSIONS.NO_READ_ACCESS
+      );
 
-      const result = await validateProjectPath('/absolute/path/to/project');
+      const result = await validateProjectPath(MOCK_PATHS.VALID_ABSOLUTE);
 
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('読み取り権限がありません');
@@ -129,56 +111,47 @@ describe('ProjectService', () => {
 
   describe('addProject', () => {
     test('有効なパスでプロジェクトを追加できる', async () => {
-      mockFileSystemService.resolvePath.mockReturnValue('/absolute/path/to/project');
+      mockFileSystemService.resolvePath.mockReturnValue(MOCK_PATHS.VALID_ABSOLUTE);
       mockFileSystemService.checkDirectoryExists.mockResolvedValue(true);
       mockFileSystemService.checkKiroDirectory.mockResolvedValue(true);
-      mockFileSystemService.checkDirectoryPermissions.mockResolvedValue({
-        readable: true,
-        writable: true,
-        executable: true,
-      });
-      mockConfigService.loadConfig.mockResolvedValue(mockConfig);
+      mockFileSystemService.checkDirectoryPermissions.mockResolvedValue(
+        MOCK_DIRECTORY_PERMISSIONS.FULL_ACCESS
+      );
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_DEFAULT_CONFIG);
       mockConfigService.saveConfig.mockResolvedValue();
 
-      const result = await addProject('/absolute/path/to/project');
+      const result = await addProject(MOCK_PATHS.VALID_ABSOLUTE);
 
-      expect(result.id).toBe('test-uuid-123');
+      expect(result.id).toBe(MOCK_UUID);
       expect(result.name).toBe('project');
-      expect(result.path).toBe('/absolute/path/to/project');
-      expect(result.kiroPath).toBe('/absolute/path/to/project/.kiro');
+      expect(result.path).toBe(MOCK_PATHS.VALID_ABSOLUTE);
+      expect(result.kiroPath).toBe(`${MOCK_PATHS.VALID_ABSOLUTE}/.kiro`);
       expect(result.hasKiroDir).toBe(true);
       expect(result.isValid).toBe(true);
       expect(mockConfigService.saveConfig).toHaveBeenCalled();
     });
 
     test('既に存在するパスの場合はエラーを投げる', async () => {
-      const configWithProject: AppConfig = {
-        ...mockConfig,
-        projects: [mockProject],
-      };
-
-      mockFileSystemService.resolvePath.mockReturnValue('/absolute/path/to/project');
+      mockFileSystemService.resolvePath.mockReturnValue(MOCK_PATHS.VALID_ABSOLUTE);
       mockFileSystemService.checkDirectoryExists.mockResolvedValue(true);
       mockFileSystemService.checkKiroDirectory.mockResolvedValue(true);
-      mockFileSystemService.checkDirectoryPermissions.mockResolvedValue({
-        readable: true,
-        writable: true,
-        executable: true,
-      });
-      mockConfigService.loadConfig.mockResolvedValue(configWithProject);
+      mockFileSystemService.checkDirectoryPermissions.mockResolvedValue(
+        MOCK_DIRECTORY_PERMISSIONS.FULL_ACCESS
+      );
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_CONFIG_WITH_PROJECT);
 
-      await expect(addProject('/absolute/path/to/project')).rejects.toThrow(ProjectError);
-      await expect(addProject('/absolute/path/to/project')).rejects.toThrow(
+      await expect(addProject(MOCK_PATHS.VALID_ABSOLUTE)).rejects.toThrow(ProjectError);
+      await expect(addProject(MOCK_PATHS.VALID_ABSOLUTE)).rejects.toThrow(
         '既にプロジェクトとして登録されています'
       );
     });
 
     test('無効なパスの場合はエラーを投げる', async () => {
-      mockFileSystemService.resolvePath.mockReturnValue('/absolute/path/to/invalid');
+      mockFileSystemService.resolvePath.mockReturnValue(MOCK_PATHS.NON_EXISTENT);
       mockFileSystemService.checkDirectoryExists.mockResolvedValue(false);
 
-      await expect(addProject('/absolute/path/to/invalid')).rejects.toThrow(ProjectError);
-      await expect(addProject('/absolute/path/to/invalid')).rejects.toThrow(
+      await expect(addProject(MOCK_PATHS.NON_EXISTENT)).rejects.toThrow(ProjectError);
+      await expect(addProject(MOCK_PATHS.NON_EXISTENT)).rejects.toThrow(
         '指定されたディレクトリが存在しません'
       );
     });
@@ -186,49 +159,35 @@ describe('ProjectService', () => {
 
   describe('removeProject', () => {
     test('存在するプロジェクトを削除できる', async () => {
-      const configWithProject: AppConfig = {
-        ...mockConfig,
-        projects: [mockProject],
-      };
-
-      mockConfigService.loadConfig.mockResolvedValue(configWithProject);
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_CONFIG_WITH_PROJECT);
       mockConfigService.saveConfig.mockResolvedValue();
 
-      await removeProject('test-project-id');
+      await removeProject(MOCK_PROJECT.id);
 
       expect(mockConfigService.saveConfig).toHaveBeenCalledWith({
-        ...configWithProject,
+        ...MOCK_CONFIG_WITH_PROJECT,
         projects: [],
       });
     });
 
     test('現在選択中のプロジェクトを削除した場合は選択を解除する', async () => {
-      const configWithSelectedProject: AppConfig = {
-        ...mockConfig,
-        projects: [mockProject],
-        settings: {
-          ...mockConfig.settings,
-          lastSelectedProject: 'test-project-id',
-        },
-      };
-
-      mockConfigService.loadConfig.mockResolvedValue(configWithSelectedProject);
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_CONFIG_WITH_SELECTED_PROJECT);
       mockConfigService.saveConfig.mockResolvedValue();
 
-      await removeProject('test-project-id');
+      await removeProject(MOCK_PROJECT.id);
 
       expect(mockConfigService.saveConfig).toHaveBeenCalledWith({
-        ...configWithSelectedProject,
+        ...MOCK_CONFIG_WITH_SELECTED_PROJECT,
         projects: [],
         settings: {
-          ...configWithSelectedProject.settings,
+          ...MOCK_CONFIG_WITH_SELECTED_PROJECT.settings,
           lastSelectedProject: undefined,
         },
       });
     });
 
     test('存在しないプロジェクトIDの場合はエラーを投げる', async () => {
-      mockConfigService.loadConfig.mockResolvedValue(mockConfig);
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_DEFAULT_CONFIG);
 
       await expect(removeProject('nonexistent-id')).rejects.toThrow(ProjectError);
       await expect(removeProject('nonexistent-id')).rejects.toThrow('プロジェクトが見つかりません');
@@ -237,30 +196,25 @@ describe('ProjectService', () => {
 
   describe('getAllProjects', () => {
     test('全プロジェクトを取得できる', async () => {
-      const configWithProjects: AppConfig = {
-        ...mockConfig,
-        projects: [mockProject],
-      };
-
-      mockConfigService.loadConfig.mockResolvedValue(configWithProjects);
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_CONFIG_WITH_PROJECT);
       mockFileSystemService.checkDirectoryExists.mockResolvedValue(true);
       mockFileSystemService.checkKiroDirectory.mockResolvedValue(true);
 
       const result = await getAllProjects();
 
       expect(result).toHaveLength(1);
-      expect(result[0]).toEqual(mockProject);
+      expect(result[0]).toEqual(MOCK_PROJECT);
     });
 
     test('プロジェクトの有効性を確認して更新する', async () => {
       const invalidProject: ProjectInfo = {
-        ...mockProject,
+        ...MOCK_PROJECT,
         isValid: true,
         hasKiroDir: true,
       };
 
       const configWithInvalidProject: AppConfig = {
-        ...mockConfig,
+        ...MOCK_DEFAULT_CONFIG,
         projects: [invalidProject],
       };
 
@@ -279,24 +233,15 @@ describe('ProjectService', () => {
 
   describe('getCurrentProject', () => {
     test('現在選択中のプロジェクトを取得できる', async () => {
-      const configWithSelectedProject: AppConfig = {
-        ...mockConfig,
-        projects: [mockProject],
-        settings: {
-          ...mockConfig.settings,
-          lastSelectedProject: 'test-project-id',
-        },
-      };
-
-      mockConfigService.loadConfig.mockResolvedValue(configWithSelectedProject);
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_CONFIG_WITH_SELECTED_PROJECT);
 
       const result = await getCurrentProject();
 
-      expect(result).toEqual(mockProject);
+      expect(result).toEqual(MOCK_PROJECT);
     });
 
     test('プロジェクトが選択されていない場合はnullを返す', async () => {
-      mockConfigService.loadConfig.mockResolvedValue(mockConfig);
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_DEFAULT_CONFIG);
 
       const result = await getCurrentProject();
 
@@ -305,9 +250,9 @@ describe('ProjectService', () => {
 
     test('選択されたプロジェクトが存在しない場合はnullを返す', async () => {
       const configWithInvalidSelection: AppConfig = {
-        ...mockConfig,
+        ...MOCK_DEFAULT_CONFIG,
         settings: {
-          ...mockConfig.settings,
+          ...MOCK_DEFAULT_CONFIG.settings,
           lastSelectedProject: 'nonexistent-id',
         },
       };
@@ -322,30 +267,25 @@ describe('ProjectService', () => {
 
   describe('setCurrentProject', () => {
     test('有効なプロジェクトを選択できる', async () => {
-      const configWithProject: AppConfig = {
-        ...mockConfig,
-        projects: [mockProject],
-      };
-
-      mockConfigService.loadConfig.mockResolvedValue(configWithProject);
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_CONFIG_WITH_PROJECT);
       mockConfigService.saveConfig.mockResolvedValue();
 
-      const result = await setCurrentProject('test-project-id');
+      const result = await setCurrentProject(MOCK_PROJECT.id);
 
-      expect(result.id).toBe('test-project-id');
-      expect(result.lastAccessedAt).toBe('2024-01-01T00:00:00.000Z');
+      expect(result.id).toBe(MOCK_PROJECT.id);
+      expect(result.lastAccessedAt).toBe(MOCK_DATE);
       expect(mockConfigService.saveConfig).toHaveBeenCalledWith({
-        ...configWithProject,
-        projects: [{ ...mockProject, lastAccessedAt: '2024-01-01T00:00:00.000Z' }],
+        ...MOCK_CONFIG_WITH_PROJECT,
+        projects: [{ ...MOCK_PROJECT, lastAccessedAt: MOCK_DATE }],
         settings: {
-          ...configWithProject.settings,
-          lastSelectedProject: 'test-project-id',
+          ...MOCK_CONFIG_WITH_PROJECT.settings,
+          lastSelectedProject: MOCK_PROJECT.id,
         },
       });
     });
 
     test('存在しないプロジェクトIDの場合はエラーを投げる', async () => {
-      mockConfigService.loadConfig.mockResolvedValue(mockConfig);
+      mockConfigService.loadConfig.mockResolvedValue(MOCK_DEFAULT_CONFIG);
 
       await expect(setCurrentProject('nonexistent-id')).rejects.toThrow(ProjectError);
       await expect(setCurrentProject('nonexistent-id')).rejects.toThrow(
@@ -354,20 +294,17 @@ describe('ProjectService', () => {
     });
 
     test('無効なプロジェクトの場合はエラーを投げる', async () => {
-      const invalidProject: ProjectInfo = {
-        ...mockProject,
-        isValid: false,
-      };
-
       const configWithInvalidProject: AppConfig = {
-        ...mockConfig,
-        projects: [invalidProject],
+        ...MOCK_DEFAULT_CONFIG,
+        projects: [MOCK_INVALID_PROJECT],
       };
 
       mockConfigService.loadConfig.mockResolvedValue(configWithInvalidProject);
 
-      await expect(setCurrentProject('test-project-id')).rejects.toThrow(ProjectError);
-      await expect(setCurrentProject('test-project-id')).rejects.toThrow('プロジェクトは無効です');
+      await expect(setCurrentProject(MOCK_INVALID_PROJECT.id)).rejects.toThrow(ProjectError);
+      await expect(setCurrentProject(MOCK_INVALID_PROJECT.id)).rejects.toThrow(
+        'プロジェクトは無効です'
+      );
     });
   });
 });
