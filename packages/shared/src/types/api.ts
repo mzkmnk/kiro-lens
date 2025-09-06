@@ -1,5 +1,7 @@
 // API関連の型定義
 
+import type { ProjectInfo } from './project';
+
 /**
  * APIエラータイプ
  *
@@ -68,4 +70,40 @@ export interface ApiResponse<T = unknown> {
   readonly data?: T;
   /** エラー情報（失敗時のみ） */
   readonly error?: ApiError;
+}
+
+// パス管理システム用のAPIリクエスト/レスポンス型
+
+/**
+ * プロジェクト追加リクエスト
+ *
+ * POST /api/projects エンドポイントのリクエスト形式を定義します。
+ */
+export interface AddProjectRequest {
+  /** 追加するプロジェクトのパス */
+  readonly path: string;
+}
+
+/**
+ * プロジェクト追加レスポンス
+ *
+ * POST /api/projects エンドポイントのレスポンス形式を定義します。
+ */
+export interface AddProjectResponse {
+  /** 追加されたプロジェクト情報 */
+  readonly project: ProjectInfo;
+  /** 成功メッセージ */
+  readonly message: string;
+}
+
+/**
+ * プロジェクト一覧レスポンス
+ *
+ * GET /api/projects エンドポイントのレスポンス形式を定義します。
+ */
+export interface ProjectListResponse {
+  /** 管理対象のプロジェクト一覧 */
+  readonly projects: readonly ProjectInfo[];
+  /** 現在選択中のプロジェクト */
+  readonly currentProject?: ProjectInfo;
 }
