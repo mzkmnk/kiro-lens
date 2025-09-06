@@ -39,7 +39,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
       <ErrorBoundary>
         <SidebarProvider>
           <div
-            className='flex h-screen bg-[#f9f9f9] font-["Noto_Sans_JP"]'
+            className='w-full flex h-screen bg-[#f9f9f9] font-["Noto_Sans_JP"]'
             role='application'
             aria-label='Kiro Lens Dashboard'
           >
@@ -78,9 +78,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
               >
                 <div className='flex items-center gap-4'>
                   <div className='flex items-center gap-2'>
-                    <div className='w-6 h-6 text-[#4a4459]' aria-hidden='true'>
-                      🔀
-                    </div>
                     <span className='text-sm font-medium text-[#4a4459]'>Kiro Lens</span>
                   </div>
                 </div>
