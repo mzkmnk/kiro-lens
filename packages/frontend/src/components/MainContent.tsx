@@ -26,7 +26,9 @@ const WelcomeContent: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-4 font-['Noto_Sans_JP']">
           ようこそ kiro-lens ダッシュボードへ
         </h1>
-        <p className='text-gray-600 mb-8'>左側のサイドバーからファイルを選択して開始してください。</p>
+        <p className='text-gray-600 mb-8'>
+          左側のサイドバーからファイルを選択して開始してください。
+        </p>
       </div>
     </div>
   );
