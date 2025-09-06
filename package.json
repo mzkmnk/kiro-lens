@@ -21,13 +21,14 @@
     "quality:fix": "pnpm run lint:fix && pnpm run format"
   },
   "keywords": [
-    "figma",
-    "mcp",
+    "kiro-ide",
+    "kiro",
     "dashboard",
     "file-manager",
-    "development-tool"
+    "development-tool",
+    "aws-kiro"
   ],
-  "author": "",
+  "author": "mzkmnk",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^9.1.0",
