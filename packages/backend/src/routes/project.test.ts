@@ -4,6 +4,13 @@ import { createServer } from '../server.js';
 import { ProjectInfo } from '@kiro-lens/shared';
 import * as projectService from '../services/projectService.js';
 import { ProjectError } from '../services/projectService.js';
+import {
+  MOCK_API_PROJECT,
+  MOCK_API_PROJECT_WITH_ACCESS,
+  MOCK_PROJECT_LIST,
+  MOCK_PATHS,
+  MOCK_VALIDATION_RESULTS,
+} from '../test/constants.js';
 
 // プロジェクトサービスのモック
 vi.mock('../services/projectService.js', () => ({
@@ -36,28 +43,18 @@ describe('Project Routes', () => {
 
   describe('POST /api/projects', () => {
     test('有効なパスでプロジェクトを追加できる', async () => {
-      const mockProject: ProjectInfo = {
-        id: 'test-id',
-        name: 'test-project',
-        path: '/test/path',
-        kiroPath: '/test/path/.kiro',
-        hasKiroDir: true,
-        isValid: true,
-        addedAt: '2024-01-01T00:00:00.000Z',
-      };
-
-      vi.mocked(projectService.addProject).mockResolvedValue(mockProject);
+      vi.mocked(projectService.addProject).mockResolvedValue(MOCK_API_PROJECT);
 
       const response = await app.inject({
         method: 'POST',
         url: '/api/projects',
-        payload: { path: '/test/path' },
+        payload: { path: MOCK_PATHS.API_TEST },
       });
 
       expect(response.statusCode).toBe(201);
       const body = JSON.parse(response.body);
       expect(body.success).toBe(true);
-      expect(body.data.project).toEqual(mockProject);
+      expect(body.data.project).toEqual(MOCK_API_PROJECT);
       expect(body.data.message).toContain('test-project');
     });
 
@@ -81,7 +78,7 @@ describe('Project Routes', () => {
       const response = await app.inject({
         method: 'POST',
         url: '/api/projects',
-        payload: { path: '/test/path' },
+        payload: { path: MOCK_PATHS.API_TEST },
       });
 
       expect(response.statusCode).toBe(409);
@@ -124,21 +121,9 @@ describe('Project Routes', () => {
 
   describe('GET /api/projects', () => {
     test('プロジェクト一覧を取得できる', async () => {
-      const mockProjects: ProjectInfo[] = [
-        {
-          id: 'project-1',
-          name: 'project1',
-          path: '/path/to/project1',
-          kiroPath: '/path/to/project1/.kiro',
-          hasKiroDir: true,
-          isValid: true,
-          addedAt: '2024-01-01T00:00:00.000Z',
-        },
-      ];
+      const mockCurrentProject: ProjectInfo = MOCK_PROJECT_LIST[0];
 
-      const mockCurrentProject: ProjectInfo = mockProjects[0];
-
-      vi.mocked(projectService.getAllProjects).mockResolvedValue(mockProjects);
+      vi.mocked(projectService.getAllProjects).mockResolvedValue(MOCK_PROJECT_LIST);
       vi.mocked(projectService.getCurrentProject).mockResolvedValue(mockCurrentProject);
 
       const response = await app.inject({
@@ -149,30 +134,27 @@ describe('Project Routes', () => {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body.success).toBe(true);
-      expect(body.data.projects).toEqual(mockProjects);
+      expect(body.data.projects).toEqual(MOCK_PROJECT_LIST);
       expect(body.data.currentProject).toEqual(mockCurrentProject);
     });
   });
 
   describe('POST /api/projects/validate-path', () => {
     test('有効なパスの検証結果を返す', async () => {
-      const mockValidation = {
-        isValid: true,
-        validatedPath: '/test/path',
-      };
-
-      vi.mocked(projectService.validateProjectPath).mockResolvedValue(mockValidation);
+      vi.mocked(projectService.validateProjectPath).mockResolvedValue(
+        MOCK_VALIDATION_RESULTS.VALID
+      );
 
       const response = await app.inject({
         method: 'POST',
         url: '/api/projects/validate-path',
-        payload: { path: '/test/path' },
+        payload: { path: MOCK_PATHS.API_TEST },
       });
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body.success).toBe(true);
-      expect(body.data).toEqual(mockValidation);
+      expect(body.data).toEqual(MOCK_VALIDATION_RESULTS.VALID);
     });
 
     test('パスが指定されていない場合はエラーを返す', async () => {
@@ -191,28 +173,17 @@ describe('Project Routes', () => {
 
   describe('PUT /api/projects/:id/select', () => {
     test('プロジェクトを選択できる', async () => {
-      const mockProject: ProjectInfo = {
-        id: 'test-id',
-        name: 'test-project',
-        path: '/test/path',
-        kiroPath: '/test/path/.kiro',
-        hasKiroDir: true,
-        isValid: true,
-        addedAt: '2024-01-01T00:00:00.000Z',
-        lastAccessedAt: '2024-01-01T01:00:00.000Z',
-      };
-
-      vi.mocked(projectService.setCurrentProject).mockResolvedValue(mockProject);
+      vi.mocked(projectService.setCurrentProject).mockResolvedValue(MOCK_API_PROJECT_WITH_ACCESS);
 
       const response = await app.inject({
         method: 'PUT',
-        url: '/api/projects/test-id/select',
+        url: `/api/projects/${MOCK_API_PROJECT.id}/select`,
       });
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body.success).toBe(true);
-      expect(body.data.project).toEqual(mockProject);
+      expect(body.data.project).toEqual(MOCK_API_PROJECT_WITH_ACCESS);
       expect(body.data.message).toContain('test-project');
     });
 

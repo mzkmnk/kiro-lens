@@ -113,6 +113,42 @@ export const MOCK_PROJECT: ProjectInfo = {
 };
 
 /**
+ * テスト用のプロジェクト情報（API用）
+ */
+export const MOCK_API_PROJECT: ProjectInfo = {
+  id: 'test-id',
+  name: 'test-project',
+  path: '/test/path',
+  kiroPath: '/test/path/.kiro',
+  hasKiroDir: true,
+  isValid: true,
+  addedAt: '2024-01-01T00:00:00.000Z',
+};
+
+/**
+ * テスト用のプロジェクト情報（最終アクセス日時付き）
+ */
+export const MOCK_API_PROJECT_WITH_ACCESS: ProjectInfo = {
+  ...MOCK_API_PROJECT,
+  lastAccessedAt: '2024-01-01T01:00:00.000Z',
+};
+
+/**
+ * テスト用のプロジェクト一覧
+ */
+export const MOCK_PROJECT_LIST: ProjectInfo[] = [
+  {
+    id: 'project-1',
+    name: 'project1',
+    path: '/path/to/project1',
+    kiroPath: '/path/to/project1/.kiro',
+    hasKiroDir: true,
+    isValid: true,
+    addedAt: '2024-01-01T00:00:00.000Z',
+  },
+];
+
+/**
  * テスト用の無効なプロジェクト情報
  */
 export const MOCK_INVALID_PROJECT: ProjectInfo = {
@@ -160,6 +196,26 @@ export const MOCK_PATHS = {
   NON_EXISTENT: '/absolute/path/to/nonexistent',
   /** テスト用設定パス */
   TEST_CONFIG: '/home/test/.kiro-lens/config.json',
+  /** API テスト用パス */
+  API_TEST: '/test/path',
+} as const;
+
+// ===== API関連のモック戻り値 =====
+
+/**
+ * パス検証結果のモック
+ */
+export const MOCK_VALIDATION_RESULTS = {
+  /** 有効なパスの検証結果 */
+  VALID: {
+    isValid: true,
+    validatedPath: MOCK_PATHS.API_TEST,
+  },
+  /** 無効なパスの検証結果 */
+  INVALID: {
+    isValid: false,
+    error: '指定されたディレクトリが存在しません',
+  },
 } as const;
 
 // ===== UUID関連のモック =====
