@@ -36,7 +36,7 @@
   - 設定管理関数とファイルシステム操作関数との連携を実装
   - _要件: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3_
 
-- [ ] 5. 新しいAPIエンドポイントの実装
+- [x] 5. 新しいAPIエンドポイントの実装
   - 既存のpackages/backend/src/routes/project.tsを拡張
   - POST /api/projects（プロジェクト追加）エンドポイントを実装
   - DELETE /api/projects/:id（プロジェクト削除）エンドポイントを実装
