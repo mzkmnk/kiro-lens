@@ -16,19 +16,18 @@ export const worker = setupWorker(...handlers);
 export const startMSW = async (): Promise<void> => {
   try {
     // 開発環境かつMSW有効化フラグがtrueの場合のみ起動
-    if (import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === 'true') {
-      await worker.start({
-        onUnhandledRequest: 'bypass',
-        serviceWorker: {
-          url: '/mockServiceWorker.js',
-        },
-      });
-      console.log('MSW enabled for development');
-    } else if (import.meta.env.DEV) {
-      console.log('MSW disabled (VITE_ENABLE_MSW is not set to "true")');
+    if (import.meta.env.VITE_ENABLE_MSW === 'false') {
+      return;
     }
+
+    await worker.start({
+      onUnhandledRequest: 'bypass',
+      serviceWorker: {
+        url: '/mockServiceWorker.js',
+      },
+    });
   } catch (error) {
-    console.error('❌ Failed to start MSW:', error);
+    console.error('Failed to start MSW:', error);
     // 開発環境では警告のみ、アプリケーション継続
     if (import.meta.env.DEV) {
       console.warn('MSW initialization failed, continuing without mocking');

@@ -8,18 +8,14 @@
 import { http, HttpResponse } from 'msw';
 import type { HealthResponse } from '@kiro-lens/shared';
 import type { MSWHandler } from '../types';
+import { createApiUrls, logMSWError } from '../config';
 
 /**
- * ヘルスチェックAPI用ハンドラー配列
+ * ヘルスチェックハンドラーの共通ロジック
  */
-export const healthHandlers: MSWHandler[] = [
-  /**
-   * GET /api/health - ヘルスチェックエンドポイント
-   *
-   * サーバーの健康状態を返します。
-   * クエリパラメータ 'error=true' でエラーシミュレーション可能。
-   */
-  http.get('/api/health', ({ request }) => {
+const createHealthHandler =
+  () =>
+  ({ request }: { request: Request }) => {
     try {
       const url = new URL(request.url);
 
@@ -44,7 +40,7 @@ export const healthHandlers: MSWHandler[] = [
 
       return HttpResponse.json(successResponse);
     } catch (error) {
-      console.error('MSW Health Handler Error:', error);
+      logMSWError('Health', 'Handler execution failed', error);
 
       // エラー時のフォールバック
       const fallbackResponse: HealthResponse = {
@@ -56,5 +52,11 @@ export const healthHandlers: MSWHandler[] = [
 
       return HttpResponse.json(fallbackResponse, { status: 500 });
     }
-  }),
-];
+  };
+
+// APIエンドポイントのURL配列を生成
+const healthUrls = createApiUrls('/api/health');
+
+export const healthHandlers: MSWHandler[] = healthUrls.map(url =>
+  http.get(url, createHealthHandler())
+);

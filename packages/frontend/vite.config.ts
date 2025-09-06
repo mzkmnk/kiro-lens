@@ -4,12 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'path';
 import type { ViteEnv } from './src/vite-env';
 
-export default defineConfig(({ mode }) => {
-  // 型安全な環境変数読み込み
-  const env = loadEnv(mode, process.cwd(), '') as unknown as ViteEnv;
-
-  const isMSWEnabled = env.VITE_ENABLE_MSW === 'true';
-
+export default defineConfig(_ => {
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -33,14 +28,6 @@ export default defineConfig(({ mode }) => {
       fs: {
         allow: ['..'],
       },
-      ...(!isMSWEnabled && {
-        proxy: {
-          '/api': {
-            target: 'http://localhost:3001',
-            changeOrigin: true,
-          },
-        },
-      }),
     },
     build: {
       outDir: 'dist',
