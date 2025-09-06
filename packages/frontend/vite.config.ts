@@ -11,10 +11,6 @@ export default defineConfig({
       '@shared': resolve(__dirname, '../shared/src'),
     },
   },
-  // 環境変数の定義
-  define: {
-    'import.meta.env.VITE_ENABLE_MSW': JSON.stringify(process.env.VITE_ENABLE_MSW || 'false'),
-  },
   server: {
     port: 3000,
     host: 'localhost',
