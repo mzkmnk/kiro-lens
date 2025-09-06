@@ -11,6 +11,12 @@ import {
   ensureConfigDirectory,
   ConfigError,
 } from './configService';
+import {
+  MOCK_FS_SUCCESS,
+  MOCK_FS_ERRORS,
+  MOCK_DEFAULT_CONFIG,
+  MOCK_CUSTOM_CONFIG,
+} from '../test/constants';
 
 // モック設定
 vi.mock('fs', () => ({
@@ -49,8 +55,8 @@ describe('ConfigService', () => {
 
   describe('ensureConfigDirectory', () => {
     test('設定ディレクトリが存在しない場合は作成する', async () => {
-      mockFs.access.mockRejectedValue(new Error('ENOENT'));
-      mockFs.mkdir.mockResolvedValue(undefined);
+      mockFs.access.mockRejectedValue(MOCK_FS_ERRORS.ENOENT);
+      mockFs.mkdir.mockResolvedValue(MOCK_FS_SUCCESS.MKDIR_SUCCESS);
 
       await ensureConfigDirectory();
 
@@ -60,7 +66,7 @@ describe('ConfigService', () => {
     });
 
     test('設定ディレクトリが既に存在する場合は何もしない', async () => {
-      mockFs.access.mockResolvedValue(undefined);
+      mockFs.access.mockResolvedValue(MOCK_FS_SUCCESS.ACCESS_SUCCESS);
 
       await ensureConfigDirectory();
 
@@ -68,8 +74,8 @@ describe('ConfigService', () => {
     });
 
     test('ディレクトリ作成に失敗した場合はConfigErrorを投げる', async () => {
-      mockFs.access.mockRejectedValue(new Error('ENOENT'));
-      mockFs.mkdir.mockRejectedValue(new Error('Permission denied'));
+      mockFs.access.mockRejectedValue(MOCK_FS_ERRORS.ENOENT);
+      mockFs.mkdir.mockRejectedValue(MOCK_FS_ERRORS.PERMISSION_DENIED);
 
       await expect(ensureConfigDirectory()).rejects.toThrow(ConfigError);
       await expect(ensureConfigDirectory()).rejects.toThrow('設定ディレクトリの作成に失敗しました');
@@ -79,16 +85,9 @@ describe('ConfigService', () => {
   describe('validateConfig', () => {
     test('有効な設定オブジェクトの場合はそのまま返す', () => {
       const validConfig: AppConfig = {
-        version: '1.0.0',
-        projects: [],
-        settings: {
-          theme: 'system',
-          autoSave: true,
-          maxRecentProjects: 10,
-        },
+        ...MOCK_DEFAULT_CONFIG,
         metadata: {
-          createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
+          ...MOCK_DEFAULT_CONFIG.metadata,
           configPath: testConfigPath,
         },
       };
@@ -121,21 +120,14 @@ describe('ConfigService', () => {
   describe('loadConfig', () => {
     test('設定ファイルが存在する場合は読み込んで返す', async () => {
       const configData = {
-        version: '1.0.0',
-        projects: [],
-        settings: {
-          theme: 'dark',
-          autoSave: false,
-          maxRecentProjects: 5,
-        },
+        ...MOCK_CUSTOM_CONFIG,
         metadata: {
-          createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
+          ...MOCK_CUSTOM_CONFIG.metadata,
           configPath: testConfigPath,
         },
       };
 
-      mockFs.access.mockResolvedValue(undefined);
+      mockFs.access.mockResolvedValue(MOCK_FS_SUCCESS.ACCESS_SUCCESS);
       mockFs.readFile.mockResolvedValue(JSON.stringify(configData));
 
       const result = await loadConfig();
@@ -146,10 +138,10 @@ describe('ConfigService', () => {
     });
 
     test('設定ファイルが存在しない場合はデフォルト設定を作成して返す', async () => {
-      mockFs.access.mockRejectedValue(new Error('ENOENT'));
-      mockFs.mkdir.mockResolvedValue(undefined);
-      mockFs.writeFile.mockResolvedValue(undefined);
-      mockFs.chmod.mockResolvedValue(undefined);
+      mockFs.access.mockRejectedValue(MOCK_FS_ERRORS.ENOENT);
+      mockFs.mkdir.mockResolvedValue(MOCK_FS_SUCCESS.MKDIR_SUCCESS);
+      mockFs.writeFile.mockResolvedValue(MOCK_FS_SUCCESS.WRITE_FILE_SUCCESS);
+      mockFs.chmod.mockResolvedValue(MOCK_FS_SUCCESS.CHMOD_SUCCESS);
 
       const result = await loadConfig();
 
@@ -161,10 +153,10 @@ describe('ConfigService', () => {
     });
 
     test('設定ファイルが破損している場合はデフォルト設定を返す', async () => {
-      mockFs.access.mockResolvedValue(undefined);
-      mockFs.readFile.mockResolvedValue('invalid json');
-      mockFs.writeFile.mockResolvedValue(undefined);
-      mockFs.chmod.mockResolvedValue(undefined);
+      mockFs.access.mockResolvedValue(MOCK_FS_SUCCESS.ACCESS_SUCCESS);
+      mockFs.readFile.mockResolvedValue(MOCK_FS_ERRORS.INVALID_JSON);
+      mockFs.writeFile.mockResolvedValue(MOCK_FS_SUCCESS.WRITE_FILE_SUCCESS);
+      mockFs.chmod.mockResolvedValue(MOCK_FS_SUCCESS.CHMOD_SUCCESS);
 
       const result = await loadConfig();
 
@@ -176,23 +168,21 @@ describe('ConfigService', () => {
   describe('saveConfig', () => {
     test('設定を正しくファイルに保存する', async () => {
       const config: AppConfig = {
-        version: '1.0.0',
-        projects: [],
+        ...MOCK_DEFAULT_CONFIG,
         settings: {
+          ...MOCK_DEFAULT_CONFIG.settings,
           theme: 'light',
-          autoSave: true,
           maxRecentProjects: 15,
         },
         metadata: {
-          createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
+          ...MOCK_DEFAULT_CONFIG.metadata,
           configPath: testConfigPath,
         },
       };
 
-      mockFs.access.mockResolvedValue(undefined);
-      mockFs.writeFile.mockResolvedValue(undefined);
-      mockFs.chmod.mockResolvedValue(undefined);
+      mockFs.access.mockResolvedValue(MOCK_FS_SUCCESS.ACCESS_SUCCESS);
+      mockFs.writeFile.mockResolvedValue(MOCK_FS_SUCCESS.WRITE_FILE_SUCCESS);
+      mockFs.chmod.mockResolvedValue(MOCK_FS_SUCCESS.CHMOD_SUCCESS);
 
       await saveConfig(config);
 
@@ -209,24 +199,17 @@ describe('ConfigService', () => {
 
     test('設定ディレクトリが存在しない場合は作成してから保存する', async () => {
       const config: AppConfig = {
-        version: '1.0.0',
-        projects: [],
-        settings: {
-          theme: 'system',
-          autoSave: true,
-          maxRecentProjects: 10,
-        },
+        ...MOCK_DEFAULT_CONFIG,
         metadata: {
-          createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
+          ...MOCK_DEFAULT_CONFIG.metadata,
           configPath: testConfigPath,
         },
       };
 
-      mockFs.access.mockRejectedValue(new Error('ENOENT'));
-      mockFs.mkdir.mockResolvedValue(undefined);
-      mockFs.writeFile.mockResolvedValue(undefined);
-      mockFs.chmod.mockResolvedValue(undefined);
+      mockFs.access.mockRejectedValue(MOCK_FS_ERRORS.ENOENT);
+      mockFs.mkdir.mockResolvedValue(MOCK_FS_SUCCESS.MKDIR_SUCCESS);
+      mockFs.writeFile.mockResolvedValue(MOCK_FS_SUCCESS.WRITE_FILE_SUCCESS);
+      mockFs.chmod.mockResolvedValue(MOCK_FS_SUCCESS.CHMOD_SUCCESS);
 
       await saveConfig(config);
 
@@ -237,21 +220,14 @@ describe('ConfigService', () => {
 
     test('ファイル書き込みに失敗した場合はConfigErrorを投げる', async () => {
       const config: AppConfig = {
-        version: '1.0.0',
-        projects: [],
-        settings: {
-          theme: 'system',
-          autoSave: true,
-          maxRecentProjects: 10,
-        },
+        ...MOCK_DEFAULT_CONFIG,
         metadata: {
-          createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
+          ...MOCK_DEFAULT_CONFIG.metadata,
           configPath: testConfigPath,
         },
       };
 
-      mockFs.access.mockResolvedValue(undefined);
+      mockFs.access.mockResolvedValue(MOCK_FS_SUCCESS.ACCESS_SUCCESS);
       mockFs.writeFile.mockRejectedValue(new Error('Disk full'));
 
       await expect(saveConfig(config)).rejects.toThrow(ConfigError);
@@ -261,9 +237,9 @@ describe('ConfigService', () => {
 
   describe('resetConfig', () => {
     test('設定をデフォルト値にリセットする', async () => {
-      mockFs.access.mockResolvedValue(undefined);
-      mockFs.writeFile.mockResolvedValue(undefined);
-      mockFs.chmod.mockResolvedValue(undefined);
+      mockFs.access.mockResolvedValue(MOCK_FS_SUCCESS.ACCESS_SUCCESS);
+      mockFs.writeFile.mockResolvedValue(MOCK_FS_SUCCESS.WRITE_FILE_SUCCESS);
+      mockFs.chmod.mockResolvedValue(MOCK_FS_SUCCESS.CHMOD_SUCCESS);
 
       const result = await resetConfig();
 
