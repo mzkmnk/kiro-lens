@@ -11,6 +11,10 @@ export default defineConfig({
       '@shared': resolve(__dirname, '../shared/src'),
     },
   },
+  // 環境変数の定義
+  define: {
+    'import.meta.env.VITE_ENABLE_MSW': JSON.stringify(process.env.VITE_ENABLE_MSW || 'false'),
+  },
   server: {
     port: 3000,
     host: 'localhost',
@@ -21,6 +25,10 @@ export default defineConfig({
     // 開発サーバーの起動時間短縮
     warmup: {
       clientFiles: ['./src/main.tsx', './src/App.tsx'],
+    },
+    // MSW Service Worker配信設定
+    fs: {
+      allow: ['..'],
     },
     proxy: {
       '/api': {
@@ -49,7 +57,7 @@ export default defineConfig({
   // 依存関係の事前バンドル最適化
   optimizeDeps: {
     include: ['react', 'react-dom'],
-    exclude: ['@shared'],
+    exclude: ['@shared', 'msw'],
   },
   // プレビューサーバー設定
   preview: {
