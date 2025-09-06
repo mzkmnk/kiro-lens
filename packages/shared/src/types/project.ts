@@ -3,16 +3,26 @@
 /**
  * プロジェクト情報
  *
- * 現在のプロジェクトの基本情報と.kiroディレクトリの存在状況を表します。
- * kiro-lensが動作するプロジェクトのコンテキスト情報を提供します。
+ * パス管理システムで管理される各プロジェクトの詳細情報を表します。
+ * 複数のプロジェクトを管理するための拡張された情報を含みます。
  */
 export interface ProjectInfo {
+  /** プロジェクトの一意識別子 */
+  readonly id: string;
   /** プロジェクト名（通常はディレクトリ名） */
   readonly name: string;
+  /** プロジェクトルートパス */
+  readonly path: string;
+  /** .kiroディレクトリの絶対パス */
+  readonly kiroPath: string;
   /** .kiroディレクトリが存在するかどうか */
   readonly hasKiroDir: boolean;
-  /** .kiroディレクトリの絶対パス（存在する場合のみ） */
-  readonly kiroPath?: string;
+  /** パスが現在も有効かどうか */
+  readonly isValid: boolean;
+  /** プロジェクト追加日時 */
+  readonly addedAt: string;
+  /** 最終アクセス日時 */
+  readonly lastAccessedAt?: string;
 }
 
 /**

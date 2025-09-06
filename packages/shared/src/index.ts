@@ -10,10 +10,20 @@ export type {
 } from './types/health';
 
 // API関連型定義
-export type { ApiErrorType, ApiError, ApiResponse } from './types/api';
+export type {
+  ApiErrorType,
+  ApiError,
+  ApiResponse,
+  AddProjectRequest,
+  AddProjectResponse,
+  ProjectListResponse,
+} from './types/api';
 
 // プロジェクト関連型定義
 export type { ProjectInfo, ProjectResponse } from './types/project';
+
+// 設定管理関連型定義
+export type { AppConfig, AppSettings, ConfigMetadata } from './types/config';
 
 // ファイルツリー関連型定義
 export type { FileItem } from './types/file-tree';

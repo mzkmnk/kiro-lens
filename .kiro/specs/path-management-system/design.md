@@ -127,18 +127,9 @@ interface FileBrowserAPI {
 export async function getAllProjects(): Promise<ProjectInfo[]>;
 export async function addProject(path: string): Promise<ProjectInfo>;
 export async function removeProject(id: string): Promise<void>;
-export async function validateProjectPath(path: string): Promise<ValidationResult>;
-
 // .kiroディレクトリ操作関数
 export async function getKiroContents(projectId: string): Promise<FileItem[]>;
 export async function switchProject(projectId: string): Promise<ProjectInfo>;
-
-interface ValidationResult {
-  isValid: boolean;
-  error?: string;
-  resolvedPath?: string;
-  hasKiroDir?: boolean;
-}
 ```
 
 #### ConfigService
@@ -183,10 +174,6 @@ interface DirectoryInfo {
   exists: boolean;
   isDirectory: boolean;
   hasKiroDir: boolean;
-  permissions: {
-    read: boolean;
-    write: boolean;
-  };
 }
 ```
 
@@ -244,14 +231,6 @@ interface AddProjectResponse {
 interface ProjectListResponse {
   projects: ProjectInfo[];
   currentProject?: ProjectInfo;
-}
-
-// パス検証レスポンス
-interface ValidatePathResponse {
-  isValid: boolean;
-  error?: string;
-  resolvedPath?: string;
-  directoryInfo?: DirectoryInfo;
 }
 ```
 
@@ -410,7 +389,6 @@ interface SecurityValidator {
   // パスセキュリティ
   validatePath(path: string): SecurityValidationResult;
   sanitizePath(path: string): string;
-  checkPathPermissions(path: string): Promise<PathPermissions>;
 
   // 設定ファイルセキュリティ
   validateConfigData(data: unknown): ConfigValidationResult;
@@ -424,7 +402,7 @@ interface SecurityValidationResult {
 }
 
 interface SecurityRisk {
-  type: 'path_traversal' | 'permission_denied' | 'suspicious_path';
+  type: 'path_traversal' | 'suspicious_path';
   severity: 'low' | 'medium' | 'high';
   description: string;
 }

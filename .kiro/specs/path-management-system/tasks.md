@@ -6,7 +6,7 @@
 
 ## 実装タスク
 
-- [ ] 1. 共通型定義の拡張
+- [x] 1. 共通型定義の拡張
   - sharedパッケージにProjectInfo、AppConfig、ValidationResult等の新しい型定義を追加
   - 既存のProjectResponse型を拡張してid、addedAt等のフィールドを追加
   - API リクエスト/レスポンス型（AddProjectRequest、ProjectListResponse等）を定義
