@@ -10,6 +10,7 @@ import {
   getPathSuggestions,
   FileSystemError,
 } from './fileSystemService';
+import { MOCK_DIRECTORY_PERMISSIONS, MOCK_PATHS } from '../test/constants';
 
 describe('fileSystemService', () => {
   let tempDir: string;
@@ -31,15 +32,14 @@ describe('fileSystemService', () => {
 
   describe('resolvePath', () => {
     test('絶対パスはそのまま返す', () => {
-      const absolutePath = '/absolute/path';
-      const result = resolvePath(absolutePath);
+      const result = resolvePath(MOCK_PATHS.VALID_ABSOLUTE);
 
-      expect(result).toBe(absolutePath);
+      expect(result).toBe(MOCK_PATHS.VALID_ABSOLUTE);
     });
 
     test('絶対パスでない場合はエラーを投げる', () => {
-      expect(() => resolvePath('./relative/path')).toThrow(FileSystemError);
-      expect(() => resolvePath('~/home/path')).toThrow(FileSystemError);
+      expect(() => resolvePath(MOCK_PATHS.INVALID_RELATIVE)).toThrow(FileSystemError);
+      expect(() => resolvePath(MOCK_PATHS.INVALID_TILDE)).toThrow(FileSystemError);
       expect(() => resolvePath('relative/path')).toThrow(FileSystemError);
     });
 
@@ -110,11 +110,7 @@ describe('fileSystemService', () => {
     test('読み書き可能なディレクトリの場合は適切な権限情報を返す', async () => {
       const result = await checkDirectoryPermissions(tempDir);
 
-      expect(result).toEqual({
-        readable: true,
-        writable: true,
-        executable: true,
-      });
+      expect(result).toEqual(MOCK_DIRECTORY_PERMISSIONS.FULL_ACCESS);
     });
 
     test('存在しないディレクトリの場合はエラーを投げる', async () => {
