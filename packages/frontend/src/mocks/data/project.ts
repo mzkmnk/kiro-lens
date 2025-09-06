@@ -2,31 +2,26 @@
  * プロジェクトAPI用モックデータ
  *
  * プロジェクトエンドポイントで使用するモックレスポンスデータを定義します。
- * 今後のタスクで実装予定。
+ * 既存のProjectResponse型を使用した型安全な実装。
  */
 
+import type { ProjectResponse } from '@kiro-lens/shared';
 import type { MockDataSet } from '../types';
-
-// 型定義は今後のタスクでsharedパッケージから取得予定
-type ProjectResponse = {
-  hasKiroDirectory: boolean;
-  projectName: string;
-  timestamp: string;
-};
 
 /**
  * プロジェクト用モックデータセット
- * タスク5で実装予定
+ * 正常時とエラー時のレスポンスパターンを提供
  */
 export const projectMockData: MockDataSet<ProjectResponse> = {
   success: {
-    hasKiroDirectory: true,
-    projectName: 'kiro-lens',
-    timestamp: new Date().toISOString(),
-  },
+    name: 'kiro-lens-demo',
+    hasKiroDir: true,
+    kiroPath: '/Users/demo/projects/kiro-lens-demo/.kiro',
+  } satisfies ProjectResponse,
+
   error: {
-    hasKiroDirectory: false,
-    projectName: 'unknown',
-    timestamp: new Date().toISOString(),
-  },
+    name: 'unknown-project',
+    hasKiroDir: false,
+    // kiroPathはundefinedなので省略
+  } satisfies ProjectResponse,
 };
