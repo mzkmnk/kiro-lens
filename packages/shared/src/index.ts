@@ -29,6 +29,9 @@ export type { AppConfig, AppSettings, ConfigMetadata } from './types/config';
 // ファイルツリー関連型定義
 export type { FileItem } from './types/file-tree';
 
+// 共通モックデータのエクスポート
+export * from './mocks';
+
 /**
  * ダミー定数
  * tscがJSファイルを生成することを保証するために追加

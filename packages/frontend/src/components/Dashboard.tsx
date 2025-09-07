@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { FileTree } from '@/components/custom-ui/file-tree';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { ErrorBoundary } from '@/components/custom-ui/error-boundary';
 import { MainContent } from './MainContent';
-import { mockFiles } from '@/data/mock-files';
+import { ProjectSidebar } from './ProjectSidebar';
+import type { ProjectInfo } from '@kiro-lens/shared';
+import type { FileItem } from '@shared/types/file-tree';
 
 interface DashboardProps {
   projectName: string;
@@ -20,19 +15,37 @@ interface DashboardProps {
  * Dashboardコンポーネント
  *
  * Kiro IDEの.kiro配下ファイル管理ツールのメインダッシュボード
- * 基本的なレイアウト（ヘッダー、サイドバー、メインコンテンツ）を提供
+ * ProjectSidebarとMainContentを統合したレイアウトを提供
  *
  * @param projectName - 現在のプロジェクト名
  */
-export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
-  const [hasKiroDir, setHasKiroDir] = useState<boolean>(true); // デフォルトでtrueに設定
+export const Dashboard: React.FC<DashboardProps> = ({ projectName: _projectName }) => {
+  const [hasKiroDir, setHasKiroDir] = useState<boolean>(true);
+  const [currentProject, setCurrentProject] = useState<ProjectInfo | undefined>();
+  const [selectedFile, setSelectedFile] = useState<FileItem | undefined>();
 
-  // 実際の実装では、APIからプロジェクト情報を取得してhasKiroDirを設定
+  // プロジェクト選択時の処理
+  const handleProjectSelect = (project: ProjectInfo) => {
+    setCurrentProject(project);
+    setSelectedFile(undefined); // プロジェクト切り替え時にファイル選択をクリア
+  };
+
+  // プロジェクト追加ダイアログを開く処理
+  const handleAddProject = () => {
+    // PathDialogコンポーネントを開く処理を追加予定
+    console.log('プロジェクト追加ダイアログを開く');
+  };
+
+  // ファイル選択時の処理
+  const handleFileSelect = (file: FileItem) => {
+    setSelectedFile(file);
+    console.log('Selected file:', file.name);
+  };
+
+  // hasKiroDirは選択されたプロジェクトから取得
   useEffect(() => {
-    // TODO: プロジェクト情報APIを呼び出してhasKiroDirを設定
-    // 現在はモックデータとしてtrueを設定
-    setHasKiroDir(true);
-  }, []);
+    setHasKiroDir(currentProject?.hasKiroDir || false);
+  }, [currentProject]);
 
   return (
     <div data-testid='dashboard-container'>
@@ -45,28 +58,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
           >
             {/* Sidebar */}
             <ErrorBoundary>
-              <Sidebar className='border-r border-[#79747e]/20'>
-                <SidebarHeader className='border-b border-[#79747e]/20'>
-                  <div className='flex items-center justify-between px-4 py-2'>
-                    <h1
-                      className='font-bold text-[20px] text-[#4a4459] truncate'
-                      title={projectName}
-                    >
-                      {projectName}
-                    </h1>
-                    <SidebarTrigger className='text-[#4a4459] hover:bg-[#4a4459]/10' />
-                  </div>
-                </SidebarHeader>
-                <SidebarContent className='p-2'>
-                  <FileTree
-                    items={mockFiles}
-                    onFileSelect={file => console.log('Selected file:', file.name)}
-                    onFolderToggle={(folder, isOpen) =>
-                      console.log('Folder toggled:', folder.name, isOpen)
-                    }
-                  />
-                </SidebarContent>
-              </Sidebar>
+              <ProjectSidebar
+                onProjectSelect={handleProjectSelect}
+                currentProject={currentProject}
+                onAddProject={handleAddProject}
+                onFileSelect={handleFileSelect}
+              />
             </ErrorBoundary>
 
             {/* Main Content */}
@@ -77,8 +74,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
                 role='banner'
               >
                 <div className='flex items-center gap-4'>
+                  <SidebarTrigger className='text-[#4a4459] hover:bg-[#4a4459]/10' />
                   <div className='flex items-center gap-2'>
                     <span className='text-sm font-medium text-[#4a4459]'>Kiro Lens</span>
+                    {currentProject && (
+                      <>
+                        <span className='text-[#79747e]'>•</span>
+                        <span className='text-sm text-[#4a4459]'>{currentProject.name}</span>
+                      </>
+                    )}
+                    {selectedFile && (
+                      <>
+                        <span className='text-[#79747e]'>•</span>
+                        <span className='text-sm text-[#79747e]'>{selectedFile.name}</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className='flex items-center gap-2'>

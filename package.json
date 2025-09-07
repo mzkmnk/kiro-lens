@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm run dev:frontend && pnpm run dev:backend",
     "dev:frontend": "pnpm --filter=frontend dev",
+    "dev:frontend:msw": "pnpm --filter=frontend dev:msw",
     "dev:backend": "pnpm --filter=backend dev",
     "build": "pnpm --filter=shared build && pnpm --filter=backend build && pnpm --filter=frontend build",
     "build:frontend": "pnpm --filter=frontend build",

@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import type { AppConfig } from '@kiro-lens/shared';
+import { MOCK_DEFAULT_CONFIG, MOCK_CUSTOM_CONFIG } from '@kiro-lens/shared';
 import {
   loadConfig,
   saveConfig,
@@ -11,12 +12,7 @@ import {
   ensureConfigDirectory,
   ConfigError,
 } from './configService';
-import {
-  MOCK_FS_SUCCESS,
-  MOCK_FS_ERRORS,
-  MOCK_DEFAULT_CONFIG,
-  MOCK_CUSTOM_CONFIG,
-} from '../test/constants';
+import { MOCK_FS_SUCCESS, MOCK_FS_ERRORS } from '../test/constants';
 
 // モック設定
 vi.mock('fs', () => ({
