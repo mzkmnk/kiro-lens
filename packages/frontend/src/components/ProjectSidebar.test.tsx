@@ -121,8 +121,8 @@ describe('ProjectSidebar Logic', () => {
     expect(errorMessage1).toBe('ネットワークエラー');
 
     // Error インスタンスでない場合は汎用メッセージを使用
-    const unknownError = 'unknown error';
-    const errorMessage2 = unknownError instanceof Error ? unknownError : genericError;
+    const unknownError: unknown = 'unknown error';
+    const errorMessage2 = unknownError instanceof Error ? unknownError.message : genericError;
     expect(errorMessage2).toBe(genericError);
   });
 
