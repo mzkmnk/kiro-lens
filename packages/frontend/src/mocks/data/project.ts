@@ -1,27 +1,22 @@
 /**
  * プロジェクトAPI用モックデータ
  *
- * プロジェクトエンドポイントで使用するモックレスポンスデータを定義します。
- * 既存のProjectResponse型を使用した型安全な実装。
+ * 共通モックデータを使用してMSWハンドラー用のデータを提供します。
  */
 
-import type { ProjectResponse } from '@kiro-lens/shared';
-import type { MockDataSet } from '../types';
+import {
+  PROJECT_LIST_MOCK_DATA,
+  ADD_PROJECT_MOCK_DATA,
+  REMOVE_PROJECT_MOCK_DATA,
+  VALIDATE_PATH_MOCK_DATA,
+  SELECT_PROJECT_MOCK_DATA,
+  LEGACY_PROJECT_MOCK_DATA,
+} from '@kiro-lens/shared';
 
-/**
- * プロジェクト用モックデータセット
- * 正常時とエラー時のレスポンスパターンを提供
- */
-export const projectMockData: MockDataSet<ProjectResponse> = {
-  success: {
-    name: 'kiro-lens-demo',
-    hasKiroDir: true,
-    kiroPath: '/Users/demo/projects/kiro-lens-demo/.kiro',
-  } satisfies ProjectResponse,
-
-  error: {
-    name: 'unknown-project',
-    hasKiroDir: false,
-    // kiroPathはundefinedなので省略
-  } satisfies ProjectResponse,
-};
+// 共通モックデータを再エクスポート
+export const projectListMockData = PROJECT_LIST_MOCK_DATA;
+export const addProjectMockData = ADD_PROJECT_MOCK_DATA;
+export const removeProjectMockData = REMOVE_PROJECT_MOCK_DATA;
+export const validatePathMockData = VALIDATE_PATH_MOCK_DATA;
+export const selectProjectMockData = SELECT_PROJECT_MOCK_DATA;
+export const projectMockData = LEGACY_PROJECT_MOCK_DATA;
