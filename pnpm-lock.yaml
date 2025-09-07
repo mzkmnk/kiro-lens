@@ -80,6 +80,9 @@ importers:
       fastify:
         specifier: ^5.1.0
         version: 5.5.0
+      fastify-plugin:
+        specifier: 5.0.1
+        version: 5.0.1
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
