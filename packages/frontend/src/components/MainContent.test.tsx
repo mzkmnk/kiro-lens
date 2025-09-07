@@ -1,6 +1,15 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MainContent } from './MainContent';
+
+// PathInputコンポーネントをモック
+vi.mock('./PathInput', () => ({
+  PathInput: ({ onPathConfirm }: { onPathConfirm: (path: string) => void }) => (
+    <div data-testid='path-input'>
+      <button onClick={() => onPathConfirm('/test/path')}>Mock PathInput</button>
+    </div>
+  ),
+}));
 
 describe('MainContent', () => {
   test('基本コンテンツ表示のテスト', () => {
@@ -10,31 +19,42 @@ describe('MainContent', () => {
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
-  test('ウェルカムメッセージ表示のテスト', () => {
+  test('プロジェクト選択時は空の状態が表示される', () => {
     render(<MainContent hasKiroDir={true} />);
 
-    // ウェルカムメッセージが表示される
-    expect(screen.getByText(/kiro-lens/i)).toBeInTheDocument();
-    expect(screen.getByText(/ダッシュボード/i)).toBeInTheDocument();
+    // PathInputコンポーネントは表示されない
+    expect(screen.queryByTestId('path-input')).not.toBeInTheDocument();
   });
 
-  test('.kiroディレクトリ未存在時のメッセージテスト', () => {
+  test('プロジェクト追加画面が表示される', () => {
     render(<MainContent hasKiroDir={false} />);
 
-    // .kiroディレクトリが見つからないメッセージが表示される
-    expect(screen.getByText(/\.kiroディレクトリが見つかりません/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/このプロジェクトのルートディレクトリに\.kiroディレクトリが存在しません/i)
-    ).toBeInTheDocument();
+    // PathInputコンポーネントが表示される
+    expect(screen.getByTestId('path-input')).toBeInTheDocument();
   });
 
-  test('.kiroディレクトリ存在時は通常のコンテンツが表示される', () => {
+  test('PathInputコンポーネントが表示される', () => {
+    render(<MainContent hasKiroDir={false} />);
+
+    // PathInputコンポーネントが表示される
+    expect(screen.getByTestId('path-input')).toBeInTheDocument();
+  });
+
+  test('プロジェクト追加コールバックが正しく動作する', () => {
+    const onProjectAdd = vi.fn();
+    render(<MainContent hasKiroDir={false} onProjectAdd={onProjectAdd} />);
+
+    // PathInputのモックボタンをクリック
+    const mockButton = screen.getByText('Mock PathInput');
+    mockButton.click();
+
+    expect(onProjectAdd).toHaveBeenCalledWith('/test/path');
+  });
+
+  test('.kiroディレクトリ存在時は空の状態が表示される', () => {
     render(<MainContent hasKiroDir={true} />);
 
-    // エラーメッセージは表示されない
-    expect(screen.queryByText(/\.kiroディレクトリが見つかりません/i)).not.toBeInTheDocument();
-
-    // 通常のウェルカムコンテンツが表示される
-    expect(screen.getByText(/ようこそ/i)).toBeInTheDocument();
+    // PathInputコンポーネントは表示されない
+    expect(screen.queryByTestId('path-input')).not.toBeInTheDocument();
   });
 });

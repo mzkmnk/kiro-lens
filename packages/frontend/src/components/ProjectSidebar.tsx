@@ -120,7 +120,19 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
   // コンポーネントマウント時にプロジェクト一覧を取得
   useEffect(() => {
-    loadProjects();
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (isMounted) {
+        await loadProjects();
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [loadProjects]);
 
   // プロジェクト項目のレンダリング
