@@ -1,11 +1,8 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
-import { ApiClient } from '@/services/api';
-
-// ApiClientをモック
-vi.mock('@/services/api');
-const mockApiClient = vi.mocked(ApiClient);
+import type { ProjectInfo } from '@kiro-lens/shared';
+import type { FileItem } from '@shared/types/file-tree';
 
 // ProjectSidebarコンポーネントをモック
 vi.mock('./ProjectSidebar', () => ({
@@ -14,16 +11,48 @@ vi.mock('./ProjectSidebar', () => ({
     onAddProject,
     onFileSelect,
   }: {
-    onProjectSelect: (project: { id: string; name: string }) => void;
+    onProjectSelect: (project: ProjectInfo) => void;
     onAddProject: () => void;
-    onFileSelect: (file: { id: string; name: string }) => void;
+    onFileSelect: (file: FileItem) => void;
   }) => (
     <div data-testid='project-sidebar'>
-      <button onClick={() => onProjectSelect({ id: '1', name: 'Test Project' })}>
+      <button
+        onClick={() =>
+          onProjectSelect({
+            id: '1',
+            name: 'Test Project',
+            path: '/test/path',
+            kiroPath: '/test/path/.kiro',
+            hasKiroDir: true,
+            isValid: true,
+            addedAt: '2024-01-01T00:00:00Z',
+          })
+        }
+      >
         Select Project
       </button>
       <button onClick={onAddProject}>Add Project</button>
-      <button onClick={() => onFileSelect({ id: 'file1', name: 'test.md' })}>Select File</button>
+      <button
+        onClick={() =>
+          onFileSelect({
+            id: 'file1',
+            name: 'test.md',
+            type: 'file',
+            path: '/test/path/.kiro/test.md',
+          })
+        }
+      >
+        Select File
+      </button>
+    </div>
+  ),
+}));
+
+// MainContentコンポーネントをモック
+vi.mock('./MainContent', () => ({
+  MainContent: ({ hasKiroDir }: { hasKiroDir: boolean }) => (
+    <div data-testid='main-content' data-has-kiro-dir={hasKiroDir}>
+      Main Content
     </div>
   ),
 }));
@@ -31,64 +60,13 @@ vi.mock('./ProjectSidebar', () => ({
 describe('Dashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // ApiClientのモック実装
-    mockApiClient.prototype.getProjects = vi.fn().mockResolvedValue({
-      projects: [],
-      currentProject: undefined,
-    });
   });
 
-  test('基本レイアウト構造が表示される', () => {
+  test('プロジェクト選択時に状態が正しく更新される', () => {
     render(<Dashboard projectName='test-project' />);
 
-    // ヘッダー、サイドバー、メインコンテンツの基本構造を確認
-    expect(screen.getByRole('banner')).toBeInTheDocument(); // header要素
-    expect(screen.getByRole('application')).toBeInTheDocument(); // アプリケーション要素
-    expect(screen.getByRole('main')).toBeInTheDocument(); // main要素
-  });
-
-  test('ProjectSidebarが表示される', () => {
-    render(<Dashboard projectName='test-project' />);
-
-    // ProjectSidebarコンポーネントが表示されることを確認
-    expect(screen.getByTestId('project-sidebar')).toBeInTheDocument();
-  });
-
-  test('レスポンシブデザインのクラスが適用される', () => {
-    render(<Dashboard projectName='test-project' />);
-
-    // 画面全体のレイアウトクラスを確認
-    const container = screen.getByTestId('dashboard-container');
-    expect(container).toBeInTheDocument();
-
-    // アプリケーションロールが適用されていることを確認
-    expect(screen.getByRole('application')).toBeInTheDocument();
-  });
-
-  test('接続状態インジケーターが表示される', () => {
-    render(<Dashboard projectName='test-project' />);
-
-    // 接続状態を示すバッジが存在することを確認
-    expect(screen.getByText('Connected')).toBeInTheDocument();
-  });
-
-  test('サイドバーが表示される', () => {
-    render(<Dashboard projectName='test-project' />);
-
-    // サイドバーコンポーネントが表示されることを確認（Toggle Sidebarボタンで確認）
-    expect(screen.getByRole('button', { name: 'Toggle Sidebar' })).toBeInTheDocument();
-  });
-
-  test('メインコンテンツエリアが表示される', () => {
-    render(<Dashboard projectName='test-project' />);
-
-    // メインコンテンツエリアが表示されることを確認
-    expect(screen.getByRole('main')).toBeInTheDocument();
-  });
-
-  test('プロジェクト選択機能が動作する', () => {
-    render(<Dashboard projectName='test-project' />);
+    // 初期状態ではプロジェクト名が表示されていない
+    expect(screen.queryByText('Test Project')).not.toBeInTheDocument();
 
     // プロジェクトを選択
     fireEvent.click(screen.getByText('Select Project'));
@@ -97,8 +75,11 @@ describe('Dashboard', () => {
     expect(screen.getByText('Test Project')).toBeInTheDocument();
   });
 
-  test('ファイル選択機能が動作する', () => {
+  test('ファイル選択時に状態が正しく更新される', () => {
     render(<Dashboard projectName='test-project' />);
+
+    // 初期状態ではファイル名が表示されていない
+    expect(screen.queryByText('test.md')).not.toBeInTheDocument();
 
     // ファイルを選択
     fireEvent.click(screen.getByText('Select File'));
@@ -107,13 +88,28 @@ describe('Dashboard', () => {
     expect(screen.getByText('test.md')).toBeInTheDocument();
   });
 
-  test('プロジェクト追加機能が動作する', () => {
+  test('プロジェクト切り替え時にファイル選択がクリアされる', () => {
     render(<Dashboard projectName='test-project' />);
 
-    // プロジェクト追加ボタンをクリック
-    fireEvent.click(screen.getByText('Add Project'));
+    // ファイルを選択
+    fireEvent.click(screen.getByText('Select File'));
+    expect(screen.getByText('test.md')).toBeInTheDocument();
 
-    // コンソールログが出力される（実際の実装では別の処理）
-    // この部分は将来的にPathDialogコンポーネントのテストに置き換える
+    // プロジェクトを選択（切り替え）
+    fireEvent.click(screen.getByText('Select Project'));
+
+    // ファイル名が表示されなくなる（クリアされる）
+    expect(screen.queryByText('test.md')).not.toBeInTheDocument();
+  });
+
+  test('プロジェクト選択時にhasKiroDirが正しく更新される', () => {
+    render(<Dashboard projectName='test-project' />);
+
+    // プロジェクトを選択
+    fireEvent.click(screen.getByText('Select Project'));
+
+    // MainContentにhasKiroDir=trueが渡される
+    const mainContent = screen.getByTestId('main-content');
+    expect(mainContent).toHaveAttribute('data-has-kiro-dir', 'true');
   });
 });

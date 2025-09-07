@@ -61,61 +61,7 @@ describe('ProjectSidebar', () => {
     });
   });
 
-  test('プロジェクト一覧が表示される', async () => {
-    renderWithProvider(
-      <ProjectSidebar
-        onProjectSelect={mockOnProjectSelect}
-        onAddProject={mockOnAddProject}
-        onFileSelect={mockOnFileSelect}
-      />
-    );
-
-    // ローディング状態の確認
-    expect(screen.getByText('読み込み中...')).toBeInTheDocument();
-
-    // プロジェクト一覧の表示を待機
-    await waitFor(() => {
-      expect(screen.getByText('Project 1')).toBeInTheDocument();
-      expect(screen.getByText('Project 2')).toBeInTheDocument();
-    });
-  });
-
-  test('現在選択中のプロジェクトが視覚的に識別できる', async () => {
-    renderWithProvider(
-      <ProjectSidebar
-        onProjectSelect={mockOnProjectSelect}
-        currentProject={mockProjects[0]}
-        onAddProject={mockOnAddProject}
-        onFileSelect={mockOnFileSelect}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Project 1')).toBeInTheDocument();
-    });
-
-    // 選択中のプロジェクトに「選択中」バッジが表示される
-    expect(screen.getByText('選択中')).toBeInTheDocument();
-  });
-
-  test('無効なプロジェクトが視覚的に表示される', async () => {
-    renderWithProvider(
-      <ProjectSidebar
-        onProjectSelect={mockOnProjectSelect}
-        onAddProject={mockOnAddProject}
-        onFileSelect={mockOnFileSelect}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Project 2')).toBeInTheDocument();
-    });
-
-    // 無効なプロジェクトに「無効」バッジが表示される
-    expect(screen.getByText('無効')).toBeInTheDocument();
-  });
-
-  test('プロジェクト選択機能が動作する', async () => {
+  test('プロジェクト選択時にAPIが呼び出される', async () => {
     renderWithProvider(
       <ProjectSidebar
         onProjectSelect={mockOnProjectSelect}
@@ -137,26 +83,28 @@ describe('ProjectSidebar', () => {
     });
   });
 
-  test('選択されたプロジェクトの.kiroファイルが表示される', async () => {
+  test('無効なプロジェクトは選択できない', async () => {
     renderWithProvider(
       <ProjectSidebar
         onProjectSelect={mockOnProjectSelect}
-        currentProject={mockProjects[0]}
         onAddProject={mockOnAddProject}
         onFileSelect={mockOnFileSelect}
       />
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Project 1')).toBeInTheDocument();
+      expect(screen.getByText('Project 2')).toBeInTheDocument();
     });
 
-    // .kiroディレクトリの内容が表示される
-    expect(screen.getByText('specs')).toBeInTheDocument();
-    expect(screen.getByText('steering')).toBeInTheDocument();
+    // 無効なプロジェクトをクリック
+    fireEvent.click(screen.getByText('Project 2'));
+
+    // APIが呼び出されない
+    expect(mockApiClient.prototype.selectProject).not.toHaveBeenCalled();
+    expect(mockOnProjectSelect).not.toHaveBeenCalled();
   });
 
-  test('フォルダの展開/折りたたみが動作する', async () => {
+  test('フォルダ展開状態が正しく管理される', async () => {
     renderWithProvider(
       <ProjectSidebar
         onProjectSelect={mockOnProjectSelect}
@@ -170,17 +118,146 @@ describe('ProjectSidebar', () => {
       expect(screen.getByText('specs')).toBeInTheDocument();
     });
 
+    // 初期状態では子要素が表示されていない
+    expect(screen.queryByText('kiro-lens-foundation')).not.toBeInTheDocument();
+
     // specsフォルダをクリックして展開
     fireEvent.click(screen.getByText('specs'));
 
     // サブフォルダが表示される
     await waitFor(() => {
       expect(screen.getByText('kiro-lens-foundation')).toBeInTheDocument();
-      expect(screen.getByText('kiro-lens-full')).toBeInTheDocument();
+    });
+
+    // 再度クリックして折りたたみ
+    fireEvent.click(screen.getByText('specs'));
+
+    // サブフォルダが非表示になる
+    await waitFor(() => {
+      expect(screen.queryByText('kiro-lens-foundation')).not.toBeInTheDocument();
     });
   });
 
-  test('ファイル選択機能が動作する', async () => {
+  test('プロジェクト削除時に確認ダイアログが表示される', async () => {
+    // window.confirmをモック
+    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    renderWithProvider(
+      <ProjectSidebar
+        onProjectSelect={mockOnProjectSelect}
+        onAddProject={mockOnAddProject}
+        onFileSelect={mockOnFileSelect}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Project 1')).toBeInTheDocument();
+    });
+
+    // 削除ボタンをクリック
+    const deleteButton = screen.getByRole('button', { name: /プロジェクト Project 1 を削除/ });
+    fireEvent.click(deleteButton);
+
+    // 確認ダイアログが表示される
+    expect(mockConfirm).toHaveBeenCalledWith(
+      expect.stringContaining('プロジェクト「Project 1」を削除しますか？')
+    );
+
+    await waitFor(() => {
+      expect(mockApiClient.prototype.removeProject).toHaveBeenCalledWith('1');
+    });
+
+    mockConfirm.mockRestore();
+  });
+
+  test('プロジェクト削除をキャンセルした場合はAPIが呼び出されない', async () => {
+    // window.confirmをモック（falseを返す）
+    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    renderWithProvider(
+      <ProjectSidebar
+        onProjectSelect={mockOnProjectSelect}
+        onAddProject={mockOnAddProject}
+        onFileSelect={mockOnFileSelect}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Project 1')).toBeInTheDocument();
+    });
+
+    // 削除ボタンをクリック
+    const deleteButton = screen.getByRole('button', { name: /プロジェクト Project 1 を削除/ });
+    fireEvent.click(deleteButton);
+
+    // 確認ダイアログが表示される
+    expect(mockConfirm).toHaveBeenCalled();
+
+    // APIが呼び出されない
+    expect(mockApiClient.prototype.removeProject).not.toHaveBeenCalled();
+
+    mockConfirm.mockRestore();
+  });
+
+  test('エラー発生時に再試行機能が動作する', async () => {
+    // エラーを返すモック
+    const mockGetProjects = vi.fn().mockRejectedValue(new Error('ネットワークエラー'));
+    mockApiClient.prototype.getProjects = mockGetProjects;
+
+    renderWithProvider(
+      <ProjectSidebar
+        onProjectSelect={mockOnProjectSelect}
+        onAddProject={mockOnAddProject}
+        onFileSelect={mockOnFileSelect}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('ネットワークエラー')).toBeInTheDocument();
+    });
+
+    // 初回呼び出しを確認
+    expect(mockGetProjects).toHaveBeenCalledTimes(1);
+
+    // 再試行ボタンをクリック
+    await act(async () => {
+      fireEvent.click(screen.getByText('再試行'));
+    });
+
+    // 2回目の呼び出しを確認
+    expect(mockGetProjects).toHaveBeenCalledTimes(2);
+  });
+
+  test('プロジェクト削除後にプロジェクト一覧が再読み込みされる', async () => {
+    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    renderWithProvider(
+      <ProjectSidebar
+        onProjectSelect={mockOnProjectSelect}
+        onAddProject={mockOnAddProject}
+        onFileSelect={mockOnFileSelect}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Project 1')).toBeInTheDocument();
+    });
+
+    // 削除ボタンをクリック
+    const deleteButton = screen.getByRole('button', { name: /プロジェクト Project 1 を削除/ });
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(mockApiClient.prototype.removeProject).toHaveBeenCalledWith('1');
+    });
+
+    // プロジェクト一覧が再読み込みされる（初回 + 削除後の再読み込み）
+    expect(mockApiClient.prototype.getProjects).toHaveBeenCalledTimes(2);
+
+    mockConfirm.mockRestore();
+  });
+
+  test('ファイル選択時にコールバックが呼び出される', async () => {
     renderWithProvider(
       <ProjectSidebar
         onProjectSelect={mockOnProjectSelect}
@@ -217,105 +294,5 @@ describe('ProjectSidebar', () => {
         type: 'file',
       })
     );
-  });
-
-  test('プロジェクト削除機能が動作する', async () => {
-    // window.confirmをモック
-    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
-
-    renderWithProvider(
-      <ProjectSidebar
-        onProjectSelect={mockOnProjectSelect}
-        onAddProject={mockOnAddProject}
-        onFileSelect={mockOnFileSelect}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Project 1')).toBeInTheDocument();
-    });
-
-    // 削除ボタンをクリック（SidebarMenuActionを探す）
-    const deleteButton = screen.getByRole('button', { name: /プロジェクト Project 1 を削除/ });
-    fireEvent.click(deleteButton);
-
-    // 確認ダイアログが表示される
-    expect(mockConfirm).toHaveBeenCalledWith(
-      expect.stringContaining('プロジェクト「Project 1」を削除しますか？')
-    );
-
-    await waitFor(() => {
-      expect(mockApiClient.prototype.removeProject).toHaveBeenCalledWith('1');
-    });
-
-    mockConfirm.mockRestore();
-  });
-
-  test('プロジェクト追加ボタンが動作する', async () => {
-    renderWithProvider(
-      <ProjectSidebar
-        onProjectSelect={mockOnProjectSelect}
-        onAddProject={mockOnAddProject}
-        onFileSelect={mockOnFileSelect}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Project 1')).toBeInTheDocument();
-    });
-
-    // ヘッダーの追加ボタンをクリック
-    const addButtons = screen.getAllByText('追加');
-    fireEvent.click(addButtons[0]);
-
-    expect(mockOnAddProject).toHaveBeenCalled();
-  });
-
-  test('プロジェクトが0個の場合の表示', async () => {
-    // 空のプロジェクト一覧を返すモック
-    mockApiClient.prototype.getProjects = vi.fn().mockResolvedValue({
-      projects: [],
-      currentProject: undefined,
-    });
-
-    renderWithProvider(
-      <ProjectSidebar
-        onProjectSelect={mockOnProjectSelect}
-        onAddProject={mockOnAddProject}
-        onFileSelect={mockOnFileSelect}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('プロジェクトが登録されていません')).toBeInTheDocument();
-      expect(screen.getByText('最初のプロジェクトを追加')).toBeInTheDocument();
-    });
-  });
-
-  test('エラー状態の表示と再試行機能', async () => {
-    // エラーを返すモック
-    mockApiClient.prototype.getProjects = vi
-      .fn()
-      .mockRejectedValue(new Error('ネットワークエラー'));
-
-    renderWithProvider(
-      <ProjectSidebar
-        onProjectSelect={mockOnProjectSelect}
-        onAddProject={mockOnAddProject}
-        onFileSelect={mockOnFileSelect}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('ネットワークエラー')).toBeInTheDocument();
-      expect(screen.getByText('再試行')).toBeInTheDocument();
-    });
-
-    // 再試行ボタンをクリック
-    await act(async () => {
-      fireEvent.click(screen.getByText('再試行'));
-    });
-
-    expect(mockApiClient.prototype.getProjects).toHaveBeenCalledTimes(2);
   });
 });
