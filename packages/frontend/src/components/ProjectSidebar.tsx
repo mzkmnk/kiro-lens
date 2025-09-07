@@ -202,31 +202,18 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
               再試行
             </Button>
           </div>
-        ) : state.projects.length === 0 ? (
-          <div className='p-4 text-center'>
-            <div className='text-[#79747e] text-sm mb-4'>プロジェクトが登録されていません</div>
-            <Button
-              size='sm'
-              onClick={onAddProject}
-              className='bg-[#4a4459] hover:bg-[#4a4459]/90 text-white'
-            >
-              最初のプロジェクトを追加
-            </Button>
-          </div>
         ) : (
           <SidebarMenu className='p-2'>
-            {state.projects.map(renderProjectItem)}
-
             {/* プロジェクト追加ボタン */}
             <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={onAddProject}
-                className='w-full justify-start text-[#4a4459] hover:bg-[#4a4459]/10'
-              >
+              <SidebarMenuButton onClick={onAddProject}>
                 <Plus className='h-4 w-4' />
-                <span>プロジェクト追加</span>
+                <span>プロジェクトを追加</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+
+            {/* プロジェクト一覧 */}
+            {state.projects.map(renderProjectItem)}
           </SidebarMenu>
         )}
 
