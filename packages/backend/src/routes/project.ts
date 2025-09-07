@@ -210,7 +210,7 @@ export async function projectRoutes(fastify: FastifyInstance, _options: FastifyP
   );
 
   // プロジェクト選択エンドポイント
-  fastify.put<{ Params: { id: string } }>('/api/projects/:id/select', async (request, reply) => {
+  fastify.post<{ Params: { id: string } }>('/api/projects/:id/select', async (request, reply) => {
     try {
       const { id } = request.params;
 

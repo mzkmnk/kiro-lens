@@ -171,12 +171,12 @@ describe('Project Routes', () => {
     });
   });
 
-  describe('PUT /api/projects/:id/select', () => {
+  describe('POST /api/projects/:id/select', () => {
     test('プロジェクトを選択できる', async () => {
       vi.mocked(projectService.setCurrentProject).mockResolvedValue(MOCK_API_PROJECT_WITH_ACCESS);
 
       const response = await app.inject({
-        method: 'PUT',
+        method: 'POST',
         url: `/api/projects/${MOCK_API_PROJECT.id}/select`,
       });
 
@@ -192,7 +192,7 @@ describe('Project Routes', () => {
       vi.mocked(projectService.setCurrentProject).mockRejectedValue(error);
 
       const response = await app.inject({
-        method: 'PUT',
+        method: 'POST',
         url: '/api/projects/nonexistent-id/select',
       });
 

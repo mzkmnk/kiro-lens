@@ -112,7 +112,7 @@ export class ApiClient {
    * @returns 選択されたプロジェクト情報
    */
   async selectProject(id: string): Promise<{ project: ProjectInfo; message: string }> {
-    return this.put<{ project: ProjectInfo; message: string }>(`/api/projects/${id}/select`);
+    return this.post<{ project: ProjectInfo; message: string }>(`/api/projects/${id}/select`);
   }
 
   /**
@@ -132,13 +132,12 @@ export class ApiClient {
       body?: string;
     } = {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {},
     };
 
     // POSTやPUTの場合はボディを追加
     if (data !== undefined && (method === 'POST' || method === 'PUT')) {
+      options.headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(data);
     }
 
