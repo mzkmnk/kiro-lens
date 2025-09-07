@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChevronRight, File, Folder, FolderOpen, Plus, X } from 'lucide-react';
+import { Folder, Plus, X } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -8,13 +8,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
   SidebarMenuAction,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { ApiClient } from '@/services/api';
-import { mockFiles } from '@/data/mock-files';
+
 import type { ProjectInfo } from '@kiro-lens/shared';
 import type { FileItem } from '@shared/types/file-tree';
 
@@ -36,8 +34,6 @@ interface ProjectSidebarState {
   isLoading: boolean;
   /** エラーメッセージ */
   error?: string;
-  /** 展開されたフォルダのID一覧 */
-  expandedFolders: Set<string>;
 }
 
 /**
@@ -56,7 +52,6 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
     projects: [],
     isLoading: true,
     error: undefined,
-    expandedFolders: new Set(),
   });
 
   const apiClient = useMemo(() => new ApiClient(), []);
@@ -122,80 +117,14 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
     }
   };
 
-  // フォルダの展開/折りたたみ
-  const handleFolderToggle = (folderId: string) => {
-    setState(prev => {
-      const newExpandedFolders = new Set(prev.expandedFolders);
-      if (newExpandedFolders.has(folderId)) {
-        newExpandedFolders.delete(folderId);
-      } else {
-        newExpandedFolders.add(folderId);
-      }
-      return {
-        ...prev,
-        expandedFolders: newExpandedFolders,
-      };
-    });
-  };
-
-  // ファイル選択
-  const handleFileSelect = (file: FileItem) => {
-    onFileSelect?.(file);
-  };
+  // TODO: ファイルツリー機能実装時に追加予定
 
   // コンポーネントマウント時にプロジェクト一覧を取得
   useEffect(() => {
     loadProjects();
   }, [loadProjects]);
 
-  // ファイルツリーアイテムのレンダリング
-  const renderFileTreeItem = (item: FileItem, depth = 0) => {
-    const isExpanded = state.expandedFolders.has(item.id);
-    const paddingLeft = depth * 16;
 
-    if (item.type === 'folder') {
-      return (
-        <React.Fragment key={item.id}>
-          <SidebarMenuSubItem>
-            <SidebarMenuSubButton
-              onClick={() => handleFolderToggle(item.id)}
-              className='w-full justify-start'
-              style={{ paddingLeft: `${paddingLeft + 8}px` }}
-            >
-              <ChevronRight
-                className={`h-3 w-3 transition-transform duration-200 ${
-                  isExpanded ? 'rotate-90' : ''
-                }`}
-              />
-              {isExpanded ? (
-                <FolderOpen className='h-4 w-4 text-blue-500' />
-              ) : (
-                <Folder className='h-4 w-4 text-blue-600' />
-              )}
-              <span className='truncate text-sm'>{item.name}</span>
-            </SidebarMenuSubButton>
-          </SidebarMenuSubItem>
-
-          {isExpanded && item.children && (
-            <>{item.children.map(child => renderFileTreeItem(child, depth + 1))}</>
-          )}
-        </React.Fragment>
-      );
-    } else {
-      return (
-        <SidebarMenuSubItem key={item.id}>
-          <SidebarMenuSubButton
-            onClick={() => handleFileSelect(item)}
-            className='w-full justify-start'
-            style={{ paddingLeft: `${paddingLeft + 24}px` }}
-          >
-            <File className='h-4 w-4 text-gray-500' />
-            <span className='truncate text-sm'>{item.name}</span>
-          </SidebarMenuSubButton>
-        </SidebarMenuSubItem>
-      );
-    }
-  };
 
   // プロジェクト項目のレンダリング
   const renderProjectItem = (project: ProjectInfo) => {
@@ -237,7 +166,12 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
         {/* 選択されたプロジェクトの.kiroファイル表示 */}
         {isSelected && !isInvalid && (
-          <SidebarMenuSub>{mockFiles.map(item => renderFileTreeItem(item))}</SidebarMenuSub>
+          <SidebarMenuSub>
+            {/* TODO: ファイルツリーAPIを実装してファイル一覧を表示 */}
+            <div className="p-2 text-sm text-[#79747e]">
+              ファイルツリー機能は実装予定です
+            </div>
+          </SidebarMenuSub>
         )}
       </SidebarMenuItem>
     );

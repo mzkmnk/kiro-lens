@@ -27,7 +27,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName: _projectName 
   // プロジェクト選択時の処理
   const handleProjectSelect = (project: ProjectInfo) => {
     setCurrentProject(project);
-    setHasKiroDir(project.hasKiroDir);
     setSelectedFile(undefined); // プロジェクト切り替え時にファイル選択をクリア
   };
 
@@ -43,12 +42,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName: _projectName 
     console.log('Selected file:', file.name);
   };
 
-  // 実際の実装では、APIからプロジェクト情報を取得してhasKiroDirを設定
+  // hasKiroDirは選択されたプロジェクトから取得
   useEffect(() => {
-    // TODO: プロジェクト情報APIを呼び出してhasKiroDirを設定
-    // 現在はモックデータとしてtrueを設定
-    setHasKiroDir(true);
-  }, []);
+    setHasKiroDir(currentProject?.hasKiroDir || false);
+  }, [currentProject]);
 
   return (
     <div data-testid='dashboard-container'>
