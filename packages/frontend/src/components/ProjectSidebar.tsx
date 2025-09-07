@@ -3,7 +3,6 @@ import { Folder, Plus, X } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -120,7 +119,19 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
   // コンポーネントマウント時にプロジェクト一覧を取得
   useEffect(() => {
-    loadProjects();
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (isMounted) {
+        await loadProjects();
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [loadProjects]);
 
   // プロジェクト項目のレンダリング
@@ -174,21 +185,6 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
   return (
     <Sidebar className='border-r border-[#79747e]/20'>
-      <SidebarHeader className='border-b border-[#79747e]/20 p-4'>
-        <div className='flex items-center justify-between'>
-          <h2 className='font-bold text-lg text-[#4a4459]'>プロジェクト</h2>
-          <Button
-            size='sm'
-            onClick={onAddProject}
-            className='bg-[#4a4459] hover:bg-[#4a4459]/90 text-white'
-            aria-label='新しいプロジェクトを追加'
-          >
-            <Plus className='h-4 w-4 mr-1' />
-            追加
-          </Button>
-        </div>
-      </SidebarHeader>
-
       <SidebarContent>
         {state.isLoading ? (
           <div className='p-4 text-center'>

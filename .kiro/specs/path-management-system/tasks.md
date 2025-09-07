@@ -59,12 +59,13 @@
   - 無効なプロジェクトの視覚的表示機能を実装
   - _要件: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-- [ ] 8. PathDialogコンポーネントの実装
-  - packages/frontend/src/components/PathDialog.tsxを作成
+- [x] 8. PathInputコンポーネントの実装
+  - packages/frontend/src/components/PathInput.tsxを作成
+  - MainContentの「.kiroディレクトリが見つかりません」表示を改良
   - パス入力フィールドとバリデーション機能を実装
   - リアルタイムパス検証とエラー表示機能を実装
   - パス入力補完機能（候補表示）を実装
-  - 確定・キャンセルボタンとイベントハンドリングを実装
+  - プロジェクト追加ボタンとの連携機能を実装
   - _要件: 1.1, 1.4, 1.5, 4.4_
 
 - [ ] 9. FileBrowserコンポーネントの実装
