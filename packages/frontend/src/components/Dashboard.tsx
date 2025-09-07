@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { ErrorBoundary } from '@/components/custom-ui/error-boundary';
 import { MainContent } from './MainContent';
@@ -99,7 +98,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName: _projectName 
                 <div className='flex items-center gap-4'>
                   <SidebarTrigger className='text-[#4a4459] hover:bg-[#4a4459]/10' />
                   <div className='flex items-center gap-2'>
-                    <span className='text-sm font-medium text-[#4a4459]'>Kiro Lens</span>
                     {currentProject && (
                       <>
                         <span className='text-[#79747e]'>•</span>
@@ -113,26 +111,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName: _projectName 
                       </>
                     )}
                   </div>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <span
-                    className='bg-green-500 text-white px-2 py-1 rounded text-xs font-medium shadow-sm'
-                    role='status'
-                    aria-live='polite'
-                    aria-label='Connection status: Connected'
-                  >
-                    Connected
-                  </span>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    className='text-[#4a4459] border-[#79747e]/30'
-                  >
-                    設定
-                  </Button>
-                  <Button size='sm' className='bg-[#4a4459] hover:bg-[#4a4459]/90'>
-                    保存
-                  </Button>
                 </div>
               </header>
 
