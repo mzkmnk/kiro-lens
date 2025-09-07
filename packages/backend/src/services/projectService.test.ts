@@ -1,6 +1,13 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { ProjectInfo, AppConfig } from '@kiro-lens/shared';
 import {
+  MOCK_DEFAULT_CONFIG,
+  MOCK_PROJECT,
+  MOCK_INVALID_PROJECT,
+  MOCK_CONFIG_WITH_PROJECT,
+  MOCK_CONFIG_WITH_SELECTED_PROJECT,
+} from '@kiro-lens/shared';
+import {
   validateProjectPath,
   addProject,
   removeProject,
@@ -11,17 +18,7 @@ import {
 } from './projectService';
 import * as configService from './configService';
 import * as fileSystemService from './fileSystemService';
-import {
-  MOCK_DEFAULT_CONFIG,
-  MOCK_PROJECT,
-  MOCK_INVALID_PROJECT,
-  MOCK_CONFIG_WITH_PROJECT,
-  MOCK_CONFIG_WITH_SELECTED_PROJECT,
-  MOCK_DIRECTORY_PERMISSIONS,
-  MOCK_UUID,
-  MOCK_DATE,
-  MOCK_PATHS,
-} from '../test/constants';
+import { MOCK_DIRECTORY_PERMISSIONS, MOCK_UUID, MOCK_DATE, MOCK_PATHS } from '../test/constants';
 
 // モック設定
 vi.mock('crypto', () => ({

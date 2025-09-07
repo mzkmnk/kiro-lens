@@ -59,25 +59,6 @@ export const MOCK_DIRECTORY_PERMISSIONS = {
   },
 } as const;
 
-// ===== 共通モックデータを再エクスポート =====
-
-// 設定関連のモックデータ
-export {
-  MOCK_DEFAULT_CONFIG,
-  MOCK_CUSTOM_CONFIG,
-  MOCK_CONFIG_WITH_PROJECT,
-  MOCK_CONFIG_WITH_SELECTED_PROJECT,
-} from '@kiro-lens/shared';
-
-// プロジェクト関連のモックデータ
-export {
-  MOCK_PROJECT,
-  MOCK_API_PROJECT,
-  MOCK_API_PROJECT_WITH_ACCESS,
-  MOCK_INVALID_PROJECT,
-  MOCK_PROJECT_LIST,
-} from '@kiro-lens/shared';
-
 // ===== テスト用のパス定数 =====
 
 /**
@@ -99,9 +80,6 @@ export const MOCK_PATHS = {
 } as const;
 
 // ===== API関連のモック戻り値 =====
-
-// パス検証結果のモック（共通モックデータを使用）
-export { MOCK_VALIDATION_RESULTS } from '@kiro-lens/shared';
 
 // ===== UUID関連のモック =====
 
