@@ -46,7 +46,6 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   onProjectSelect,
   currentProject,
   onAddProject,
-  onFileSelect,
 }) => {
   const [state, setState] = useState<ProjectSidebarState>({
     projects: [],
@@ -124,8 +123,6 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
     loadProjects();
   }, [loadProjects]);
 
-
-
   // プロジェクト項目のレンダリング
   const renderProjectItem = (project: ProjectInfo) => {
     const isSelected = currentProject?.id === project.id;
@@ -168,9 +165,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
         {isSelected && !isInvalid && (
           <SidebarMenuSub>
             {/* TODO: ファイルツリーAPIを実装してファイル一覧を表示 */}
-            <div className="p-2 text-sm text-[#79747e]">
-              ファイルツリー機能は実装予定です
-            </div>
+            <div className='p-2 text-sm text-[#79747e]'>ファイルツリー機能は実装予定です</div>
           </SidebarMenuSub>
         )}
       </SidebarMenuItem>
