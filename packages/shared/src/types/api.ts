@@ -107,3 +107,17 @@ export interface ProjectListResponse {
   /** 現在選択中のプロジェクト */
   readonly currentProject?: ProjectInfo;
 }
+
+/**
+ * パス検証結果
+ *
+ * POST /api/projects/validate-path エンドポイントのレスポンス形式を定義します。
+ */
+export interface ValidationResult {
+  /** 検証が成功したかどうか */
+  readonly isValid: boolean;
+  /** エラーメッセージ（検証失敗時） */
+  readonly error?: string;
+  /** 検証されたパス（成功時） */
+  readonly validatedPath?: string;
+}

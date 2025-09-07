@@ -1,3 +1,11 @@
+import type {
+  AddProjectRequest,
+  AddProjectResponse,
+  ProjectListResponse,
+  ValidationResult,
+  ProjectInfo,
+} from '@kiro-lens/shared';
+
 /**
  * API通信ラッパークラス
  *
@@ -58,6 +66,56 @@ export class ApiClient {
   }
 
   /**
+   * プロジェクトを追加
+   *
+   * @param path - プロジェクトのパス
+   * @returns 追加されたプロジェクト情報
+   */
+  async addProject(path: string): Promise<AddProjectResponse> {
+    const requestData: AddProjectRequest = { path };
+    return this.post<AddProjectResponse>('/api/projects', requestData);
+  }
+
+  /**
+   * プロジェクトを削除
+   *
+   * @param id - 削除するプロジェクトのID
+   * @returns 削除結果メッセージ
+   */
+  async removeProject(id: string): Promise<{ message: string }> {
+    return this.delete<{ message: string }>(`/api/projects/${id}`);
+  }
+
+  /**
+   * プロジェクト一覧を取得
+   *
+   * @returns プロジェクト一覧と現在選択中のプロジェクト
+   */
+  async getProjects(): Promise<ProjectListResponse> {
+    return this.get<ProjectListResponse>('/api/projects');
+  }
+
+  /**
+   * パスを検証
+   *
+   * @param path - 検証するパス
+   * @returns 検証結果
+   */
+  async validatePath(path: string): Promise<ValidationResult> {
+    return this.post<ValidationResult>('/api/projects/validate-path', { path });
+  }
+
+  /**
+   * プロジェクトを選択
+   *
+   * @param id - 選択するプロジェクトのID
+   * @returns 選択されたプロジェクト情報
+   */
+  async selectProject(id: string): Promise<{ project: ProjectInfo; message: string }> {
+    return this.put<{ project: ProjectInfo; message: string }>(`/api/projects/${id}/select`);
+  }
+
+  /**
    * 共通のHTTPリクエスト処理
    *
    * @param method - HTTPメソッド
@@ -90,6 +148,17 @@ export class ApiClient {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+
+    // 新しいAPIエンドポイント（/api/projects/*）の場合はApiResponse形式からdataを抽出
+    if (path.startsWith('/api/projects')) {
+      if (result.success && result.data !== undefined) {
+        return result.data;
+      } else if (!result.success && result.error) {
+        throw new Error(result.error.message);
+      }
+    }
+
+    return result;
   }
 }

@@ -1,5 +1,12 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { ApiClient } from './api';
+import type {
+  AddProjectResponse,
+  ProjectListResponse,
+  ValidationResult,
+  ProjectInfo,
+  ApiResponse,
+} from '@kiro-lens/shared';
 
 describe('ApiClient', () => {
   let apiClient: ApiClient;
@@ -133,6 +140,210 @@ describe('ApiClient', () => {
     test('ApiClientが正常にインスタンス化される', () => {
       const client = new ApiClient();
       expect(client).toBeInstanceOf(ApiClient);
+    });
+  });
+
+  describe('プロジェクト管理API', () => {
+    describe('addProject', () => {
+      test('プロジェクト追加が成功する', async () => {
+        const mockProject: ProjectInfo = {
+          id: 'test-id',
+          name: 'test-project',
+          path: '/path/to/project',
+          kiroPath: '/path/to/project/.kiro',
+          hasKiroDir: true,
+          isValid: true,
+          addedAt: '2024-01-01T00:00:00.000Z',
+        };
+        const mockResponse: ApiResponse<AddProjectResponse> = {
+          success: true,
+          data: {
+            project: mockProject,
+            message: 'プロジェクトを追加しました',
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await apiClient.addProject('/path/to/project');
+
+        expect(mockFetch).toHaveBeenCalledWith('http://localhost:3001/api/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ path: '/path/to/project' }),
+        });
+        expect(result).toEqual(mockResponse.data);
+      });
+
+      test('APIエラーレスポンスの場合はエラーをスローする', async () => {
+        const mockErrorResponse: ApiResponse<never> = {
+          success: false,
+          error: {
+            type: 'VALIDATION_ERROR',
+            message: 'パスが無効です',
+            timestamp: new Date(),
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: false,
+          status: 400,
+          json: () => Promise.resolve(mockErrorResponse),
+        });
+
+        await expect(apiClient.addProject('/invalid/path')).rejects.toThrow(
+          'HTTP error! status: 400'
+        );
+      });
+    });
+
+    describe('removeProject', () => {
+      test('プロジェクト削除が成功する', async () => {
+        const mockResponse: ApiResponse<{ message: string }> = {
+          success: true,
+          data: { message: 'プロジェクトを削除しました' },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await apiClient.removeProject('test-id');
+
+        expect(mockFetch).toHaveBeenCalledWith('http://localhost:3001/api/projects/test-id', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        expect(result).toEqual(mockResponse.data);
+      });
+    });
+
+    describe('getProjects', () => {
+      test('プロジェクト一覧取得が成功する', async () => {
+        const mockProjects: ProjectInfo[] = [
+          {
+            id: 'project-1',
+            name: 'project-1',
+            path: '/path/to/project1',
+            kiroPath: '/path/to/project1/.kiro',
+            hasKiroDir: true,
+            isValid: true,
+            addedAt: '2024-01-01T00:00:00.000Z',
+          },
+        ];
+        const mockResponse: ApiResponse<ProjectListResponse> = {
+          success: true,
+          data: {
+            projects: mockProjects,
+            currentProject: mockProjects[0],
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await apiClient.getProjects();
+
+        expect(mockFetch).toHaveBeenCalledWith('http://localhost:3001/api/projects', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        expect(result).toEqual(mockResponse.data);
+      });
+    });
+
+    describe('validatePath', () => {
+      test('パス検証が成功する', async () => {
+        const mockResponse: ApiResponse<ValidationResult> = {
+          success: true,
+          data: {
+            isValid: true,
+            validatedPath: '/path/to/project',
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await apiClient.validatePath('/path/to/project');
+
+        expect(mockFetch).toHaveBeenCalledWith('http://localhost:3001/api/projects/validate-path', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ path: '/path/to/project' }),
+        });
+        expect(result).toEqual(mockResponse.data);
+      });
+
+      test('パス検証が失敗する', async () => {
+        const mockResponse: ApiResponse<ValidationResult> = {
+          success: true,
+          data: {
+            isValid: false,
+            error: '.kiroディレクトリが存在しません',
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await apiClient.validatePath('/invalid/path');
+
+        expect(result).toEqual(mockResponse.data);
+        expect(result.isValid).toBe(false);
+        expect(result.error).toBe('.kiroディレクトリが存在しません');
+      });
+    });
+
+    describe('selectProject', () => {
+      test('プロジェクト選択が成功する', async () => {
+        const mockProject: ProjectInfo = {
+          id: 'test-id',
+          name: 'test-project',
+          path: '/path/to/project',
+          kiroPath: '/path/to/project/.kiro',
+          hasKiroDir: true,
+          isValid: true,
+          addedAt: '2024-01-01T00:00:00.000Z',
+          lastAccessedAt: '2024-01-01T01:00:00.000Z',
+        };
+        const mockResponse: ApiResponse<{ project: ProjectInfo; message: string }> = {
+          success: true,
+          data: {
+            project: mockProject,
+            message: 'プロジェクトを選択しました',
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await apiClient.selectProject('test-id');
+
+        expect(mockFetch).toHaveBeenCalledWith(
+          'http://localhost:3001/api/projects/test-id/select',
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        expect(result).toEqual(mockResponse.data);
+      });
     });
   });
 });

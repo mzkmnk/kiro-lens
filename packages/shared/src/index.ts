@@ -17,6 +17,7 @@ export type {
   AddProjectRequest,
   AddProjectResponse,
   ProjectListResponse,
+  ValidationResult,
 } from './types/api';
 
 // プロジェクト関連型定義
