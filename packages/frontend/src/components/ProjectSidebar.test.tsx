@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { ProjectSidebar } from './ProjectSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -312,7 +312,9 @@ describe('ProjectSidebar', () => {
     });
 
     // 再試行ボタンをクリック
-    fireEvent.click(screen.getByText('再試行'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('再試行'));
+    });
 
     expect(mockApiClient.prototype.getProjects).toHaveBeenCalledTimes(2);
   });
