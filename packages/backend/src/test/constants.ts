@@ -5,7 +5,19 @@
  * 共通で使用するモックデータと定数をここに集約します。
  */
 
-import type { AppConfig, ProjectInfo } from '@kiro-lens/shared';
+import type { AppConfig } from '@kiro-lens/shared';
+import {
+  MOCK_PROJECT,
+  MOCK_API_PROJECT,
+  MOCK_API_PROJECT_WITH_ACCESS,
+  MOCK_INVALID_PROJECT,
+  MOCK_PROJECT_LIST,
+  MOCK_DEFAULT_CONFIG,
+  MOCK_CUSTOM_CONFIG,
+  MOCK_CONFIG_WITH_PROJECT,
+  MOCK_CONFIG_WITH_SELECTED_PROJECT,
+  MOCK_VALIDATION_RESULTS,
+} from '@kiro-lens/shared';
 
 // ===== ファイルシステム関連のモック戻り値 =====
 
@@ -59,126 +71,24 @@ export const MOCK_DIRECTORY_PERMISSIONS = {
   },
 } as const;
 
-// ===== 設定関連のモックデータ =====
+// ===== 共通モックデータを再エクスポート =====
 
-/**
- * テスト用のデフォルト設定
- */
-export const MOCK_DEFAULT_CONFIG: AppConfig = {
-  version: '1.0.0',
-  projects: [],
-  settings: {
-    theme: 'system',
-    autoSave: true,
-    maxRecentProjects: 10,
-  },
-  metadata: {
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: '2024-01-01T00:00:00.000Z',
-    configPath: '/home/test/.kiro-lens/config.json',
-  },
-};
+// 設定関連のモックデータ
+export {
+  MOCK_DEFAULT_CONFIG,
+  MOCK_CUSTOM_CONFIG,
+  MOCK_CONFIG_WITH_PROJECT,
+  MOCK_CONFIG_WITH_SELECTED_PROJECT,
+} from '@kiro-lens/shared';
 
-/**
- * テスト用のカスタム設定
- */
-export const MOCK_CUSTOM_CONFIG: AppConfig = {
-  version: '1.0.0',
-  projects: [],
-  settings: {
-    theme: 'dark',
-    autoSave: false,
-    maxRecentProjects: 5,
-  },
-  metadata: {
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: '2024-01-01T00:00:00.000Z',
-    configPath: '/home/test/.kiro-lens/config.json',
-  },
-};
-
-// ===== プロジェクト関連のモックデータ =====
-
-/**
- * テスト用のプロジェクト情報
- */
-export const MOCK_PROJECT: ProjectInfo = {
-  id: 'test-project-id',
-  name: 'test-project',
-  path: '/absolute/path/to/project',
-  kiroPath: '/absolute/path/to/project/.kiro',
-  hasKiroDir: true,
-  isValid: true,
-  addedAt: '2024-01-01T00:00:00.000Z',
-};
-
-/**
- * テスト用のプロジェクト情報（API用）
- */
-export const MOCK_API_PROJECT: ProjectInfo = {
-  id: 'test-id',
-  name: 'test-project',
-  path: '/test/path',
-  kiroPath: '/test/path/.kiro',
-  hasKiroDir: true,
-  isValid: true,
-  addedAt: '2024-01-01T00:00:00.000Z',
-};
-
-/**
- * テスト用のプロジェクト情報（最終アクセス日時付き）
- */
-export const MOCK_API_PROJECT_WITH_ACCESS: ProjectInfo = {
-  ...MOCK_API_PROJECT,
-  lastAccessedAt: '2024-01-01T01:00:00.000Z',
-};
-
-/**
- * テスト用のプロジェクト一覧
- */
-export const MOCK_PROJECT_LIST: ProjectInfo[] = [
-  {
-    id: 'project-1',
-    name: 'project1',
-    path: '/path/to/project1',
-    kiroPath: '/path/to/project1/.kiro',
-    hasKiroDir: true,
-    isValid: true,
-    addedAt: '2024-01-01T00:00:00.000Z',
-  },
-];
-
-/**
- * テスト用の無効なプロジェクト情報
- */
-export const MOCK_INVALID_PROJECT: ProjectInfo = {
-  ...MOCK_PROJECT,
-  id: 'invalid-project-id',
-  name: 'invalid-project',
-  path: '/absolute/path/to/invalid',
-  kiroPath: '/absolute/path/to/invalid/.kiro',
-  hasKiroDir: false,
-  isValid: false,
-};
-
-/**
- * プロジェクトを含む設定
- */
-export const MOCK_CONFIG_WITH_PROJECT: AppConfig = {
-  ...MOCK_DEFAULT_CONFIG,
-  projects: [MOCK_PROJECT],
-};
-
-/**
- * 選択されたプロジェクトを含む設定
- */
-export const MOCK_CONFIG_WITH_SELECTED_PROJECT: AppConfig = {
-  ...MOCK_CONFIG_WITH_PROJECT,
-  settings: {
-    ...MOCK_DEFAULT_CONFIG.settings,
-    lastSelectedProject: MOCK_PROJECT.id,
-  },
-};
+// プロジェクト関連のモックデータ
+export {
+  MOCK_PROJECT,
+  MOCK_API_PROJECT,
+  MOCK_API_PROJECT_WITH_ACCESS,
+  MOCK_INVALID_PROJECT,
+  MOCK_PROJECT_LIST,
+} from '@kiro-lens/shared';
 
 // ===== テスト用のパス定数 =====
 
@@ -202,21 +112,8 @@ export const MOCK_PATHS = {
 
 // ===== API関連のモック戻り値 =====
 
-/**
- * パス検証結果のモック
- */
-export const MOCK_VALIDATION_RESULTS = {
-  /** 有効なパスの検証結果 */
-  VALID: {
-    isValid: true,
-    validatedPath: MOCK_PATHS.API_TEST,
-  },
-  /** 無効なパスの検証結果 */
-  INVALID: {
-    isValid: false,
-    error: '指定されたディレクトリが存在しません',
-  },
-} as const;
+// パス検証結果のモック（共通モックデータを使用）
+export { MOCK_VALIDATION_RESULTS } from '@kiro-lens/shared';
 
 // ===== UUID関連のモック =====
 
