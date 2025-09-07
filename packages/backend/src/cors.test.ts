@@ -25,7 +25,7 @@ describe('FastifyCORS設定', () => {
   test('プリフライトリクエストが正しく処理される', async () => {
     const response = await server.inject({
       method: 'OPTIONS',
-      url: '/health',
+      url: '/api/health',
       headers: {
         Origin: 'http://localhost:3000',
         'Access-Control-Request-Method': 'GET',
@@ -42,7 +42,7 @@ describe('FastifyCORS設定', () => {
     // サーバーが正常に動作することを確認（CORS設定が適用されている）
     const response = await server.inject({
       method: 'GET',
-      url: '/health',
+      url: '/api/health',
     });
 
     expect(response.statusCode).toBe(200);
