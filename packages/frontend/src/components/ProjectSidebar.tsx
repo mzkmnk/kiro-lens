@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React from 'react';
 import { Folder, Plus, X } from 'lucide-react';
 import {
   Sidebar,
@@ -10,29 +10,27 @@ import {
   SidebarMenuAction,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { ApiClient } from '@/services/api';
 
 import type { ProjectInfo } from '@kiro-lens/shared';
 import type { FileItem } from '@shared/types/file-tree';
 
 interface ProjectSidebarProps {
-  /** プロジェクト選択時のコールバック */
-  onProjectSelect: (project: ProjectInfo) => void;
-  /** 現在選択中のプロジェクト */
-  currentProject?: ProjectInfo;
-  /** プロジェクト追加ボタンクリック時のコールバック */
-  onAddProject: () => void;
-  /** ファイル選択時のコールバック */
-  onFileSelect?: (file: FileItem) => void;
-}
-
-interface ProjectSidebarState {
   /** 管理対象のプロジェクト一覧 */
   projects: readonly ProjectInfo[];
+  /** 現在選択中のプロジェクト */
+  currentProject?: ProjectInfo;
   /** ローディング状態 */
   isLoading: boolean;
   /** エラーメッセージ */
   error?: string;
+  /** プロジェクト選択時のコールバック */
+  onProjectSelect: (project: ProjectInfo) => void;
+  /** プロジェクト削除時のコールバック */
+  onProjectDelete: (projectId: string) => void;
+  /** プロジェクト追加ボタンクリック時のコールバック */
+  onAddProject: () => void;
+  /** ファイル選択時のコールバック */
+  onFileSelect?: (file: FileItem) => void;
 }
 
 /**
@@ -40,41 +38,21 @@ interface ProjectSidebarState {
  *
  * プロジェクト管理とファイルツリーを統合したサイドバー
  * shadcn/uiのSidebarコンポーネントを使用して階層構造を実現
+ *
+ * プレゼンテーションコンポーネントとして実装され、
+ * 状態管理はDashboardコンポーネントで行われる
  */
 export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
-  onProjectSelect,
+  projects,
   currentProject,
+  isLoading,
+  error,
+  onProjectSelect,
+  onProjectDelete,
   onAddProject,
 }) => {
-  const [state, setState] = useState<ProjectSidebarState>({
-    projects: [],
-    isLoading: true,
-    error: undefined,
-  });
-
-  const apiClient = useMemo(() => new ApiClient(), []);
-
-  // プロジェクト一覧を取得
-  const loadProjects = useCallback(async () => {
-    try {
-      setState(prev => ({ ...prev, isLoading: true, error: undefined }));
-      const response = await apiClient.getProjects();
-      setState(prev => ({
-        ...prev,
-        projects: response.projects,
-        isLoading: false,
-      }));
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'プロジェクトの取得に失敗しました',
-        isLoading: false,
-      }));
-    }
-  }, [apiClient]);
-
   // プロジェクトを削除
-  const handleDeleteProject = async (project: ProjectInfo, event: React.MouseEvent) => {
+  const handleDeleteProject = (project: ProjectInfo, event: React.MouseEvent) => {
     event.stopPropagation();
 
     // 確認ダイアログを表示
@@ -82,57 +60,17 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       `プロジェクト「${project.name}」を削除しますか？\n\nパス: ${project.path}\n\nこの操作は元に戻せません。`
     );
 
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await apiClient.removeProject(project.id);
-      // プロジェクト一覧を再読み込み
-      await loadProjects();
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'プロジェクトの削除に失敗しました',
-      }));
+    if (confirmed) {
+      onProjectDelete(project.id);
     }
   };
 
   // プロジェクトを選択
-  const handleSelectProject = async (project: ProjectInfo) => {
-    if (!project.isValid) {
-      return;
-    }
-
-    try {
-      await apiClient.selectProject(project.id);
+  const handleSelectProject = (project: ProjectInfo) => {
+    if (project.isValid) {
       onProjectSelect(project);
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'プロジェクトの選択に失敗しました',
-      }));
     }
   };
-
-  // TODO: ファイルツリー機能実装時に追加予定
-
-  // コンポーネントマウント時にプロジェクト一覧を取得
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadData = async () => {
-      if (isMounted) {
-        await loadProjects();
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [loadProjects]);
 
   // プロジェクト項目のレンダリング
   const renderProjectItem = (project: ProjectInfo) => {
@@ -186,20 +124,20 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   return (
     <Sidebar className='border-r border-[#79747e]/20'>
       <SidebarContent>
-        {state.isLoading ? (
+        {isLoading ? (
           <div className='p-4 text-center'>
             <div className='text-[#79747e]'>読み込み中...</div>
           </div>
-        ) : state.error ? (
+        ) : error ? (
           <div className='p-4 text-center'>
-            <div className='text-red-600 text-sm mb-2'>{state.error}</div>
+            <div className='text-red-600 text-sm mb-2'>{error}</div>
             <Button
               variant='outline'
               size='sm'
-              onClick={loadProjects}
+              onClick={() => window.location.reload()}
               className='text-[#4a4459] border-[#79747e]/30'
             >
-              再試行
+              再読み込み
             </Button>
           </div>
         ) : (
@@ -213,18 +151,18 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             </SidebarMenuItem>
 
             {/* プロジェクト一覧 */}
-            {state.projects.map(renderProjectItem)}
+            {projects.map(renderProjectItem)}
           </SidebarMenu>
         )}
 
         {/* フッター情報 */}
-        {state.projects.length > 0 && (
+        {projects.length > 0 && (
           <div className='p-4 border-t border-[#79747e]/20 mt-auto'>
             <div className='text-xs text-[#79747e] text-center'>
-              {state.projects.length} 個のプロジェクト
-              {state.projects.filter(p => !p.isValid).length > 0 && (
+              {projects.length} 個のプロジェクト
+              {projects.filter(p => !p.isValid).length > 0 && (
                 <span className='text-red-600 ml-2'>
-                  ({state.projects.filter(p => !p.isValid).length} 個が無効)
+                  ({projects.filter(p => !p.isValid).length} 個が無効)
                 </span>
               )}
             </div>

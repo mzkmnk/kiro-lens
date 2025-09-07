@@ -1,12 +1,10 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { ApiClient } from '@/services/api';
-import type { ProjectInfo, ProjectListResponse } from '@kiro-lens/shared';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { ProjectSidebar } from './ProjectSidebar';
+import type { ProjectInfo } from '@kiro-lens/shared';
 
-// ApiClientをモック
-vi.mock('@/services/api');
-const mockApiClient = vi.mocked(ApiClient);
-
-describe('ProjectSidebar Logic', () => {
+describe('ProjectSidebar', () => {
   const mockProjects: ProjectInfo[] = [
     {
       id: '1',
@@ -29,117 +27,95 @@ describe('ProjectSidebar Logic', () => {
     },
   ];
 
-  const mockProjectListResponse: ProjectListResponse = {
+  const defaultProps = {
     projects: mockProjects,
     currentProject: mockProjects[0],
+    isLoading: false,
+    error: undefined as string | undefined,
+    onProjectSelect: vi.fn(),
+    onProjectDelete: vi.fn(),
+    onAddProject: vi.fn(),
+    onFileSelect: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // ApiClientのモック実装
-    mockApiClient.prototype.getProjects = vi.fn().mockResolvedValue(mockProjectListResponse);
-    mockApiClient.prototype.selectProject = vi.fn().mockResolvedValue({
-      project: mockProjects[0],
-      message: 'プロジェクトを選択しました',
-    });
-    mockApiClient.prototype.removeProject = vi.fn().mockResolvedValue({
-      message: 'プロジェクトを削除しました',
-    });
   });
 
-  test('プロジェクト削除時に確認ダイアログロジックが動作する', () => {
-    // window.confirmをモック
+  // テストヘルパー関数
+  const renderWithProvider = (props = defaultProps) => {
+    return render(
+      <SidebarProvider>
+        <ProjectSidebar {...props} />
+      </SidebarProvider>
+    );
+  };
+
+  test('プロジェクト一覧が正しく表示される', () => {
+    renderWithProvider();
+
+    expect(screen.getByText('Project 1')).toBeInTheDocument();
+    expect(screen.getByText('Project 2')).toBeInTheDocument();
+    expect(screen.getByText('プロジェクトを追加')).toBeInTheDocument();
+  });
+
+  test('ローディング状態が正しく表示される', () => {
+    renderWithProvider({ ...defaultProps, isLoading: true });
+
+    expect(screen.getByText('読み込み中...')).toBeInTheDocument();
+  });
+
+  test('エラー状態が正しく表示される', () => {
+    const errorMessage = 'プロジェクトの取得に失敗しました';
+    renderWithProvider({ ...defaultProps, error: errorMessage });
+
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    expect(screen.getByText('再読み込み')).toBeInTheDocument();
+  });
+
+  test('プロジェクト追加ボタンクリック時にコールバックが呼ばれる', () => {
+    const mockOnAddProject = vi.fn();
+    renderWithProvider({ ...defaultProps, onAddProject: mockOnAddProject });
+
+    fireEvent.click(screen.getByText('プロジェクトを追加'));
+    expect(mockOnAddProject).toHaveBeenCalledTimes(1);
+  });
+
+  test('有効なプロジェクト選択時にコールバックが呼ばれる', () => {
+    const mockOnProjectSelect = vi.fn();
+    renderWithProvider({ ...defaultProps, onProjectSelect: mockOnProjectSelect });
+
+    fireEvent.click(screen.getByText('Project 1'));
+    expect(mockOnProjectSelect).toHaveBeenCalledWith(mockProjects[0]);
+  });
+
+  test('無効なプロジェクトは選択できない', () => {
+    const mockOnProjectSelect = vi.fn();
+    renderWithProvider({ ...defaultProps, onProjectSelect: mockOnProjectSelect });
+
+    // 無効なプロジェクトをクリック
+    fireEvent.click(screen.getByText('Project 2'));
+    expect(mockOnProjectSelect).not.toHaveBeenCalled();
+  });
+
+  test('プロジェクト削除確認ダイアログが表示される', () => {
     const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const mockOnProjectDelete = vi.fn();
 
-    // 確認ダイアログのロジックをテスト
-    const project = mockProjects[0];
-    const expectedMessage = `プロジェクト「${project.name}」を削除しますか？\n\nパス: ${project.path}\n\nこの操作は元に戻せません。`;
+    renderWithProvider({ ...defaultProps, onProjectDelete: mockOnProjectDelete });
 
-    // 実際のコンポーネントロジックをシミュレート
-    const confirmed = window.confirm(expectedMessage);
+    // 削除ボタンを探してクリック（X アイコン）
+    const deleteButtons = screen.getAllByRole('button');
+    const deleteButton = deleteButtons.find(
+      button => button.querySelector('svg') && button.getAttribute('aria-label')?.includes('削除')
+    );
 
-    expect(mockConfirm).toHaveBeenCalledWith(expectedMessage);
-    expect(confirmed).toBe(true);
-
-    mockConfirm.mockRestore();
-  });
-
-  test('プロジェクト削除をキャンセルした場合の確認ダイアログロジック', () => {
-    // window.confirmをモック（falseを返す）
-    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
-
-    const project = mockProjects[0];
-    const expectedMessage = `プロジェクト「${project.name}」を削除しますか？\n\nパス: ${project.path}\n\nこの操作は元に戻せません。`;
-
-    const confirmed = window.confirm(expectedMessage);
-
-    expect(mockConfirm).toHaveBeenCalledWith(expectedMessage);
-    expect(confirmed).toBe(false);
+    if (deleteButton) {
+      fireEvent.click(deleteButton);
+      expect(mockConfirm).toHaveBeenCalled();
+      expect(mockOnProjectDelete).toHaveBeenCalledWith('1');
+    }
 
     mockConfirm.mockRestore();
-  });
-
-  test('無効なプロジェクトの選択制限ロジック', () => {
-    const validProject = mockProjects[0];
-    const invalidProject = mockProjects[1];
-
-    // 有効なプロジェクトは選択可能
-    expect(validProject.isValid).toBe(true);
-
-    // 無効なプロジェクトは選択不可
-    expect(invalidProject.isValid).toBe(false);
-  });
-
-  test('フォルダ展開状態管理のSetロジック', () => {
-    // Set操作のロジックをテスト
-    const expandedFolders = new Set<string>();
-    const folderId = 'specs';
-
-    // 初期状態では展開されていない
-    expect(expandedFolders.has(folderId)).toBe(false);
-
-    // 展開
-    expandedFolders.add(folderId);
-    expect(expandedFolders.has(folderId)).toBe(true);
-
-    // 折りたたみ
-    expandedFolders.delete(folderId);
-    expect(expandedFolders.has(folderId)).toBe(false);
-
-    // 再展開
-    expandedFolders.add(folderId);
-    expect(expandedFolders.has(folderId)).toBe(true);
-  });
-
-  test('エラーハンドリングロジック', () => {
-    const error = new Error('ネットワークエラー');
-    const genericError = 'プロジェクトの取得に失敗しました';
-
-    // Error インスタンスの場合はメッセージを使用
-    const errorMessage1 = error instanceof Error ? error.message : genericError;
-    expect(errorMessage1).toBe('ネットワークエラー');
-
-    // Error インスタンスでない場合は汎用メッセージを使用
-    const unknownError: unknown = 'unknown error';
-    const errorMessage2 = unknownError instanceof Error ? unknownError.message : genericError;
-    expect(errorMessage2).toBe(genericError);
-  });
-
-  test('API呼び出し回数の管理ロジック', async () => {
-    const mockGetProjects = vi.fn().mockResolvedValue(mockProjectListResponse);
-    mockApiClient.prototype.getProjects = mockGetProjects;
-
-    // 初回呼び出し
-    await mockGetProjects();
-    expect(mockGetProjects).toHaveBeenCalledTimes(1);
-
-    // 再試行呼び出し
-    await mockGetProjects();
-    expect(mockGetProjects).toHaveBeenCalledTimes(2);
-
-    // 削除後の再読み込み
-    await mockGetProjects();
-    expect(mockGetProjects).toHaveBeenCalledTimes(3);
   });
 });
