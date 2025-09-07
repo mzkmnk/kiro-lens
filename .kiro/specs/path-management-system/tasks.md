@@ -51,7 +51,7 @@
   - エラーハンドリングと型安全性を確保した実装
   - _要件: 1.1, 2.1, 2.2_
 
-- [ ] 7. ProjectManagerコンポーネントの実装
+- [x] 7. ProjectManagerコンポーネントの実装
   - packages/frontend/src/components/ProjectManager.tsxを作成
   - プロジェクト一覧表示機能を実装
   - プロジェクト選択とアクティブ状態表示機能を実装

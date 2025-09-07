@@ -10,7 +10,9 @@ import {
 import { FileTree } from '@/components/custom-ui/file-tree';
 import { ErrorBoundary } from '@/components/custom-ui/error-boundary';
 import { MainContent } from './MainContent';
+import { ProjectManager } from './ProjectManager';
 import { mockFiles } from '@/data/mock-files';
+import type { ProjectInfo } from '@kiro-lens/shared';
 
 interface DashboardProps {
   projectName: string;
@@ -21,11 +23,27 @@ interface DashboardProps {
  *
  * Kiro IDEの.kiro配下ファイル管理ツールのメインダッシュボード
  * 基本的なレイアウト（ヘッダー、サイドバー、メインコンテンツ）を提供
+ * プロジェクト管理機能を統合
  *
  * @param projectName - 現在のプロジェクト名
  */
 export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
-  const [hasKiroDir, setHasKiroDir] = useState<boolean>(true); // デフォルトでtrueに設定
+  const [hasKiroDir, setHasKiroDir] = useState<boolean>(true);
+  const [currentProject, setCurrentProject] = useState<ProjectInfo | undefined>();
+  const [showProjectManager, setShowProjectManager] = useState<boolean>(false);
+
+  // プロジェクト選択時の処理
+  const handleProjectSelect = (project: ProjectInfo) => {
+    setCurrentProject(project);
+    setHasKiroDir(project.hasKiroDir);
+    // プロジェクト切り替え時にファイルツリーを更新する処理を追加予定
+  };
+
+  // プロジェクト追加ダイアログを開く処理
+  const handleAddProject = () => {
+    // PathDialogコンポーネントを開く処理を追加予定
+    console.log('プロジェクト追加ダイアログを開く');
+  };
 
   // 実際の実装では、APIからプロジェクト情報を取得してhasKiroDirを設定
   useEffect(() => {
@@ -50,21 +68,42 @@ export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
                   <div className='flex items-center justify-between px-4 py-2'>
                     <h1
                       className='font-bold text-[20px] text-[#4a4459] truncate'
-                      title={projectName}
+                      title={currentProject?.name || projectName}
                     >
-                      {projectName}
+                      {currentProject?.name || projectName}
                     </h1>
-                    <SidebarTrigger className='text-[#4a4459] hover:bg-[#4a4459]/10' />
+                    <div className='flex items-center gap-2'>
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        onClick={() => setShowProjectManager(!showProjectManager)}
+                        className='text-[#4a4459] hover:bg-[#4a4459]/10'
+                        aria-label='プロジェクト管理を切り替え'
+                      >
+                        📁
+                      </Button>
+                      <SidebarTrigger className='text-[#4a4459] hover:bg-[#4a4459]/10' />
+                    </div>
                   </div>
                 </SidebarHeader>
-                <SidebarContent className='p-2'>
-                  <FileTree
-                    items={mockFiles}
-                    onFileSelect={file => console.log('Selected file:', file.name)}
-                    onFolderToggle={(folder, isOpen) =>
-                      console.log('Folder toggled:', folder.name, isOpen)
-                    }
-                  />
+                <SidebarContent className='p-0'>
+                  {showProjectManager ? (
+                    <ProjectManager
+                      onProjectSelect={handleProjectSelect}
+                      currentProject={currentProject}
+                      onAddProject={handleAddProject}
+                    />
+                  ) : (
+                    <div className='p-2'>
+                      <FileTree
+                        items={mockFiles}
+                        onFileSelect={file => console.log('Selected file:', file.name)}
+                        onFolderToggle={(folder, isOpen) =>
+                          console.log('Folder toggled:', folder.name, isOpen)
+                        }
+                      />
+                    </div>
+                  )}
                 </SidebarContent>
               </Sidebar>
             </ErrorBoundary>
