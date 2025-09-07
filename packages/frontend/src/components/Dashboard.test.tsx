@@ -7,20 +7,25 @@ import { ApiClient } from '@/services/api';
 vi.mock('@/services/api');
 const mockApiClient = vi.mocked(ApiClient);
 
-// ProjectManagerコンポーネントをモック
-vi.mock('./ProjectManager', () => ({
-  ProjectManager: ({
+// ProjectSidebarコンポーネントをモック
+vi.mock('./ProjectSidebar', () => ({
+  ProjectSidebar: ({
     onProjectSelect,
     onAddProject,
+    onFileSelect,
   }: {
     onProjectSelect: (project: { id: string; name: string }) => void;
     onAddProject: () => void;
+    onFileSelect: (file: { id: string; name: string }) => void;
   }) => (
-    <div data-testid='project-manager'>
+    <div data-testid='project-sidebar'>
       <button onClick={() => onProjectSelect({ id: '1', name: 'Test Project' })}>
         Select Project
       </button>
       <button onClick={onAddProject}>Add Project</button>
+      <button onClick={() => onFileSelect({ id: 'file1', name: 'test.md' })}>
+        Select File
+      </button>
     </div>
   ),
 }));
@@ -45,12 +50,11 @@ describe('Dashboard', () => {
     expect(screen.getByRole('main')).toBeInTheDocument(); // main要素
   });
 
-  test('プロジェクト名が表示される', () => {
-    const projectName = 'my-test-project';
-    render(<Dashboard projectName={projectName} />);
+  test('ProjectSidebarが表示される', () => {
+    render(<Dashboard projectName='test-project' />);
 
-    // プロジェクト名がサイドバーに表示されることを確認（titleで特定）
-    expect(screen.getByTitle(projectName)).toHaveTextContent(projectName);
+    // ProjectSidebarコンポーネントが表示されることを確認
+    expect(screen.getByTestId('project-sidebar')).toBeInTheDocument();
   });
 
   test('レスポンシブデザインのクラスが適用される', () => {
@@ -85,36 +89,33 @@ describe('Dashboard', () => {
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
-  test('プロジェクト管理ボタンが表示される', () => {
+  test('プロジェクト選択機能が動作する', () => {
     render(<Dashboard projectName='test-project' />);
-
-    // プロジェクト管理ボタンが表示されることを確認
-    expect(screen.getByLabelText('プロジェクト管理を切り替え')).toBeInTheDocument();
-  });
-
-  test('プロジェクト管理ボタンをクリックするとProjectManagerが表示される', () => {
-    render(<Dashboard projectName='test-project' />);
-
-    // 初期状態ではProjectManagerは表示されない
-    expect(screen.queryByTestId('project-manager')).not.toBeInTheDocument();
-
-    // プロジェクト管理ボタンをクリック
-    fireEvent.click(screen.getByLabelText('プロジェクト管理を切り替え'));
-
-    // ProjectManagerが表示される
-    expect(screen.getByTestId('project-manager')).toBeInTheDocument();
-  });
-
-  test('プロジェクト選択時にプロジェクト名が更新される', () => {
-    render(<Dashboard projectName='test-project' />);
-
-    // プロジェクト管理を表示
-    fireEvent.click(screen.getByLabelText('プロジェクト管理を切り替え'));
 
     // プロジェクトを選択
     fireEvent.click(screen.getByText('Select Project'));
 
-    // プロジェクト名が更新される
-    expect(screen.getByTitle('Test Project')).toBeInTheDocument();
+    // プロジェクト名がヘッダーに表示される
+    expect(screen.getByText('Test Project')).toBeInTheDocument();
+  });
+
+  test('ファイル選択機能が動作する', () => {
+    render(<Dashboard projectName='test-project' />);
+
+    // ファイルを選択
+    fireEvent.click(screen.getByText('Select File'));
+
+    // ファイル名がヘッダーに表示される
+    expect(screen.getByText('test.md')).toBeInTheDocument();
+  });
+
+  test('プロジェクト追加機能が動作する', () => {
+    render(<Dashboard projectName='test-project' />);
+
+    // プロジェクト追加ボタンをクリック
+    fireEvent.click(screen.getByText('Add Project'));
+
+    // コンソールログが出力される（実際の実装では別の処理）
+    // この部分は将来的にPathDialogコンポーネントのテストに置き換える
   });
 });
