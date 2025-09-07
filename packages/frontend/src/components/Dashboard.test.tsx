@@ -23,9 +23,7 @@ vi.mock('./ProjectSidebar', () => ({
         Select Project
       </button>
       <button onClick={onAddProject}>Add Project</button>
-      <button onClick={() => onFileSelect({ id: 'file1', name: 'test.md' })}>
-        Select File
-      </button>
+      <button onClick={() => onFileSelect({ id: 'file1', name: 'test.md' })}>Select File</button>
     </div>
   ),
 }));

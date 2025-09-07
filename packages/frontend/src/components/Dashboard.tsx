@@ -19,7 +19,7 @@ interface DashboardProps {
  *
  * @param projectName - 現在のプロジェクト名
  */
-export const Dashboard: React.FC<DashboardProps> = ({ projectName }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ projectName: _projectName }) => {
   const [hasKiroDir, setHasKiroDir] = useState<boolean>(true);
   const [currentProject, setCurrentProject] = useState<ProjectInfo | undefined>();
   const [selectedFile, setSelectedFile] = useState<FileItem | undefined>();

@@ -5,19 +5,7 @@
  * 共通で使用するモックデータと定数をここに集約します。
  */
 
-import type { AppConfig } from '@kiro-lens/shared';
-import {
-  MOCK_PROJECT,
-  MOCK_API_PROJECT,
-  MOCK_API_PROJECT_WITH_ACCESS,
-  MOCK_INVALID_PROJECT,
-  MOCK_PROJECT_LIST,
-  MOCK_DEFAULT_CONFIG,
-  MOCK_CUSTOM_CONFIG,
-  MOCK_CONFIG_WITH_PROJECT,
-  MOCK_CONFIG_WITH_SELECTED_PROJECT,
-  MOCK_VALIDATION_RESULTS,
-} from '@kiro-lens/shared';
+// 共通モックデータは再エクスポートで使用
 
 // ===== ファイルシステム関連のモック戻り値 =====
 
