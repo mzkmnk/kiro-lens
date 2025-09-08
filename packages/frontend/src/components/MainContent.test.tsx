@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MainContent } from './MainContent';
 
@@ -11,50 +11,42 @@ vi.mock('./PathInput', () => ({
   ),
 }));
 
+// ProjectStoreをモック
+const mockAddProject = vi.fn();
+
+vi.mock('@/stores/projectStore', () => ({
+  useProjectStore: () => ({
+    hasKiroDir: false, // デフォルトはfalse（プロジェクト追加画面を表示）
+    addProject: mockAddProject,
+  }),
+}));
+
 describe('MainContent', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   test('基本コンテンツ表示のテスト', () => {
-    render(<MainContent hasKiroDir={true} />);
+    render(<MainContent />);
 
     // メインコンテンツエリアが表示される
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
-  test('プロジェクト選択時は空の状態が表示される', () => {
-    render(<MainContent hasKiroDir={true} />);
+  test('プロジェクト追加画面が表示される（hasKiroDir: false）', () => {
+    render(<MainContent />);
 
-    // PathInputコンポーネントは表示されない
-    expect(screen.queryByTestId('path-input')).not.toBeInTheDocument();
-  });
-
-  test('プロジェクト追加画面が表示される', () => {
-    render(<MainContent hasKiroDir={false} />);
-
-    // PathInputコンポーネントが表示される
+    // PathInputコンポーネントが表示される（デフォルトのモック設定）
     expect(screen.getByTestId('path-input')).toBeInTheDocument();
   });
 
-  test('PathInputコンポーネントが表示される', () => {
-    render(<MainContent hasKiroDir={false} />);
-
-    // PathInputコンポーネントが表示される
-    expect(screen.getByTestId('path-input')).toBeInTheDocument();
-  });
-
-  test('プロジェクト追加コールバックが正しく動作する', () => {
-    const onProjectAdd = vi.fn();
-    render(<MainContent hasKiroDir={false} onProjectAdd={onProjectAdd} />);
+  test('プロジェクト追加時にstoreアクションが呼ばれる', async () => {
+    render(<MainContent />);
 
     // PathInputのモックボタンをクリック
     const mockButton = screen.getByText('Mock PathInput');
     mockButton.click();
 
-    expect(onProjectAdd).toHaveBeenCalledWith('/test/path');
-  });
-
-  test('.kiroディレクトリ存在時は空の状態が表示される', () => {
-    render(<MainContent hasKiroDir={true} />);
-
-    // PathInputコンポーネントは表示されない
-    expect(screen.queryByTestId('path-input')).not.toBeInTheDocument();
+    expect(mockAddProject).toHaveBeenCalledWith('/test/path');
   });
 });

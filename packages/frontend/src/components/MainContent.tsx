@@ -1,20 +1,19 @@
 import React from 'react';
 import { PathInput } from './PathInput';
-
-interface MainContentProps {
-  hasKiroDir: boolean;
-  /** プロジェクト追加時のコールバック */
-  onProjectAdd?: (path: string) => void;
-}
+import { useProjectStore } from '@/stores/projectStore';
 
 /**
  * メインコンテンツコンポーネント
+ *
+ * ProjectStoreから直接状態とアクションを取得し、
+ * 完全に独立したコンポーネントとして実装
  */
-export const MainContent: React.FC<MainContentProps> = ({ hasKiroDir, onProjectAdd }) => {
-  const handlePathConfirm = (path: string) => {
-    if (onProjectAdd) {
-      onProjectAdd(path);
-    }
+export const MainContent: React.FC = () => {
+  // Zustandストアから状態とアクションを取得
+  const { hasKiroDir, addProject } = useProjectStore();
+
+  const handlePathConfirm = async (path: string) => {
+    await addProject(path);
   };
 
   return (

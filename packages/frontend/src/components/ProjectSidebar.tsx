@@ -10,28 +10,9 @@ import {
   SidebarMenuAction,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { useProjectStore } from '@/stores/projectStore';
 
 import type { ProjectInfo } from '@kiro-lens/shared';
-import type { FileItem } from '@shared/types/file-tree';
-
-interface ProjectSidebarProps {
-  /** 管理対象のプロジェクト一覧 */
-  projects: readonly ProjectInfo[];
-  /** 現在選択中のプロジェクト */
-  currentProject?: ProjectInfo;
-  /** ローディング状態 */
-  isLoading: boolean;
-  /** エラーメッセージ */
-  error?: string;
-  /** プロジェクト選択時のコールバック */
-  onProjectSelect: (project: ProjectInfo) => void;
-  /** プロジェクト削除時のコールバック */
-  onProjectDelete: (projectId: string) => void;
-  /** プロジェクト追加ボタンクリック時のコールバック */
-  onAddProject: () => void;
-  /** ファイル選択時のコールバック */
-  onFileSelect?: (file: FileItem) => void;
-}
 
 /**
  * ProjectSidebarコンポーネント
@@ -39,20 +20,22 @@ interface ProjectSidebarProps {
  * プロジェクト管理とファイルツリーを統合したサイドバー
  * shadcn/uiのSidebarコンポーネントを使用して階層構造を実現
  *
- * プレゼンテーションコンポーネントとして実装され、
- * 状態管理はDashboardコンポーネントで行われる
+ * ProjectStoreから直接状態とアクションを取得し、
+ * 完全に独立したコンポーネントとして実装
  */
-export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
-  projects,
-  currentProject,
-  isLoading,
-  error,
-  onProjectSelect,
-  onProjectDelete,
-  onAddProject,
-}) => {
+export const ProjectSidebar: React.FC = () => {
+  // Zustandストアから状態とアクションを直接取得
+  const {
+    projects,
+    currentProject,
+    isLoading,
+    error,
+    removeProject,
+    selectProject,
+    setAddingProjectMode,
+  } = useProjectStore();
   // プロジェクトを削除
-  const handleDeleteProject = (project: ProjectInfo, event: React.MouseEvent) => {
+  const handleDeleteProject = async (project: ProjectInfo, event: React.MouseEvent) => {
     event.stopPropagation();
 
     // 確認ダイアログを表示
@@ -61,15 +44,20 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
     );
 
     if (confirmed) {
-      onProjectDelete(project.id);
+      await removeProject(project.id);
     }
   };
 
   // プロジェクトを選択
-  const handleSelectProject = (project: ProjectInfo) => {
+  const handleSelectProject = async (project: ProjectInfo) => {
     if (project.isValid) {
-      onProjectSelect(project);
+      await selectProject(project);
     }
+  };
+
+  // プロジェクト追加モードを開始
+  const handleAddProject = () => {
+    setAddingProjectMode(true);
   };
 
   // プロジェクト項目のレンダリング
@@ -144,7 +132,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
           <SidebarMenu className='p-2'>
             {/* プロジェクト追加ボタン */}
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={onAddProject}>
+              <SidebarMenuButton onClick={handleAddProject}>
                 <Plus className='h-4 w-4' />
                 <span>プロジェクトを追加</span>
               </SidebarMenuButton>

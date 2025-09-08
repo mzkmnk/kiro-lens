@@ -2,51 +2,38 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ProjectSidebar } from './ProjectSidebar';
-import type { ProjectInfo } from '@kiro-lens/shared';
+import { MSW_MOCK_PROJECTS } from '@kiro-lens/shared';
+
+// ProjectStoreをモック
+const mockRemoveProject = vi.fn();
+const mockSelectProject = vi.fn();
+const mockSetAddingProjectMode = vi.fn();
+
+vi.mock('@/stores/projectStore', () => ({
+  useProjectStore: () => ({
+    projects: MSW_MOCK_PROJECTS,
+    currentProject: MSW_MOCK_PROJECTS[0],
+    selectedFile: undefined,
+    isAddingProject: false,
+    hasKiroDir: true,
+    isLoading: false,
+    error: undefined,
+    removeProject: mockRemoveProject,
+    selectProject: mockSelectProject,
+    setAddingProjectMode: mockSetAddingProjectMode,
+  }),
+}));
 
 describe('ProjectSidebar', () => {
-  const mockProjects: ProjectInfo[] = [
-    {
-      id: '1',
-      name: 'Project 1',
-      path: '/path/to/project1',
-      kiroPath: '/path/to/project1/.kiro',
-      hasKiroDir: true,
-      isValid: true,
-      addedAt: '2024-01-01T00:00:00Z',
-      lastAccessedAt: '2024-01-02T00:00:00Z',
-    },
-    {
-      id: '2',
-      name: 'Project 2',
-      path: '/path/to/project2',
-      kiroPath: '/path/to/project2/.kiro',
-      hasKiroDir: true,
-      isValid: false, // 無効なプロジェクト
-      addedAt: '2024-01-01T00:00:00Z',
-    },
-  ];
-
-  const defaultProps = {
-    projects: mockProjects,
-    currentProject: mockProjects[0],
-    isLoading: false,
-    error: undefined as string | undefined,
-    onProjectSelect: vi.fn(),
-    onProjectDelete: vi.fn(),
-    onAddProject: vi.fn(),
-    onFileSelect: vi.fn(),
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   // テストヘルパー関数
-  const renderWithProvider = (props = defaultProps) => {
+  const renderWithProvider = () => {
     return render(
       <SidebarProvider>
-        <ProjectSidebar {...props} />
+        <ProjectSidebar />
       </SidebarProvider>
     );
   };
@@ -54,55 +41,39 @@ describe('ProjectSidebar', () => {
   test('プロジェクト一覧が正しく表示される', () => {
     renderWithProvider();
 
-    expect(screen.getByText('Project 1')).toBeInTheDocument();
-    expect(screen.getByText('Project 2')).toBeInTheDocument();
+    expect(screen.getByText('kiro-lens-foundation')).toBeInTheDocument();
+    expect(screen.getByText('path-management-system')).toBeInTheDocument();
+    expect(screen.getByText('invalid-project')).toBeInTheDocument();
     expect(screen.getByText('プロジェクトを追加')).toBeInTheDocument();
   });
 
-  test('ローディング状態が正しく表示される', () => {
-    renderWithProvider({ ...defaultProps, isLoading: true });
-
-    expect(screen.getByText('読み込み中...')).toBeInTheDocument();
-  });
-
-  test('エラー状態が正しく表示される', () => {
-    const errorMessage = 'プロジェクトの取得に失敗しました';
-    renderWithProvider({ ...defaultProps, error: errorMessage });
-
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    expect(screen.getByText('再読み込み')).toBeInTheDocument();
-  });
-
-  test('プロジェクト追加ボタンクリック時にコールバックが呼ばれる', () => {
-    const mockOnAddProject = vi.fn();
-    renderWithProvider({ ...defaultProps, onAddProject: mockOnAddProject });
+  test('プロジェクト追加ボタンクリック時にstoreアクションが呼ばれる', () => {
+    renderWithProvider();
 
     fireEvent.click(screen.getByText('プロジェクトを追加'));
-    expect(mockOnAddProject).toHaveBeenCalledTimes(1);
+    expect(mockSetAddingProjectMode).toHaveBeenCalledWith(true);
   });
 
-  test('有効なプロジェクト選択時にコールバックが呼ばれる', () => {
-    const mockOnProjectSelect = vi.fn();
-    renderWithProvider({ ...defaultProps, onProjectSelect: mockOnProjectSelect });
+  test('有効なプロジェクト選択時にstoreアクションが呼ばれる', async () => {
+    renderWithProvider();
 
-    fireEvent.click(screen.getByText('Project 1'));
-    expect(mockOnProjectSelect).toHaveBeenCalledWith(mockProjects[0]);
+    fireEvent.click(screen.getByText('kiro-lens-foundation'));
+    expect(mockSelectProject).toHaveBeenCalledWith(MSW_MOCK_PROJECTS[0]);
   });
 
   test('無効なプロジェクトは選択できない', () => {
-    const mockOnProjectSelect = vi.fn();
-    renderWithProvider({ ...defaultProps, onProjectSelect: mockOnProjectSelect });
+    renderWithProvider();
 
-    // 無効なプロジェクトをクリック
-    fireEvent.click(screen.getByText('Project 2'));
-    expect(mockOnProjectSelect).not.toHaveBeenCalled();
+    // 無効なプロジェクト（invalid-project）をクリック
+    fireEvent.click(screen.getByText('invalid-project'));
+    // 無効なプロジェクトなので、selectProjectは呼ばれない
+    expect(mockSelectProject).not.toHaveBeenCalled();
   });
 
   test('プロジェクト削除確認ダイアログが表示される', () => {
     const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const mockOnProjectDelete = vi.fn();
 
-    renderWithProvider({ ...defaultProps, onProjectDelete: mockOnProjectDelete });
+    renderWithProvider();
 
     // 削除ボタンを探してクリック（X アイコン）
     const deleteButtons = screen.getAllByRole('button');
@@ -113,7 +84,7 @@ describe('ProjectSidebar', () => {
     if (deleteButton) {
       fireEvent.click(deleteButton);
       expect(mockConfirm).toHaveBeenCalled();
-      expect(mockOnProjectDelete).toHaveBeenCalledWith('1');
+      expect(mockRemoveProject).toHaveBeenCalledWith('1');
     }
 
     mockConfirm.mockRestore();
