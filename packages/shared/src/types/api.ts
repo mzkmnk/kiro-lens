@@ -1,6 +1,7 @@
 // API関連の型定義
 
 import type { ProjectInfo } from './project';
+import type { FileItem } from './file-tree';
 
 /**
  * APIエラータイプ
@@ -120,4 +121,15 @@ export interface ValidationResult {
   readonly error?: string;
   /** 検証されたパス（成功時） */
   readonly validatedPath?: string;
+}
+
+/**
+ * ファイルツリーレスポンス
+ *
+ * GET /api/projects/:id/files エンドポイントのレスポンス形式を定義します。
+ * 既存のFileItem型を使用してファイル構造を表現します。
+ */
+export interface FileTreeResponse {
+  /** プロジェクトの.kiro配下のファイル構造 */
+  readonly files: FileItem[];
 }
