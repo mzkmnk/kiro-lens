@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React from 'react';
 import { Folder, Plus, X } from 'lucide-react';
 import {
   Sidebar,
@@ -10,69 +10,30 @@ import {
   SidebarMenuAction,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { ApiClient } from '@/services/api';
+import { useProjectStore } from '@/stores/projectStore';
 
 import type { ProjectInfo } from '@kiro-lens/shared';
-import type { FileItem } from '@shared/types/file-tree';
-
-interface ProjectSidebarProps {
-  /** プロジェクト選択時のコールバック */
-  onProjectSelect: (project: ProjectInfo) => void;
-  /** 現在選択中のプロジェクト */
-  currentProject?: ProjectInfo;
-  /** プロジェクト追加ボタンクリック時のコールバック */
-  onAddProject: () => void;
-  /** ファイル選択時のコールバック */
-  onFileSelect?: (file: FileItem) => void;
-}
-
-interface ProjectSidebarState {
-  /** 管理対象のプロジェクト一覧 */
-  projects: readonly ProjectInfo[];
-  /** ローディング状態 */
-  isLoading: boolean;
-  /** エラーメッセージ */
-  error?: string;
-}
 
 /**
  * ProjectSidebarコンポーネント
  *
  * プロジェクト管理とファイルツリーを統合したサイドバー
  * shadcn/uiのSidebarコンポーネントを使用して階層構造を実現
+ *
+ * ProjectStoreから直接状態とアクションを取得し、
+ * 完全に独立したコンポーネントとして実装
  */
-export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
-  onProjectSelect,
-  currentProject,
-  onAddProject,
-}) => {
-  const [state, setState] = useState<ProjectSidebarState>({
-    projects: [],
-    isLoading: true,
-    error: undefined,
-  });
-
-  const apiClient = useMemo(() => new ApiClient(), []);
-
-  // プロジェクト一覧を取得
-  const loadProjects = useCallback(async () => {
-    try {
-      setState(prev => ({ ...prev, isLoading: true, error: undefined }));
-      const response = await apiClient.getProjects();
-      setState(prev => ({
-        ...prev,
-        projects: response.projects,
-        isLoading: false,
-      }));
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'プロジェクトの取得に失敗しました',
-        isLoading: false,
-      }));
-    }
-  }, [apiClient]);
-
+export const ProjectSidebar: React.FC = () => {
+  // Zustandストアから状態とアクションを直接取得
+  const {
+    projects,
+    currentProject,
+    isLoading,
+    error,
+    removeProject,
+    selectProject,
+    setAddingProjectMode,
+  } = useProjectStore();
   // プロジェクトを削除
   const handleDeleteProject = async (project: ProjectInfo, event: React.MouseEvent) => {
     event.stopPropagation();
@@ -82,57 +43,22 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       `プロジェクト「${project.name}」を削除しますか？\n\nパス: ${project.path}\n\nこの操作は元に戻せません。`
     );
 
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await apiClient.removeProject(project.id);
-      // プロジェクト一覧を再読み込み
-      await loadProjects();
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'プロジェクトの削除に失敗しました',
-      }));
+    if (confirmed) {
+      await removeProject(project.id);
     }
   };
 
   // プロジェクトを選択
   const handleSelectProject = async (project: ProjectInfo) => {
-    if (!project.isValid) {
-      return;
-    }
-
-    try {
-      await apiClient.selectProject(project.id);
-      onProjectSelect(project);
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'プロジェクトの選択に失敗しました',
-      }));
+    if (project.isValid) {
+      await selectProject(project);
     }
   };
 
-  // TODO: ファイルツリー機能実装時に追加予定
-
-  // コンポーネントマウント時にプロジェクト一覧を取得
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadData = async () => {
-      if (isMounted) {
-        await loadProjects();
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [loadProjects]);
+  // プロジェクト追加モードを開始
+  const handleAddProject = () => {
+    setAddingProjectMode(true);
+  };
 
   // プロジェクト項目のレンダリング
   const renderProjectItem = (project: ProjectInfo) => {
@@ -186,58 +112,45 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   return (
     <Sidebar className='border-r border-[#79747e]/20'>
       <SidebarContent>
-        {state.isLoading ? (
+        {isLoading ? (
           <div className='p-4 text-center'>
             <div className='text-[#79747e]'>読み込み中...</div>
           </div>
-        ) : state.error ? (
+        ) : error ? (
           <div className='p-4 text-center'>
-            <div className='text-red-600 text-sm mb-2'>{state.error}</div>
+            <div className='text-red-600 text-sm mb-2'>{error}</div>
             <Button
               variant='outline'
               size='sm'
-              onClick={loadProjects}
+              onClick={() => window.location.reload()}
               className='text-[#4a4459] border-[#79747e]/30'
             >
-              再試行
-            </Button>
-          </div>
-        ) : state.projects.length === 0 ? (
-          <div className='p-4 text-center'>
-            <div className='text-[#79747e] text-sm mb-4'>プロジェクトが登録されていません</div>
-            <Button
-              size='sm'
-              onClick={onAddProject}
-              className='bg-[#4a4459] hover:bg-[#4a4459]/90 text-white'
-            >
-              最初のプロジェクトを追加
+              再読み込み
             </Button>
           </div>
         ) : (
           <SidebarMenu className='p-2'>
-            {state.projects.map(renderProjectItem)}
-
             {/* プロジェクト追加ボタン */}
             <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={onAddProject}
-                className='w-full justify-start text-[#4a4459] hover:bg-[#4a4459]/10'
-              >
+              <SidebarMenuButton onClick={handleAddProject}>
                 <Plus className='h-4 w-4' />
-                <span>プロジェクト追加</span>
+                <span>プロジェクトを追加</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+
+            {/* プロジェクト一覧 */}
+            {projects.map(renderProjectItem)}
           </SidebarMenu>
         )}
 
         {/* フッター情報 */}
-        {state.projects.length > 0 && (
+        {projects.length > 0 && (
           <div className='p-4 border-t border-[#79747e]/20 mt-auto'>
             <div className='text-xs text-[#79747e] text-center'>
-              {state.projects.length} 個のプロジェクト
-              {state.projects.filter(p => !p.isValid).length > 0 && (
+              {projects.length} 個のプロジェクト
+              {projects.filter(p => !p.isValid).length > 0 && (
                 <span className='text-red-600 ml-2'>
-                  ({state.projects.filter(p => !p.isValid).length} 個が無効)
+                  ({projects.filter(p => !p.isValid).length} 個が無効)
                 </span>
               )}
             </div>
