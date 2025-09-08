@@ -6,7 +6,7 @@
 
 ## TDD実装タスク
 
-- [x] 1. 共通型定義の拡張（TDD）
+- [ ] 1. 共通型定義の拡張（TDD）
   - shared パッケージにFileTreeResponse型を追加
   - 既存のFileItem型との統合確認
   - TypeScriptコンパイルエラーなしを確認
