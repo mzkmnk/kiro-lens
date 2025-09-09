@@ -221,44 +221,60 @@ describe('FileTreeService', () => {
         type: 'folder',
         children: expect.arrayContaining([
           {
-            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/file-tree-system$/),
+            id: expect.stringMatching(
+              /^real-kiro-structure-project\/.kiro\/specs\/file-tree-system$/
+            ),
             name: 'file-tree-system',
             type: 'folder',
             children: expect.arrayContaining([
               {
-                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/design\.md$/),
+                id: expect.stringMatching(
+                  /^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/design\.md$/
+                ),
                 name: 'design.md',
                 type: 'file',
               },
               {
-                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/requirements\.md$/),
+                id: expect.stringMatching(
+                  /^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/requirements\.md$/
+                ),
                 name: 'requirements.md',
                 type: 'file',
               },
               {
-                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/tasks\.md$/),
+                id: expect.stringMatching(
+                  /^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/tasks\.md$/
+                ),
                 name: 'tasks.md',
                 type: 'file',
               },
             ]),
           },
           {
-            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation$/),
+            id: expect.stringMatching(
+              /^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation$/
+            ),
             name: 'kiro-lens-foundation',
             type: 'folder',
             children: expect.arrayContaining([
               {
-                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/design\.md$/),
+                id: expect.stringMatching(
+                  /^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/design\.md$/
+                ),
                 name: 'design.md',
                 type: 'file',
               },
               {
-                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/requirements\.md$/),
+                id: expect.stringMatching(
+                  /^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/requirements\.md$/
+                ),
                 name: 'requirements.md',
                 type: 'file',
               },
               {
-                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/tasks\.md$/),
+                id: expect.stringMatching(
+                  /^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/tasks\.md$/
+                ),
                 name: 'tasks.md',
                 type: 'file',
               },
@@ -274,17 +290,23 @@ describe('FileTreeService', () => {
         type: 'folder',
         children: expect.arrayContaining([
           {
-            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering\/behavior\.md$/),
+            id: expect.stringMatching(
+              /^real-kiro-structure-project\/.kiro\/steering\/behavior\.md$/
+            ),
             name: 'behavior.md',
             type: 'file',
           },
           {
-            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering\/product\.md$/),
+            id: expect.stringMatching(
+              /^real-kiro-structure-project\/.kiro\/steering\/product\.md$/
+            ),
             name: 'product.md',
             type: 'file',
           },
           {
-            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering\/structure\.md$/),
+            id: expect.stringMatching(
+              /^real-kiro-structure-project\/.kiro\/steering\/structure\.md$/
+            ),
             name: 'structure.md',
             type: 'file',
           },
@@ -352,7 +374,9 @@ describe('FileTreeService', () => {
       expect(specsFolder?.children).toHaveLength(2);
 
       // 各specフォルダに3つのファイル（requirements.md, design.md, tasks.md）があることを確認
-      const fileTreeSystemSpec = specsFolder?.children?.find(child => child.name === 'file-tree-system');
+      const fileTreeSystemSpec = specsFolder?.children?.find(
+        child => child.name === 'file-tree-system'
+      );
       expect(fileTreeSystemSpec?.children).toHaveLength(3);
 
       // steeringフォルダに複数のファイルがあることを確認
@@ -414,7 +438,9 @@ describe('FileTreeService', () => {
       expect(specsFolder?.children).toHaveLength(3); // 3つのspecフォルダ
 
       // 各specフォルダに3つのファイルがあることを確認
-      const fileTreeSystemSpec = specsFolder?.children?.find(child => child.name === 'file-tree-system');
+      const fileTreeSystemSpec = specsFolder?.children?.find(
+        child => child.name === 'file-tree-system'
+      );
       expect(fileTreeSystemSpec?.type).toBe('folder');
       expect(fileTreeSystemSpec?.children).toHaveLength(3); // requirements.md, design.md, tasks.md
 
