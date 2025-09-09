@@ -21,7 +21,7 @@ const httpClient = ky.create({
       },
     ],
     afterResponse: [
-      (request, options, response) => {
+      (request, _options, response) => {
         // レスポンスログ（開発環境のみ）
         if (import.meta.env.DEV) {
           console.log(`✅ ${request.method} ${request.url} - ${response.status}`);

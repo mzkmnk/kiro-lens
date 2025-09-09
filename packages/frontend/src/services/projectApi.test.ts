@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { HTTPError } from 'ky';
+// HTTPErrorは使用していないため削除
 import * as projectApi from './projectApi';
 
 // httpClientのモック

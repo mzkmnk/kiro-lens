@@ -40,36 +40,33 @@ export const PathInput: React.FC<PathInputProps> = ({
   });
 
   // パスのバリデーション
-  const validatePathInput = useCallback(
-    async (inputPath: string) => {
-      if (!inputPath.trim()) {
-        setValidation({
-          isValid: false,
-          message: undefined,
-          isValidating: false,
-        });
-        return;
-      }
+  const validatePathInput = useCallback(async (inputPath: string) => {
+    if (!inputPath.trim()) {
+      setValidation({
+        isValid: false,
+        message: undefined,
+        isValidating: false,
+      });
+      return;
+    }
 
-      setValidation(prev => ({ ...prev, isValidating: true }));
+    setValidation(prev => ({ ...prev, isValidating: true }));
 
-      try {
-        const result = await validatePath(inputPath.trim());
-        setValidation({
-          isValid: result.isValid,
-          message: result.error || (result.isValid ? 'パスが有効です' : undefined),
-          isValidating: false,
-        });
-      } catch (error) {
-        setValidation({
-          isValid: false,
-          message: error instanceof Error ? error.message : 'パスの検証に失敗しました',
-          isValidating: false,
-        });
-      }
-    },
-    []
-  );
+    try {
+      const result = await validatePath(inputPath.trim());
+      setValidation({
+        isValid: result.isValid,
+        message: result.error || (result.isValid ? 'パスが有効です' : undefined),
+        isValidating: false,
+      });
+    } catch (error) {
+      setValidation({
+        isValid: false,
+        message: error instanceof Error ? error.message : 'パスの検証に失敗しました',
+        isValidating: false,
+      });
+    }
+  }, []);
 
   // パス入力時の処理（デバウンス付き）
   useEffect(() => {

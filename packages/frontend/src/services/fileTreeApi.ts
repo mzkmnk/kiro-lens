@@ -1,5 +1,5 @@
 import httpClient, { handleApiError } from './httpClient';
-import type { FileTreeResponse } from '@kiro-lens/shared/types';
+import type { FileTreeResponse } from '@kiro-lens/shared';
 
 /**
  * プロジェクトのファイルツリーを取得する

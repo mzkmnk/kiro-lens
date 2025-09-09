@@ -13,4 +13,4 @@ export type {
   ApiResponse,
   ValidationResult,
   FileTreeResponse,
-} from '@kiro-lens/shared/types';
+} from '@kiro-lens/shared';

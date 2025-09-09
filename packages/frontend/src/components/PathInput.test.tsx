@@ -9,7 +9,7 @@ vi.mock('@/services', () => ({
 
 import { validatePath } from '@/services';
 
-const mockValidatePath = validatePath as vi.MockedFunction<typeof validatePath>;
+const mockValidatePath = vi.mocked(validatePath);
 
 beforeEach(() => {
   vi.clearAllMocks();

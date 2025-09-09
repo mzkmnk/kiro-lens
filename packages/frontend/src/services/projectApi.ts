@@ -1,5 +1,5 @@
 import httpClient, { handleApiError } from './httpClient';
-import type { ProjectInfo, ApiResponse, ValidationResult } from '@kiro-lens/shared/types';
+import type { ProjectInfo, ApiResponse, ValidationResult } from '@kiro-lens/shared';
 
 /**
  * プロジェクト一覧を取得する
@@ -16,7 +16,7 @@ import type { ProjectInfo, ApiResponse, ValidationResult } from '@kiro-lens/shar
 export const getProjects = async (): Promise<ProjectInfo[]> => {
   try {
     const response = await httpClient.get('api/projects').json<ApiResponse<ProjectInfo[]>>();
-    return response.data;
+    return response.data || [];
   } catch (error) {
     const message = handleApiError(error);
     throw new Error(`プロジェクト一覧の取得に失敗しました: ${message}`);
@@ -47,6 +47,10 @@ export const addProject = async (path: string): Promise<ProjectInfo> => {
         json: { path: path.trim() },
       })
       .json<ApiResponse<ProjectInfo>>();
+
+    if (!response.data) {
+      throw new Error('プロジェクトデータが取得できませんでした');
+    }
     return response.data;
   } catch (error) {
     const message = handleApiError(error);
@@ -107,6 +111,10 @@ export const validatePath = async (path: string): Promise<ValidationResult> => {
         json: { path: path.trim() },
       })
       .json<ApiResponse<ValidationResult>>();
+
+    if (!response.data) {
+      throw new Error('バリデーション結果が取得できませんでした');
+    }
     return response.data;
   } catch (error) {
     const message = handleApiError(error);
