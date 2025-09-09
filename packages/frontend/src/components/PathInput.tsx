@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FolderOpen } from 'lucide-react';
-import { ApiClient } from '@/services/api';
+import { validatePath } from '@/services';
 
 interface PathInputProps {
   /** パス確定時のコールバック */
@@ -39,10 +39,8 @@ export const PathInput: React.FC<PathInputProps> = ({
     isValidating: false,
   });
 
-  const apiClient = useMemo(() => new ApiClient(), []);
-
   // パスのバリデーション
-  const validatePath = useCallback(
+  const validatePathInput = useCallback(
     async (inputPath: string) => {
       if (!inputPath.trim()) {
         setValidation({
@@ -56,7 +54,7 @@ export const PathInput: React.FC<PathInputProps> = ({
       setValidation(prev => ({ ...prev, isValidating: true }));
 
       try {
-        const result = await apiClient.validatePath(inputPath.trim());
+        const result = await validatePath(inputPath.trim());
         setValidation({
           isValid: result.isValid,
           message: result.error || (result.isValid ? 'パスが有効です' : undefined),
@@ -70,17 +68,17 @@ export const PathInput: React.FC<PathInputProps> = ({
         });
       }
     },
-    [apiClient]
+    []
   );
 
   // パス入力時の処理（デバウンス付き）
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      validatePath(path);
+      validatePathInput(path);
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [path, validatePath]);
+  }, [path, validatePathInput]);
 
   // パス確定処理
   const handleConfirm = () => {
