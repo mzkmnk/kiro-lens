@@ -6,6 +6,8 @@ import type {
   ValidationResult,
   ProjectInfo,
   ApiResponse,
+  FileTreeResponse,
+  FileItem,
 } from '@kiro-lens/shared';
 
 describe('ApiClient', () => {
@@ -270,6 +272,178 @@ describe('ApiClient', () => {
         const result = await apiClient.selectProject('test-id');
 
         expect(result).toEqual(mockResponse.data);
+      });
+    });
+  });
+
+  describe('ファイルツリーAPI', () => {
+    describe('getProjectFiles', () => {
+      test('プロジェクトのファイルツリー取得が成功する', async () => {
+        const mockFiles: FileItem[] = [
+          {
+            id: 'specs',
+            name: 'specs',
+            type: 'folder',
+            children: [
+              {
+                id: 'specs/feature1.md',
+                name: 'feature1.md',
+                type: 'file',
+              },
+            ],
+          },
+          {
+            id: 'steering',
+            name: 'steering',
+            type: 'folder',
+            children: [
+              {
+                id: 'steering/guidelines.md',
+                name: 'guidelines.md',
+                type: 'file',
+              },
+            ],
+          },
+        ];
+        const mockResponse: ApiResponse<FileTreeResponse> = {
+          success: true,
+          data: {
+            files: mockFiles,
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await apiClient.getProjectFiles('test-project-id');
+
+        expect(result).toEqual(mockResponse.data);
+        expect(result.files).toHaveLength(2);
+        expect(result.files[0].type).toBe('folder');
+        expect(result.files[0].children).toHaveLength(1);
+      });
+
+      test('プロジェクトが存在しない場合はエラーをスローする', async () => {
+        const mockErrorResponse: ApiResponse<never> = {
+          success: false,
+          error: {
+            type: 'NOT_FOUND',
+            message: 'プロジェクトが見つかりません',
+            timestamp: new Date(),
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: false,
+          status: 404,
+          json: () => Promise.resolve(mockErrorResponse),
+        });
+
+        await expect(apiClient.getProjectFiles('non-existent-id')).rejects.toThrow(
+          'HTTP error! status: 404'
+        );
+      });
+
+      test('.kiroディレクトリが存在しない場合はエラーをスローする', async () => {
+        const mockErrorResponse: ApiResponse<never> = {
+          success: false,
+          error: {
+            type: 'NOT_FOUND',
+            message: '.kiroディレクトリが存在しません',
+            timestamp: new Date(),
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: false,
+          status: 404,
+          json: () => Promise.resolve(mockErrorResponse),
+        });
+
+        await expect(apiClient.getProjectFiles('project-without-kiro')).rejects.toThrow(
+          'HTTP error! status: 404'
+        );
+      });
+
+      test('権限エラーの場合はエラーをスローする', async () => {
+        const mockErrorResponse: ApiResponse<never> = {
+          success: false,
+          error: {
+            type: 'PERMISSION_DENIED',
+            message: 'ファイル読み取り権限がありません',
+            timestamp: new Date(),
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: false,
+          status: 403,
+          json: () => Promise.resolve(mockErrorResponse),
+        });
+
+        await expect(apiClient.getProjectFiles('restricted-project')).rejects.toThrow(
+          'HTTP error! status: 403'
+        );
+      });
+
+      test('空のファイルツリーを正常に処理する', async () => {
+        const mockResponse: ApiResponse<FileTreeResponse> = {
+          success: true,
+          data: {
+            files: [],
+          },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await apiClient.getProjectFiles('empty-project');
+
+        expect(result).toEqual(mockResponse.data);
+        expect(result.files).toHaveLength(0);
+      });
+
+      test('正しいAPIエンドポイントを呼び出す', async () => {
+        const mockResponse: ApiResponse<FileTreeResponse> = {
+          success: true,
+          data: { files: [] },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        await apiClient.getProjectFiles('test-id');
+
+        expect(mockFetch).toHaveBeenCalledWith('http://localhost:3001/api/projects/test-id/files', {
+          method: 'GET',
+          headers: {},
+        });
+      });
+
+      test('プロジェクトIDのバリデーションを行う', async () => {
+        await expect(apiClient.getProjectFiles('')).rejects.toThrow('プロジェクトIDが無効です');
+        await expect(apiClient.getProjectFiles('   ')).rejects.toThrow('プロジェクトIDが無効です');
+      });
+
+      test('プロジェクトIDをURLエンコードする', async () => {
+        const mockResponse: ApiResponse<FileTreeResponse> = {
+          success: true,
+          data: { files: [] },
+        };
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        await apiClient.getProjectFiles('test id with spaces');
+
+        expect(mockFetch).toHaveBeenCalledWith(
+          'http://localhost:3001/api/projects/test%20id%20with%20spaces/files',
+          {
+            method: 'GET',
+            headers: {},
+          }
+        );
       });
     });
   });

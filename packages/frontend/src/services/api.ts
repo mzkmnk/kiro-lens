@@ -4,6 +4,7 @@ import type {
   ProjectListResponse,
   ValidationResult,
   ProjectInfo,
+  FileTreeResponse,
 } from '@kiro-lens/shared';
 
 /**
@@ -116,6 +117,34 @@ export class ApiClient {
   }
 
   /**
+   * プロジェクトのファイルツリーを取得
+   *
+   * 指定されたプロジェクトの.kiro配下のファイル構造を階層表示用に取得します。
+   * ファイルとフォルダの情報を含む再帰的な構造で返されます。
+   *
+   * @param projectId - ファイルツリーを取得するプロジェクトのID
+   * @returns プロジェクトの.kiro配下のファイル構造
+   * @throws {Error} プロジェクトが存在しない場合
+   * @throws {Error} .kiroディレクトリが存在しない場合
+   * @throws {Error} ファイル読み取り権限がない場合
+   *
+   * @example
+   * ```typescript
+   * const fileTree = await apiClient.getProjectFiles('project-123');
+   * console.log(fileTree.files); // FileItem[]
+   * ```
+   */
+  async getProjectFiles(projectId: string): Promise<FileTreeResponse> {
+    if (!projectId || typeof projectId !== 'string' || projectId.trim() === '') {
+      throw new Error('プロジェクトIDが無効です');
+    }
+
+    return this.get<FileTreeResponse>(
+      `/api/projects/${encodeURIComponent(projectId.trim())}/files`
+    );
+  }
+
+  /**
    * 共通のHTTPリクエスト処理
    *
    * @param method - HTTPメソッド
@@ -154,6 +183,12 @@ export class ApiClient {
       if (result.success && result.data !== undefined) {
         return result.data;
       } else if (!result.success && result.error) {
+        // ファイルツリー関連のエラーメッセージを改善
+        if (path.includes('/files') && result.error.type === 'NOT_FOUND') {
+          throw new Error(`ファイルツリーの取得に失敗しました: ${result.error.message}`);
+        } else if (path.includes('/files') && result.error.type === 'PERMISSION_DENIED') {
+          throw new Error(`ファイルアクセス権限がありません: ${result.error.message}`);
+        }
         throw new Error(result.error.message);
       }
     }
