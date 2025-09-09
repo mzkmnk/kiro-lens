@@ -12,15 +12,15 @@
   - TypeScriptコンパイルエラーなしを確認
   - _要件: 4.1_
 
-- [ ] 2. バックエンドFileTreeServiceの実装（TDD）
-- [ ] 2.1 FileTreeServiceテスト作成（Red）
+- [x] 2. バックエンドFileTreeServiceの実装（TDD）
+- [x] 2.1 FileTreeServiceテスト作成（Red）
   - プロジェクトファイル取得のテスト作成
   - ディレクトリ読み取り機能のテスト作成
   - FileItem変換機能のテスト作成
   - エラーケース（プロジェクト未存在、権限エラー等）のテスト作成
   - _要件: 1.3, 1.4, 1.5_
 
-- [ ] 2.2 FileTreeService実装（Green）
+- [x] 2.2 FileTreeService実装（Green）
   - テストを通すための最小限のFileTreeService実装
   - プロジェクト情報取得とパス解決機能
   - ディレクトリ再帰読み取り機能
@@ -28,7 +28,7 @@
   - 基本的なエラーハンドリング
   - _要件: 1.1, 1.2_
 
-- [ ] 2.3 FileTreeServiceリファクタリング（Refactor）
+- [x] 2.3 FileTreeServiceリファクタリング（Refactor）
   - パフォーマンス最適化（大量ファイル対応）
   - セキュリティ強化（パストラバーサル対策）
   - エラーメッセージの改善
