@@ -3,6 +3,15 @@ import type { ProjectInfo, ApiResponse, ValidationResult } from '@kiro-lens/shar
 
 /**
  * プロジェクト一覧を取得する
+ *
+ * @returns プロジェクト情報の配列
+ * @throws {Error} API通信エラーまたはサーバーエラーの場合
+ *
+ * @example
+ * ```typescript
+ * const projects = await getProjects();
+ * console.log(projects); // [{ id: 1, name: 'project1', path: '/path/to/project1' }]
+ * ```
  */
 export const getProjects = async (): Promise<ProjectInfo[]> => {
   try {
@@ -16,6 +25,16 @@ export const getProjects = async (): Promise<ProjectInfo[]> => {
 
 /**
  * プロジェクトを追加する
+ *
+ * @param path - 追加するプロジェクトのパス
+ * @returns 追加されたプロジェクト情報
+ * @throws {Error} パスが無効、またはAPI通信エラーの場合
+ *
+ * @example
+ * ```typescript
+ * const project = await addProject('/path/to/new/project');
+ * console.log(project); // { id: 2, name: 'new-project', path: '/path/to/new/project' }
+ * ```
  */
 export const addProject = async (path: string): Promise<ProjectInfo> => {
   if (!path || path.trim() === '') {
@@ -37,6 +56,15 @@ export const addProject = async (path: string): Promise<ProjectInfo> => {
 
 /**
  * プロジェクトを削除する
+ *
+ * @param id - 削除するプロジェクトのID
+ * @throws {Error} プロジェクトIDが無効、またはAPI通信エラーの場合
+ *
+ * @example
+ * ```typescript
+ * await removeProject(1);
+ * console.log('プロジェクトが削除されました');
+ * ```
  */
 export const removeProject = async (id: number): Promise<void> => {
   if (!id || id <= 0) {
@@ -53,6 +81,20 @@ export const removeProject = async (id: number): Promise<void> => {
 
 /**
  * パスの妥当性を検証する
+ *
+ * @param path - 検証するパス
+ * @returns パスの検証結果
+ * @throws {Error} パスが無効、またはAPI通信エラーの場合
+ *
+ * @example
+ * ```typescript
+ * const result = await validatePath('/path/to/validate');
+ * if (result.isValid) {
+ *   console.log('パスは有効です');
+ * } else {
+ *   console.log('パスは無効です:', result.message);
+ * }
+ * ```
  */
 export const validatePath = async (path: string): Promise<ValidationResult> => {
   if (!path || path.trim() === '') {
@@ -74,6 +116,15 @@ export const validatePath = async (path: string): Promise<ValidationResult> => {
 
 /**
  * プロジェクトを選択する
+ *
+ * @param id - 選択するプロジェクトのID
+ * @throws {Error} プロジェクトIDが無効、またはAPI通信エラーの場合
+ *
+ * @example
+ * ```typescript
+ * await selectProject(1);
+ * console.log('プロジェクトが選択されました');
+ * ```
  */
 export const selectProject = async (id: number): Promise<void> => {
   if (!id || id <= 0) {
