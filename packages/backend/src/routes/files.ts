@@ -8,9 +8,12 @@ interface ProjectFilesParams {
 
 /**
  * プロジェクトIDのバリデーション
+ *
+ * @param id - 検証するプロジェクトID
+ * @returns IDが有効かどうか（空文字や空白のみの文字列は無効）
  */
 function validateProjectId(id: string): boolean {
-  return Boolean(id && id.trim() !== '');
+  return id.trim().length > 0;
 }
 
 /**
