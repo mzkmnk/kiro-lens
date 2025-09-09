@@ -169,26 +169,38 @@ describe('FileTreeService', () => {
       });
     });
 
-    test('フォルダのみの.kiroディレクトリの場合は正しいFileItem配列を返す', async () => {
+    test('実際の.kiro構造（specs/steeringフォルダ）の場合は正しいFileItem配列を返す', async () => {
       // Arrange
-      const projectId = 'folders-only-project';
+      const projectId = 'real-kiro-structure-project';
       const mockProject = {
         ...MOCK_PROJECT,
-        id: 'folders-only-project',
-        name: 'Folders Only Project',
-        path: '/folders/only/project',
-        kiroPath: '/folders/only/project/.kiro',
+        id: 'real-kiro-structure-project',
+        name: 'Real Kiro Structure Project',
+        path: '/real/kiro/structure/project',
+        kiroPath: '/real/kiro/structure/project/.kiro',
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      // mock-fsでフォルダのみのディレクトリを作成
+      // mock-fsで実際の.kiro構造を作成
       mockFs({
-        '/folders/only/project/.kiro': {
+        '/real/kiro/structure/project/.kiro': {
           specs: {
-            'feature1.md': '# Feature 1',
+            'file-tree-system': {
+              'requirements.md': '# Requirements',
+              'design.md': '# Design',
+              'tasks.md': '# Tasks',
+            },
+            'kiro-lens-foundation': {
+              'requirements.md': '# Foundation Requirements',
+              'design.md': '# Foundation Design',
+              'tasks.md': '# Foundation Tasks',
+            },
           },
           steering: {
-            'rules.md': '# Rules',
+            'behavior.md': '# Behavior',
+            'tech.md': '# Tech',
+            'product.md': '# Product',
+            'structure.md': '# Structure',
           },
         },
       });
@@ -198,53 +210,127 @@ describe('FileTreeService', () => {
 
       // Assert
       expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({
-        id: expect.stringMatching(/^folders-only-project\/.kiro\/specs$/),
+
+      // ファイルはアルファベット順でソートされる
+      const sortedResult = result.sort((a, b) => a.name.localeCompare(b.name));
+
+      // specs フォルダの検証
+      expect(sortedResult[0]).toEqual({
+        id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs$/),
         name: 'specs',
         type: 'folder',
-        children: [
+        children: expect.arrayContaining([
           {
-            id: expect.stringMatching(/^folders-only-project\/.kiro\/specs\/feature1\.md$/),
-            name: 'feature1.md',
-            type: 'file',
+            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/file-tree-system$/),
+            name: 'file-tree-system',
+            type: 'folder',
+            children: expect.arrayContaining([
+              {
+                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/design\.md$/),
+                name: 'design.md',
+                type: 'file',
+              },
+              {
+                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/requirements\.md$/),
+                name: 'requirements.md',
+                type: 'file',
+              },
+              {
+                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/tasks\.md$/),
+                name: 'tasks.md',
+                type: 'file',
+              },
+            ]),
           },
-        ],
+          {
+            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation$/),
+            name: 'kiro-lens-foundation',
+            type: 'folder',
+            children: expect.arrayContaining([
+              {
+                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/design\.md$/),
+                name: 'design.md',
+                type: 'file',
+              },
+              {
+                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/requirements\.md$/),
+                name: 'requirements.md',
+                type: 'file',
+              },
+              {
+                id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/tasks\.md$/),
+                name: 'tasks.md',
+                type: 'file',
+              },
+            ]),
+          },
+        ]),
       });
-      expect(result[1]).toEqual({
-        id: expect.stringMatching(/^folders-only-project\/.kiro\/steering$/),
+
+      // steering フォルダの検証
+      expect(sortedResult[1]).toEqual({
+        id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering$/),
         name: 'steering',
         type: 'folder',
-        children: [
+        children: expect.arrayContaining([
           {
-            id: expect.stringMatching(/^folders-only-project\/.kiro\/steering\/rules\.md$/),
-            name: 'rules.md',
+            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering\/behavior\.md$/),
+            name: 'behavior.md',
             type: 'file',
           },
-        ],
+          {
+            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering\/product\.md$/),
+            name: 'product.md',
+            type: 'file',
+          },
+          {
+            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering\/structure\.md$/),
+            name: 'structure.md',
+            type: 'file',
+          },
+          {
+            id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering\/tech\.md$/),
+            name: 'tech.md',
+            type: 'file',
+          },
+        ]),
       });
     });
 
-    test('混在する.kiroディレクトリの場合は正しいFileItem配列を返す', async () => {
+    test('実際の.kiro構造に追加ファイルがある場合は正しいFileItem配列を返す', async () => {
       // Arrange
-      const projectId = 'mixed-content-project';
+      const projectId = 'extended-kiro-structure-project';
       const mockProject = {
         ...MOCK_PROJECT,
-        id: 'mixed-content-project',
-        name: 'Mixed Content Project',
-        path: '/mixed/content/project',
-        kiroPath: '/mixed/content/project/.kiro',
+        id: 'extended-kiro-structure-project',
+        name: 'Extended Kiro Structure Project',
+        path: '/extended/kiro/structure/project',
+        kiroPath: '/extended/kiro/structure/project/.kiro',
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      // mock-fsで混在するディレクトリを作成
+      // mock-fsで実際の.kiro構造に追加ファイルを含む構造を作成
       mockFs({
-        '/mixed/content/project/.kiro': {
-          'config.json': '{}',
+        '/extended/kiro/structure/project/.kiro': {
+          'config.json': '{}', // 追加のルートファイル
           specs: {
-            'feature1.md': '# Feature 1',
-            'feature2.md': '# Feature 2',
+            'file-tree-system': {
+              'requirements.md': '# Requirements',
+              'design.md': '# Design',
+              'tasks.md': '# Tasks',
+            },
+            'msw-integration': {
+              'requirements.md': '# MSW Requirements',
+              'design.md': '# MSW Design',
+              'tasks.md': '# MSW Tasks',
+            },
           },
-          'README.md': '# README',
+          steering: {
+            'behavior.md': '# Behavior',
+            'tech.md': '# Tech',
+            'product.md': '# Product',
+          },
+          'README.md': '# Project README', // 追加のルートファイル
         },
       });
 
@@ -252,39 +338,66 @@ describe('FileTreeService', () => {
       const result = await getProjectFiles(projectId);
 
       // Assert
-      expect(result).toHaveLength(3);
+      expect(result).toHaveLength(4); // config.json, README.md, specs, steering
 
       // ファイルとフォルダが混在していることを確認
       const fileItems = result.filter(item => item.type === 'file');
       const folderItems = result.filter(item => item.type === 'folder');
 
-      expect(fileItems).toHaveLength(2);
-      expect(folderItems).toHaveLength(1);
+      expect(fileItems).toHaveLength(2); // config.json, README.md
+      expect(folderItems).toHaveLength(2); // specs, steering
 
-      // フォルダに子要素があることを確認
+      // specsフォルダに複数のspecフォルダがあることを確認
       const specsFolder = folderItems.find(item => item.name === 'specs');
       expect(specsFolder?.children).toHaveLength(2);
+
+      // 各specフォルダに3つのファイル（requirements.md, design.md, tasks.md）があることを確認
+      const fileTreeSystemSpec = specsFolder?.children?.find(child => child.name === 'file-tree-system');
+      expect(fileTreeSystemSpec?.children).toHaveLength(3);
+
+      // steeringフォルダに複数のファイルがあることを確認
+      const steeringFolder = folderItems.find(item => item.name === 'steering');
+      expect(steeringFolder?.children).toHaveLength(3);
     });
 
-    test('ネストしたディレクトリ構造の場合は正しい階層構造を返す', async () => {
+    test('複数のspecフォルダを含む実際の.kiro構造の階層確認', async () => {
       // Arrange
-      const projectId = 'nested-structure-project';
+      const projectId = 'full-kiro-structure-project';
       const mockProject = {
         ...MOCK_PROJECT,
-        id: 'nested-structure-project',
-        name: 'Nested Structure Project',
-        path: '/nested/structure/project',
-        kiroPath: '/nested/structure/project/.kiro',
+        id: 'full-kiro-structure-project',
+        name: 'Full Kiro Structure Project',
+        path: '/full/kiro/structure/project',
+        kiroPath: '/full/kiro/structure/project/.kiro',
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      // mock-fsで3階層のネスト構造を作成
+      // mock-fsで実際の.kiro構造（3階層）を作成
       mockFs({
-        '/nested/structure/project/.kiro': {
-          level1: {
-            level2: {
-              'deep-file.txt': 'deep content',
+        '/full/kiro/structure/project/.kiro': {
+          specs: {
+            'file-tree-system': {
+              'requirements.md': '# File Tree Requirements',
+              'design.md': '# File Tree Design',
+              'tasks.md': '# File Tree Tasks',
             },
+            'kiro-lens-foundation': {
+              'requirements.md': '# Foundation Requirements',
+              'design.md': '# Foundation Design',
+              'tasks.md': '# Foundation Tasks',
+            },
+            'path-management-system': {
+              'requirements.md': '# Path Management Requirements',
+              'design.md': '# Path Management Design',
+              'tasks.md': '# Path Management Tasks',
+            },
+          },
+          steering: {
+            'behavior.md': '# Behavior Guidelines',
+            'tech.md': '# Tech Stack',
+            'product.md': '# Product Overview',
+            'structure.md': '# Project Structure',
+            'testing-guidelines.md': '# Testing Guidelines',
           },
         },
       });
@@ -293,15 +406,26 @@ describe('FileTreeService', () => {
       const result = await getProjectFiles(projectId);
 
       // Assert
-      expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('level1');
-      expect(result[0].type).toBe('folder');
-      expect(result[0].children).toHaveLength(1);
-      expect(result[0].children![0].name).toBe('level2');
-      expect(result[0].children![0].type).toBe('folder');
-      expect(result[0].children![0].children).toHaveLength(1);
-      expect(result[0].children![0].children![0].name).toBe('deep-file.txt');
-      expect(result[0].children![0].children![0].type).toBe('file');
+      expect(result).toHaveLength(2); // specs, steering
+
+      // specs フォルダの階層確認
+      const specsFolder = result.find(item => item.name === 'specs');
+      expect(specsFolder?.type).toBe('folder');
+      expect(specsFolder?.children).toHaveLength(3); // 3つのspecフォルダ
+
+      // 各specフォルダに3つのファイルがあることを確認
+      const fileTreeSystemSpec = specsFolder?.children?.find(child => child.name === 'file-tree-system');
+      expect(fileTreeSystemSpec?.type).toBe('folder');
+      expect(fileTreeSystemSpec?.children).toHaveLength(3); // requirements.md, design.md, tasks.md
+
+      // steering フォルダの階層確認
+      const steeringFolder = result.find(item => item.name === 'steering');
+      expect(steeringFolder?.type).toBe('folder');
+      expect(steeringFolder?.children).toHaveLength(5); // 5つのsteeringファイル
+
+      // steeringフォルダ内はファイルのみであることを確認
+      const steeringFiles = steeringFolder?.children?.every(child => child.type === 'file');
+      expect(steeringFiles).toBe(true);
     });
 
     test('ファイルシステムエラーが発生した場合は適切なエラーを投げる', async () => {
