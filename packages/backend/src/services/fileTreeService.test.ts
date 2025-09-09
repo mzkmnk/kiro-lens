@@ -1,59 +1,23 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { promises as fs } from 'fs';
-import type { Dirent } from 'fs';
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import mockFs from 'mock-fs';
 import { MOCK_PROJECT, MOCK_INVALID_PROJECT } from '@kiro-lens/shared';
 import { getProjectFiles, FileTreeError } from './fileTreeService.js';
 import { getCurrentProject } from './projectService.js';
 
-// テストヘルパー関数 - 実用的なモックオブジェクトを作成
-function createMockFile(name: string) {
-  return {
-    name,
-    isFile: () => true,
-    isDirectory: () => false,
-    isBlockDevice: () => false,
-    isCharacterDevice: () => false,
-    isSymbolicLink: () => false,
-    isFIFO: () => false,
-    isSocket: () => false,
-    parentPath: '',
-    path: name,
-  };
-}
-
-function createMockFolder(name: string) {
-  return {
-    name,
-    isFile: () => false,
-    isDirectory: () => true,
-    isBlockDevice: () => false,
-    isCharacterDevice: () => false,
-    isSymbolicLink: () => false,
-    isFIFO: () => false,
-    isSocket: () => false,
-    parentPath: '',
-    path: name,
-  };
-}
-
 // モック設定
-vi.mock('fs', () => ({
-  promises: {
-    readdir: vi.fn(),
-    stat: vi.fn(),
-  },
-}));
-
 vi.mock('./projectService.js', () => ({
   getCurrentProject: vi.fn(),
 }));
 
-const mockFs = vi.mocked(fs);
 const mockGetCurrentProject = vi.mocked(getCurrentProject);
 
 describe('FileTreeService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    mockFs.restore();
   });
 
   describe('getProjectFiles', () => {
@@ -127,9 +91,12 @@ describe('FileTreeService', () => {
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      const permissionError = new Error('EACCES: permission denied') as Error & { code: string };
-      permissionError.code = 'EACCES';
-      mockFs.readdir.mockRejectedValue(permissionError);
+      // mock-fsで権限エラーをシミュレート
+      mockFs({
+        '/permission/denied/project/.kiro': mockFs.directory({
+          mode: 0o000, // 読み取り権限なし
+        }),
+      });
 
       // Act & Assert
       await expect(getProjectFiles(projectId)).rejects.toThrow(FileTreeError);
@@ -149,16 +116,17 @@ describe('FileTreeService', () => {
         kiroPath: '/empty/kiro/project/.kiro',
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
-      mockFs.readdir.mockResolvedValue([]);
+
+      // mock-fsで空のディレクトリを作成
+      mockFs({
+        '/empty/kiro/project/.kiro': {},
+      });
 
       // Act
       const result = await getProjectFiles(projectId);
 
       // Assert
       expect(result).toEqual([]);
-      expect(mockFs.readdir).toHaveBeenCalledWith('/empty/kiro/project/.kiro', {
-        withFileTypes: true,
-      });
     });
 
     test('ファイルのみの.kiroディレクトリの場合は正しいFileItem配列を返す', async () => {
@@ -173,20 +141,28 @@ describe('FileTreeService', () => {
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      const mockDirents = [createMockFile('config.json'), createMockFile('README.md')];
-      mockFs.readdir.mockResolvedValue(mockDirents as unknown as Dirent[]);
+      // mock-fsでファイルのみのディレクトリを作成
+      mockFs({
+        '/files/only/project/.kiro': {
+          'config.json': '{}',
+          'README.md': '# README',
+        },
+      });
 
       // Act
       const result = await getProjectFiles(projectId);
 
       // Assert
       expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({
+
+      // ファイルはアルファベット順でソートされる
+      const sortedResult = result.sort((a, b) => a.name.localeCompare(b.name));
+      expect(sortedResult[0]).toEqual({
         id: expect.stringMatching(/^files-only-project\/.kiro\/config\.json$/),
         name: 'config.json',
         type: 'file',
       });
-      expect(result[1]).toEqual({
+      expect(sortedResult[1]).toEqual({
         id: expect.stringMatching(/^files-only-project\/.kiro\/README\.md$/),
         name: 'README.md',
         type: 'file',
@@ -205,17 +181,17 @@ describe('FileTreeService', () => {
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      // 最初の呼び出し（ルートディレクトリ）
-      const mockRootDirents = [createMockFolder('specs'), createMockFolder('steering')];
-
-      // サブディレクトリの呼び出し
-      const mockSpecsDirents = [createMockFile('feature1.md')];
-      const mockSteeringDirents = [createMockFile('rules.md')];
-
-      mockFs.readdir
-        .mockResolvedValueOnce(mockRootDirents as unknown as Dirent[])
-        .mockResolvedValueOnce(mockSpecsDirents as unknown as Dirent[])
-        .mockResolvedValueOnce(mockSteeringDirents as unknown as Dirent[]);
+      // mock-fsでフォルダのみのディレクトリを作成
+      mockFs({
+        '/folders/only/project/.kiro': {
+          specs: {
+            'feature1.md': '# Feature 1',
+          },
+          steering: {
+            'rules.md': '# Rules',
+          },
+        },
+      });
 
       // Act
       const result = await getProjectFiles(projectId);
@@ -260,19 +236,17 @@ describe('FileTreeService', () => {
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      // ルートディレクトリの内容
-      const mockRootDirents = [
-        createMockFile('config.json'),
-        createMockFolder('specs'),
-        createMockFile('README.md'),
-      ];
-
-      // specsディレクトリの内容
-      const mockSpecsDirents = [createMockFile('feature1.md'), createMockFile('feature2.md')];
-
-      mockFs.readdir
-        .mockResolvedValueOnce(mockRootDirents as unknown as Dirent[])
-        .mockResolvedValueOnce(mockSpecsDirents as unknown as Dirent[]);
+      // mock-fsで混在するディレクトリを作成
+      mockFs({
+        '/mixed/content/project/.kiro': {
+          'config.json': '{}',
+          specs: {
+            'feature1.md': '# Feature 1',
+            'feature2.md': '# Feature 2',
+          },
+          'README.md': '# README',
+        },
+      });
 
       // Act
       const result = await getProjectFiles(projectId);
@@ -304,15 +278,16 @@ describe('FileTreeService', () => {
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      // 3階層のネスト構造をモック
-      const mockRootDirents = [createMockFolder('level1')];
-      const mockLevel1Dirents = [createMockFolder('level2')];
-      const mockLevel2Dirents = [createMockFile('deep-file.txt')];
-
-      mockFs.readdir
-        .mockResolvedValueOnce(mockRootDirents as unknown as Dirent[])
-        .mockResolvedValueOnce(mockLevel1Dirents as unknown as Dirent[])
-        .mockResolvedValueOnce(mockLevel2Dirents as unknown as Dirent[]);
+      // mock-fsで3階層のネスト構造を作成
+      mockFs({
+        '/nested/structure/project/.kiro': {
+          level1: {
+            level2: {
+              'deep-file.txt': 'deep content',
+            },
+          },
+        },
+      });
 
       // Act
       const result = await getProjectFiles(projectId);
@@ -341,14 +316,14 @@ describe('FileTreeService', () => {
       };
       mockGetCurrentProject.mockResolvedValue(mockProject);
 
-      const fsError = new Error('Filesystem error occurred');
-      mockFs.readdir.mockRejectedValue(fsError);
+      // mock-fsで存在しないディレクトリを設定（ファイルシステムエラーをシミュレート）
+      mockFs({
+        // .kiroディレクトリを作成しない
+      });
 
       // Act & Assert
       await expect(getProjectFiles(projectId)).rejects.toThrow(FileTreeError);
-      await expect(getProjectFiles(projectId)).rejects.toThrow(
-        'ファイルツリーの読み取り中に予期しないエラーが発生しました'
-      );
+      await expect(getProjectFiles(projectId)).rejects.toThrow('ディレクトリが存在しません');
     });
   });
 });
