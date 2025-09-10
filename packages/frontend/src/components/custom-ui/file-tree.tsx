@@ -5,7 +5,7 @@ import {
   SidebarMenu,
 } from '@/components/ui/sidebar';
 import { FileTreeItem } from './file-tree-item';
-import type { FileTreeProps } from '@/types/file-tree';
+import type { FileTreeProps } from '@/types/components.js';
 
 /**
  * ファイルツリー全体を表示するコンポーネント

@@ -1,23 +1,6 @@
 import { promises as fs } from 'fs';
 import { join, dirname, basename } from 'path';
-import type {
-  DirectoryPermissions,
-  FileSystemError as SharedFileSystemError,
-} from '@kiro-lens/shared';
-
-/**
- * ファイルシステム操作エラー
- */
-export class FileSystemError extends Error {
-  constructor(
-    message: string,
-    public readonly code: string,
-    public readonly cause?: Error
-  ) {
-    super(message);
-    this.name = 'FileSystemError';
-  }
-}
+import { DirectoryPermissions, FileSystemError } from '@kiro-lens/shared';
 
 /**
  * パス検証と正規化

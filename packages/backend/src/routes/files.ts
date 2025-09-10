@@ -1,10 +1,6 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { getProjectFiles, FileTreeError } from '../services/fileTreeService.js';
-import type { FileItem, ApiResponse } from '@kiro-lens/shared';
-
-interface ProjectFilesParams {
-  id: string;
-}
+import type { FileItem, ApiResponse, ProjectFilesParams } from '@kiro-lens/shared';
 
 /**
  * プロジェクトIDのバリデーション

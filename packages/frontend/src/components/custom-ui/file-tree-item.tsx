@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronRight, File, Folder, FolderOpen } from 'lucide-react';
 import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import type { FileTreeItemProps } from '@/types/file-tree';
+import type { FileTreeItemProps } from '@/types/components.js';
 import type { FileItem } from '@shared/types/file-tree';
 
 /**
@@ -33,9 +33,8 @@ export function FileTreeItem({ item, onFileSelect, onFolderToggle }: FileTreeIte
             <div className='flex items-center justify-center w-4 h-4 flex-shrink-0'>
               {item.type === 'folder' && (
                 <ChevronRight
-                  className={`h-3 w-3 transition-transform duration-200 ${
-                    isOpen ? 'rotate-90' : ''
-                  }`}
+                  className={`h-3 w-3 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''
+                    }`}
                 />
               )}
             </div>

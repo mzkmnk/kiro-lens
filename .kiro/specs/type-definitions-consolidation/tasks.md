@@ -55,35 +55,35 @@
   - Fastify固有の型定義を集約
   - _要件: 3.1, 3.2_
 
-- [ ] 4. インポート文の統一と中間層削除
+- [x] 4. インポート文の統一と中間層削除
   - 全ファイルのインポート文をsharedからの直接インポートに統一し、不要な再エクスポートを削除する
   - _要件: 5.1, 5.2_
 
-- [ ] 4.1 バックエンドのインポート文更新
+- [x] 4.1 バックエンドのインポート文更新
   - `packages/backend/src/routes/files.ts`のインポート文を更新
   - `packages/backend/src/services/projectService.ts`のインポート文を更新
   - `packages/backend/src/services/fileSystemService.ts`のインポート文を更新
   - 各ファイルでsharedから直接型をインポートするように変更
   - _要件: 5.1, 5.2_
 
-- [ ] 4.2 フロントエンドのインポート文更新
+- [x] 4.2 フロントエンドのインポート文更新
   - `packages/frontend/src/services/fileTreeApi.ts`のインポート文を更新
   - `packages/frontend/src/services/projectApi.ts`のインポート文を更新
   - `packages/frontend/src/stores/projectStore.ts`のインポート文を更新
   - 各ファイルでsharedから直接型をインポートするように変更
   - _要件: 5.1, 5.2_
 
-- [ ] 4.3 不要な中間層ファイルの削除
+- [x] 4.3 不要な中間層ファイルの削除
   - フロントエンドとバックエンドで不要な型の再エクスポートファイルを特定
   - 不要な`types/index.ts`ファイルがあれば削除
   - 使用されていない型定義ファイルを削除
   - _要件: 5.1, 5.2_
 
-- [ ] 5. sharedパッケージのエクスポート更新
+- [x] 5. sharedパッケージのエクスポート更新
   - 新しく追加した型定義をsharedパッケージのindex.tsからエクスポートする
   - _要件: 2.1, 2.2, 5.1_
 
-- [ ] 5.1 index.tsのエクスポート追加
+- [x] 5.1 index.tsのエクスポート追加
   - `packages/shared/src/index.ts`に新しい型定義のエクスポートを追加
   - `filesystem.ts`と`route-params.ts`の型をエクスポート
   - 型ガード関数のエクスポートを追加
