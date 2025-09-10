@@ -39,12 +39,7 @@ export type { FileSystemErrorType, DirectoryPermissions } from './types/filesyst
 export { FileSystemError } from './types/filesystem';
 
 // ルートパラメータ関連型定義
-export type {
-  ProjectFilesParams,
-  ProjectSelectParams,
-  ProjectDeleteParams,
-  IdParams,
-} from './types/route-params';
+export type { IdParams } from './types/route-params';
 
 // 共通モックデータのエクスポート
 export * from './mocks';

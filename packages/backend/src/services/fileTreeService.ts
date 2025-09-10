@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { join, resolve, relative } from 'path';
 import type { FileItem } from '@kiro-lens/shared';
-import { getCurrentProject } from './projectService.js';
+import { getCurrentProject } from './projectService';
 
 /**
  * ファイルツリー取得エラー

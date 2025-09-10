@@ -1,31 +1,10 @@
 /**
- * プロジェクトファイル取得APIのパラメータ型
- */
-export interface ProjectFilesParams {
-  /** プロジェクトID */
-  id: string;
-}
-
-/**
- * プロジェクト選択APIのパラメータ型
- */
-export interface ProjectSelectParams {
-  /** プロジェクトID */
-  id: string;
-}
-
-/**
- * プロジェクト削除APIのパラメータ型
- */
-export interface ProjectDeleteParams {
-  /** プロジェクトID */
-  id: string;
-}
-
-/**
  * 汎用IDパラメータ型
+ *
+ * プロジェクトファイル取得、プロジェクト選択、プロジェクト削除等の
+ * APIエンドポイントで共通して使用されるIDパラメータを定義します。
  */
 export interface IdParams {
-  /** ID */
+  /** リソースID */
   id: string;
 }

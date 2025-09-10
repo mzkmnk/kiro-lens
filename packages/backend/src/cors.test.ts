@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { FastifyInstance } from 'fastify';
-import { createServer } from './server.js';
+import { createServer } from './server';
 
 describe('FastifyCORS設定', () => {
   let server: FastifyInstance;

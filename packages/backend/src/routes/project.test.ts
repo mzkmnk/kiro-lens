@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { FastifyInstance } from 'fastify';
-import { createServer } from '../server.js';
+import { createServer } from '../server';
 import {
   ProjectInfo,
   MOCK_API_PROJECT,
@@ -8,9 +8,9 @@ import {
   MOCK_PROJECT_LIST,
   MOCK_VALIDATION_RESULTS,
 } from '@kiro-lens/shared';
-import * as projectService from '../services/projectService.js';
-import { ProjectError } from '../services/projectService.js';
-import { MOCK_PATHS } from '../test/constants.js';
+import * as projectService from '../services/projectService';
+import { ProjectError } from '../services/projectService';
+import { MOCK_PATHS } from '../test/constants';
 
 // プロジェクトサービスのモック
 vi.mock('../services/projectService.js', () => ({

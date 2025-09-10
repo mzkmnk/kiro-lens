@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import mockFs from 'mock-fs';
 import { MOCK_PROJECT, MOCK_INVALID_PROJECT } from '@kiro-lens/shared';
-import { getProjectFiles, FileTreeError } from './fileTreeService.js';
-import { getCurrentProject } from './projectService.js';
+import { getProjectFiles, FileTreeError } from './fileTreeService';
+import { getCurrentProject } from './projectService';
 
 // モック設定
 vi.mock('./projectService.js', () => ({

@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { basename, join } from 'path';
 import type { ProjectInfo, AppConfig, ValidationResult } from '@kiro-lens/shared';
-import { loadConfig, saveConfig } from './configService.js';
+import { loadConfig, saveConfig } from './configService';
 import {
   resolvePath,
   checkDirectoryExists,
