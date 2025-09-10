@@ -53,14 +53,14 @@ describe('projectApi', () => {
     test('プロジェクトを正常に削除できる', async () => {
       // このテストは実装後に通るようになる
       expect(async () => {
-        await projectApi.removeProject(1);
+        await projectApi.removeProject('1');
       }).rejects.toThrow();
     });
 
     test('存在しないプロジェクトIDでエラーになる', async () => {
       // このテストは実装後に通るようになる
       expect(async () => {
-        await projectApi.removeProject(999);
+        await projectApi.removeProject('999');
       }).rejects.toThrow();
     });
   });
@@ -85,14 +85,14 @@ describe('projectApi', () => {
     test('プロジェクトを正常に選択できる', async () => {
       // このテストは実装後に通るようになる
       expect(async () => {
-        await projectApi.selectProject(1);
+        await projectApi.selectProject('1');
       }).rejects.toThrow();
     });
 
     test('存在しないプロジェクトIDでエラーになる', async () => {
       // このテストは実装後に通るようになる
       expect(async () => {
-        await projectApi.selectProject(999);
+        await projectApi.selectProject('1');
       }).rejects.toThrow();
     });
   });
