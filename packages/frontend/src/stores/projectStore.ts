@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ApiClient } from '@/services/api';
+import { getProjects, addProject, removeProject, selectProject } from '@/services';
 import type { ProjectInfo } from '@kiro-lens/shared';
 import type { FileItem } from '@shared/types/file-tree';
 
@@ -26,7 +26,7 @@ interface ProjectState {
   setError: (error: string) => void;
 }
 
-const apiClient = new ApiClient();
+// ApiClientインスタンスは不要 - 関数ベースAPIを使用
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
   // 初期状態
@@ -50,9 +50,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   loadProjects: async () => {
     try {
       set({ isLoading: true, error: undefined });
-      const response = await apiClient.getProjects();
+      const projects = await getProjects();
       set({
-        projects: [...response.projects],
+        projects: [...projects],
         isLoading: false,
       });
     } catch (error) {
@@ -67,13 +67,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   addProject: async (path: string) => {
     try {
       set({ error: undefined });
-      const response = await apiClient.addProject(path);
+      const project = await addProject(path);
       const { projects } = get();
 
       // 新しいプロジェクトを追加して選択、プロジェクト追加モードを終了
       set({
-        projects: [...projects, response.project],
-        currentProject: response.project,
+        projects: [...projects, project],
+        currentProject: project,
         isAddingProject: false,
         selectedFile: undefined, // プロジェクト変更時にファイル選択をクリア
       });
@@ -88,7 +88,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   removeProject: async (projectId: string) => {
     try {
       set({ error: undefined });
-      await apiClient.removeProject(projectId);
+      await removeProject(projectId);
       const { projects, currentProject } = get();
 
       // プロジェクトを削除
@@ -114,7 +114,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
     try {
       set({ error: undefined });
-      await apiClient.selectProject(project.id);
+      await selectProject(project.id);
       set({
         currentProject: project,
         selectedFile: undefined, // プロジェクト切り替え時にファイル選択をクリア

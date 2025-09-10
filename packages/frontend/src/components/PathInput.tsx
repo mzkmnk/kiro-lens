@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FolderOpen } from 'lucide-react';
-import { ApiClient } from '@/services/api';
+import { validatePath } from '@/services';
 
 interface PathInputProps {
   /** パス確定時のコールバック */
@@ -39,48 +39,43 @@ export const PathInput: React.FC<PathInputProps> = ({
     isValidating: false,
   });
 
-  const apiClient = useMemo(() => new ApiClient(), []);
-
   // パスのバリデーション
-  const validatePath = useCallback(
-    async (inputPath: string) => {
-      if (!inputPath.trim()) {
-        setValidation({
-          isValid: false,
-          message: undefined,
-          isValidating: false,
-        });
-        return;
-      }
+  const validatePathInput = useCallback(async (inputPath: string) => {
+    if (!inputPath.trim()) {
+      setValidation({
+        isValid: false,
+        message: undefined,
+        isValidating: false,
+      });
+      return;
+    }
 
-      setValidation(prev => ({ ...prev, isValidating: true }));
+    setValidation(prev => ({ ...prev, isValidating: true }));
 
-      try {
-        const result = await apiClient.validatePath(inputPath.trim());
-        setValidation({
-          isValid: result.isValid,
-          message: result.error || (result.isValid ? 'パスが有効です' : undefined),
-          isValidating: false,
-        });
-      } catch (error) {
-        setValidation({
-          isValid: false,
-          message: error instanceof Error ? error.message : 'パスの検証に失敗しました',
-          isValidating: false,
-        });
-      }
-    },
-    [apiClient]
-  );
+    try {
+      const result = await validatePath(inputPath.trim());
+      setValidation({
+        isValid: result.isValid,
+        message: result.error || (result.isValid ? 'パスが有効です' : undefined),
+        isValidating: false,
+      });
+    } catch (error) {
+      setValidation({
+        isValid: false,
+        message: error instanceof Error ? error.message : 'パスの検証に失敗しました',
+        isValidating: false,
+      });
+    }
+  }, []);
 
   // パス入力時の処理（デバウンス付き）
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      validatePath(path);
+      validatePathInput(path);
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [path, validatePath]);
+  }, [path, validatePathInput]);
 
   // パス確定処理
   const handleConfirm = () => {

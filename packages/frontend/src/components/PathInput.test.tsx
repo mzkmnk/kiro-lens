@@ -1,19 +1,18 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PathInput } from './PathInput';
-import { ApiClient } from '@/services/api';
 
-// ApiClientをモック
-vi.mock('@/services/api');
-
-const mockApiClient = {
+// validatePath関数をモック
+vi.mock('@/services', () => ({
   validatePath: vi.fn(),
-};
+}));
+
+import { validatePath } from '@/services';
+
+const mockValidatePath = vi.mocked(validatePath);
 
 beforeEach(() => {
   vi.clearAllMocks();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (ApiClient as any).mockImplementation(() => mockApiClient);
 });
 
 describe('PathInput', () => {
@@ -28,7 +27,7 @@ describe('PathInput', () => {
 
   test('パス入力時にバリデーションが実行される', async () => {
     const onPathConfirm = vi.fn();
-    mockApiClient.validatePath.mockResolvedValue({
+    mockValidatePath.mockResolvedValue({
       isValid: true,
       error: undefined,
     });
@@ -39,13 +38,13 @@ describe('PathInput', () => {
     fireEvent.change(input, { target: { value: '/valid/path' } });
 
     await waitFor(() => {
-      expect(mockApiClient.validatePath).toHaveBeenCalledWith('/valid/path');
+      expect(mockValidatePath).toHaveBeenCalledWith('/valid/path');
     });
   });
 
   test('有効なパスでボタンが有効になる', async () => {
     const onPathConfirm = vi.fn();
-    mockApiClient.validatePath.mockResolvedValue({
+    mockValidatePath.mockResolvedValue({
       isValid: true,
       error: undefined,
     });
@@ -62,7 +61,7 @@ describe('PathInput', () => {
 
   test('無効なパスでバリデーションが実行される', async () => {
     const onPathConfirm = vi.fn();
-    mockApiClient.validatePath.mockResolvedValue({
+    mockValidatePath.mockResolvedValue({
       isValid: false,
       error: '.kiroディレクトリが見つかりません',
     });
@@ -74,13 +73,13 @@ describe('PathInput', () => {
 
     // バリデーションが実行されることを確認（エラーメッセージは表示されない）
     await waitFor(() => {
-      expect(mockApiClient.validatePath).toHaveBeenCalledWith('/invalid/path');
+      expect(mockValidatePath).toHaveBeenCalledWith('/invalid/path');
     });
   });
 
   test('確定ボタンクリックでコールバックが呼ばれる', async () => {
     const onPathConfirm = vi.fn();
-    mockApiClient.validatePath.mockResolvedValue({
+    mockValidatePath.mockResolvedValue({
       isValid: true,
       error: undefined,
     });
@@ -101,7 +100,7 @@ describe('PathInput', () => {
 
   test('Enterキーでも確定できる', async () => {
     const onPathConfirm = vi.fn();
-    mockApiClient.validatePath.mockResolvedValue({
+    mockValidatePath.mockResolvedValue({
       isValid: true,
       error: undefined,
     });
