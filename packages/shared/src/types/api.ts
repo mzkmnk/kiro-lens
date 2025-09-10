@@ -133,3 +133,62 @@ export interface FileTreeResponse {
   /** プロジェクトの.kiro配下のファイル構造 */
   readonly files: FileItem[];
 }
+
+/**
+ * API結果型
+ *
+ * API呼び出しの結果を表現する型です。
+ * 成功時はSuccess<T>、失敗時はFailure<E>を返します。
+ *
+ * @template T - 成功時のデータ型
+ * @template E - 失敗時のエラー型
+ */
+export type ApiResult<T, E = ApiError> = { success: true; data: T } | { success: false; error: E };
+
+/**
+ * ValidationResult型ガード関数
+ *
+ * ValidationResultが成功かどうかを判定します。
+ *
+ * @param result - 検証結果
+ * @returns 検証が成功した場合はtrue
+ *
+ * @example
+ * ```typescript
+ * const result = await validatePath('/some/path');
+ * if (isValidationSuccess(result)) {
+ *   console.log('Valid path:', result.validatedPath);
+ * } else {
+ *   console.error('Validation error:', result.error);
+ * }
+ * ```
+ */
+export function isValidationSuccess(
+  result: ValidationResult
+): result is ValidationResult & { isValid: true; validatedPath: string } {
+  return result.isValid && result.validatedPath !== undefined;
+}
+
+/**
+ * ApiResponse型ガード関数
+ *
+ * ApiResponseが成功かどうかを判定します。
+ *
+ * @param response - APIレスポンス
+ * @returns APIが成功した場合はtrue
+ *
+ * @example
+ * ```typescript
+ * const response = await apiCall();
+ * if (isApiSuccess(response)) {
+ *   console.log('Success:', response.data);
+ * } else {
+ *   console.error('Error:', response.error);
+ * }
+ * ```
+ */
+export function isApiSuccess<T>(
+  response: ApiResponse<T>
+): response is ApiResponse<T> & { success: true; data: T } {
+  return response.success && response.data !== undefined;
+}

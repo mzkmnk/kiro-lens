@@ -1,22 +1,22 @@
 # 実装計画
 
-- [ ] 1. 新規共通型定義の作成
+- [x] 1. 新規共通型定義の作成
   - sharedパッケージに新しい型定義ファイルを作成し、分散している型を統合する
   - _要件: 1.1, 2.1_
 
-- [ ] 1.1 ファイルシステム関連型定義の作成
+- [x] 1.1 ファイルシステム関連型定義の作成
   - `packages/shared/src/types/filesystem.ts`を作成
   - `DirectoryPermissions`、`FileSystemError`、`FileSystemErrorType`型を定義
   - バックエンドの`fileSystemService.ts`から`DirectoryPermissions`型を移動
   - _要件: 2.1, 2.2_
 
-- [ ] 1.2 ルートパラメータ型定義の作成
+- [x] 1.2 ルートパラメータ型定義の作成
   - `packages/shared/src/types/route-params.ts`を作成
   - `ProjectFilesParams`、`ProjectSelectParams`、`ProjectDeleteParams`、`IdParams`型を定義
   - バックエンドの各ルートファイルで使用されているパラメータ型を統合
   - _要件: 2.1, 2.2_
 
-- [ ] 1.3 API型定義の拡張
+- [x] 1.3 API型定義の拡張
   - `packages/shared/src/types/api.ts`に型ガード関数を追加
   - `isValidationSuccess`、`isApiSuccess`関数を実装
   - `ApiResult`型を追加してより型安全なエラーハンドリングを提供
