@@ -1,5 +1,10 @@
 import httpClient, { handleApiError } from './httpClient';
-import type { ProjectInfo, ApiResponse, ValidationResult, ProjectListResponse } from '@kiro-lens/shared';
+import type {
+  ProjectInfo,
+  ApiResponse,
+  ValidationResult,
+  ProjectListResponse,
+} from '@kiro-lens/shared';
 
 /**
  * プロジェクト一覧を取得する
