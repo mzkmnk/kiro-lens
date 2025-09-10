@@ -38,18 +38,18 @@
   - 型定義の参照を更新
   - _要件: 2.1, 2.2_
 
-- [ ] 3. パッケージ固有型の整理
+- [x] 3. パッケージ固有型の整理
   - フロントエンドとバックエンドで固有の型定義を適切なファイルに整理する
   - _要件: 3.1, 3.2_
 
-- [ ] 3.1 フロントエンド固有型の整理
+- [x] 3.1 フロントエンド固有型の整理
   - `packages/frontend/src/types/components.ts`を作成
   - `FileTreeProps`、`FileTreeItemProps`、`ProjectState`型を定義
   - 既存の`packages/frontend/src/types/file-tree.ts`から型を移動
   - `packages/frontend/src/stores/projectStore.ts`の`ProjectState`型を移動
   - _要件: 3.1, 3.2_
 
-- [ ] 3.2 バックエンド固有型の整理
+- [x] 3.2 バックエンド固有型の整理
   - `packages/backend/src/types/internal.ts`を作成
   - `ProjectFilesRequest`、`ProjectSelectRequest`、`ServiceConfig`、`FileTreeServiceError`型を定義
   - Fastify固有の型定義を集約
