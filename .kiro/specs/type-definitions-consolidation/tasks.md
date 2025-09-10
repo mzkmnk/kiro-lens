@@ -22,17 +22,17 @@
   - `ApiResult`型を追加してより型安全なエラーハンドリングを提供
   - _要件: 4.1, 4.2_
 
-- [ ] 2. 重複型定義の解消
+- [x] 2. 重複型定義の解消
   - バックエンドで重複定義されている型を削除し、sharedからのインポートに変更する
   - _要件: 1.1, 1.2_
 
-- [ ] 2.1 ValidationResult型の重複解消
+- [x] 2.1 ValidationResult型の重複解消
   - `packages/backend/src/services/projectService.ts`の`ValidationResult`型定義を削除
   - sharedパッケージの`ValidationResult`型をインポートするように変更
   - 型の互換性を確認し、必要に応じてshared側の型定義を調整
   - _要件: 1.1, 1.2, 4.1_
 
-- [ ] 2.2 DirectoryPermissions型の移動
+- [x] 2.2 DirectoryPermissions型の移動
   - `packages/backend/src/services/fileSystemService.ts`の`DirectoryPermissions`型をsharedに移動
   - バックエンドでsharedからインポートするように変更
   - 型定義の参照を更新
