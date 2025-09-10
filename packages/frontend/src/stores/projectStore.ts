@@ -88,7 +88,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   removeProject: async (projectId: string) => {
     try {
       set({ error: undefined });
-      await removeProject(Number(projectId));
+      await removeProject(projectId);
       const { projects, currentProject } = get();
 
       // プロジェクトを削除
@@ -114,7 +114,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
     try {
       set({ error: undefined });
-      await selectProject(Number(project.id));
+      await selectProject(project.id);
       set({
         currentProject: project,
         selectedFile: undefined, // プロジェクト切り替え時にファイル選択をクリア

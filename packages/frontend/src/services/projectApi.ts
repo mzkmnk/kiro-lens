@@ -61,22 +61,23 @@ export const addProject = async (path: string): Promise<ProjectInfo> => {
 /**
  * プロジェクトを削除する
  *
- * @param id - 削除するプロジェクトのID
+ * @param id - 削除するプロジェクトのID（UUID）
  * @throws {Error} プロジェクトIDが無効、またはAPI通信エラーの場合
  *
  * @example
  * ```typescript
- * await removeProject(1);
+ * await removeProject('uuid-string');
  * console.log('プロジェクトが削除されました');
  * ```
  */
-export const removeProject = async (id: number): Promise<void> => {
-  if (!id || id <= 0) {
+export const removeProject = async (id: string): Promise<void> => {
+  if (!id || id.trim() === '') {
     throw new Error('無効なプロジェクトIDです');
   }
 
   try {
-    await httpClient.delete(`api/projects/${id}`).json<ApiResponse<void>>();
+    const encodedId = encodeURIComponent(id.trim());
+    await httpClient.delete(`api/projects/${encodedId}`).json<ApiResponse<void>>();
   } catch (error) {
     const message = handleApiError(error);
     throw new Error(`プロジェクトの削除に失敗しました: ${message}`);
@@ -125,22 +126,23 @@ export const validatePath = async (path: string): Promise<ValidationResult> => {
 /**
  * プロジェクトを選択する
  *
- * @param id - 選択するプロジェクトのID
+ * @param id - 選択するプロジェクトのID（UUID）
  * @throws {Error} プロジェクトIDが無効、またはAPI通信エラーの場合
  *
  * @example
  * ```typescript
- * await selectProject(1);
+ * await selectProject('uuid-string');
  * console.log('プロジェクトが選択されました');
  * ```
  */
-export const selectProject = async (id: number): Promise<void> => {
-  if (!id || id <= 0) {
+export const selectProject = async (id: string): Promise<void> => {
+  if (!id || id.trim() === '') {
     throw new Error('無効なプロジェクトIDです');
   }
 
   try {
-    await httpClient.post(`api/projects/${id}/select`).json<ApiResponse<void>>();
+    const encodedId = encodeURIComponent(id.trim());
+    await httpClient.post(`api/projects/${encodedId}/select`).json<ApiResponse<void>>();
   } catch (error) {
     const message = handleApiError(error);
     throw new Error(`プロジェクトの選択に失敗しました: ${message}`);
