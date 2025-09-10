@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { getProjects, addProject, removeProject, selectProject } from '@/services';
 import type { ProjectInfo, FileItem } from '@kiro-lens/shared';
-import type { ProjectState } from '@/types/components.js';
+import type { ProjectState } from '@/types/project-store.js';
 
 // ApiClientインスタンスは不要 - 関数ベースAPIを使用
 

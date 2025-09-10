@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronRight, File, Folder, FolderOpen } from 'lucide-react';
 import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import type { FileTreeItemProps } from '@/types/components.js';
+import type { FileTreeItemProps } from '@/types/file-tree.js';
 import type { FileItem } from '@shared/types/file-tree';
 
 /**
