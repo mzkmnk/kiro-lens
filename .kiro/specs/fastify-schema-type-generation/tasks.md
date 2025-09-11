@@ -1,22 +1,22 @@
 # 実装計画
 
-- [ ] 1. 基盤構築とTypeBox導入
+- [x] 1. 基盤構築とTypeBox導入
   - TypeBox関連の依存関係を追加し、基本的なプロジェクト構造を整備する
   - _要件: 1.1, 1.2_
 
-- [ ] 1.1 TypeBox依存関係の追加
+- [x] 1.1 TypeBox依存関係の追加
   - `@sinclair/typebox`をsharedパッケージに追加
   - `@fastify/type-provider-typebox`をバックエンドに追加
   - package.jsonの依存関係を更新してインストール
   - _要件: 1.1, 1.2_
 
-- [ ] 1.2 sharedパッケージのスキーマ構造作成
+- [x] 1.2 sharedパッケージのスキーマ構造作成
   - `packages/shared/src/schemas/`ディレクトリを作成
   - `api/`、`domain/`、`security/`サブディレクトリを作成
   - 基本的なindex.tsファイルを作成してエクスポート構造を準備
   - _要件: 2.1, 2.2_
 
-- [ ] 1.3 Fastify TypeProvider設定
+- [x] 1.3 Fastify TypeProvider設定
   - `packages/backend/src/app.ts`でTypeBoxTypeProviderを設定
   - TypeBoxValidatorCompilerを設定
   - FastifyTypeboxカスタム型を定義

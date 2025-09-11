@@ -1,16 +1,11 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import { createApp, type FastifyTypebox } from './app';
 import { corsPlugin } from './plugins/cors';
 import { healthRoutes } from './routes/health';
 import { projectRoutes } from './routes/project';
 import { filesRoutes } from './routes/files';
 
-export function createServer(): FastifyInstance {
-  const fastify = Fastify({
-    logger: {
-      level: process.env.NODE_ENV === 'production' ? 'warn' : 'info',
-    },
-    disableRequestLogging: process.env.NODE_ENV === 'test',
-  });
+export function createServer(): FastifyTypebox {
+  const fastify = createApp();
 
   // プラグイン登録
   fastify.register(corsPlugin);

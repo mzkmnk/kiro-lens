@@ -28,5 +28,8 @@
   },
   "files": [
     "dist/**/*"
-  ]
+  ],
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.41"
+  }
 }
