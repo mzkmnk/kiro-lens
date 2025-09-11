@@ -54,7 +54,7 @@
   - 全サービスのテスト作成
   - _要件: 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 8. ProjectService実装（Signals）
+- [x] 8. ProjectService実装（Signals）
   - Signalsベースの状態管理実装
   - computed()による派生状態
   - プロジェクト管理機能（追加・削除・選択）
