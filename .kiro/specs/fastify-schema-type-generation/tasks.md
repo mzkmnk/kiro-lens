@@ -70,17 +70,17 @@
   - パスバリデーション用のスキーマを実装
   - _要件: 2.1, 2.2_
 
-- [ ] 4. 型定義の自動エクスポート
+- [x] 4. 型定義の自動エクスポート
   - sharedパッケージから型定義を自動エクスポートする仕組みを構築する
   - _要件: 2.1, 2.2, 5.1_
 
-- [ ] 4.1 generated.tsファイルの作成
+- [x] 4.1 generated.tsファイルの作成
   - `packages/shared/src/types/generated.ts`を作成
   - 全スキーマからのStatic型エクスポートを実装
   - 自動生成コメントとタイムスタンプを追加
   - _要件: 2.1, 2.2, 5.1_
 
-- [ ] 4.2 sharedパッケージのindex.ts更新
+- [x] 4.2 sharedパッケージのindex.ts更新
   - `packages/shared/src/index.ts`を更新
   - スキーマとgenerated型の両方をエクスポート
   - 適切なre-exportの構造を実装
