@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { getProjects, addProject, removeProject, selectProject } from '@/services';
-import type { ProjectInfo, FileItem } from '@kiro-lens/shared';
+import { projectApiService, ApiClientError } from '@/services';
+import type { ProjectInfo, FileItem } from '@kiro-lens/shared/types/generated';
 import type { ProjectState } from '@/types/project-store';
 
-// ApiClientインスタンスは不要 - 関数ベースAPIを使用
+// TypeBoxスキーマベースのprojectApiServiceを使用
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
   // 初期状態
@@ -27,14 +27,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   loadProjects: async () => {
     try {
       set({ isLoading: true, error: undefined });
-      const projects = await getProjects();
+      const { projects } = await projectApiService.getProjects();
       set({
         projects: [...projects],
         isLoading: false,
       });
     } catch (error) {
+      const errorMessage =
+        error instanceof ApiClientError
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : 'プロジェクトの取得に失敗しました';
+
       set({
-        error: error instanceof Error ? error.message : 'プロジェクトの取得に失敗しました',
+        error: errorMessage,
         isLoading: false,
       });
     }
@@ -44,7 +51,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   addProject: async (path: string) => {
     try {
       set({ error: undefined });
-      const project = await addProject(path);
+      const { project } = await projectApiService.addProject(path);
       const { projects } = get();
 
       // 新しいプロジェクトを追加して選択、プロジェクト追加モードを終了
@@ -55,8 +62,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         selectedFile: undefined, // プロジェクト変更時にファイル選択をクリア
       });
     } catch (error) {
+      const errorMessage =
+        error instanceof ApiClientError
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : 'プロジェクトの追加に失敗しました';
+
       set({
-        error: error instanceof Error ? error.message : 'プロジェクトの追加に失敗しました',
+        error: errorMessage,
       });
     }
   },
@@ -65,7 +79,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   removeProject: async (projectId: string) => {
     try {
       set({ error: undefined });
-      await removeProject(projectId);
+      await projectApiService.deleteProject(projectId);
       const { projects, currentProject } = get();
 
       // プロジェクトを削除
@@ -77,8 +91,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         currentProject: newCurrentProject,
       });
     } catch (error) {
+      const errorMessage =
+        error instanceof ApiClientError
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : 'プロジェクトの削除に失敗しました';
+
       set({
-        error: error instanceof Error ? error.message : 'プロジェクトの削除に失敗しました',
+        error: errorMessage,
       });
     }
   },
@@ -91,15 +112,22 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
     try {
       set({ error: undefined });
-      await selectProject(project.id);
+      const { project: selectedProject } = await projectApiService.selectProject(project.id);
       set({
-        currentProject: project,
+        currentProject: selectedProject,
         selectedFile: undefined, // プロジェクト切り替え時にファイル選択をクリア
         isAddingProject: false, // プロジェクト追加モードを終了
       });
     } catch (error) {
+      const errorMessage =
+        error instanceof ApiClientError
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : 'プロジェクトの選択に失敗しました';
+
       set({
-        error: error instanceof Error ? error.message : 'プロジェクトの選択に失敗しました',
+        error: errorMessage,
       });
     }
   },

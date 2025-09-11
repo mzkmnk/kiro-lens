@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useProjectStore } from '@/stores/projectStore';
 
-import type { ProjectInfo } from '@kiro-lens/shared';
+import type { ProjectInfo } from '@kiro-lens/shared/types/generated';
 
 /**
  * ProjectSidebarコンポーネント

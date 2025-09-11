@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FolderOpen } from 'lucide-react';
-import { validatePath } from '@/services';
+import { projectApiService } from '@/services';
 
 interface PathInputProps {
   /** パス確定時のコールバック */
@@ -53,7 +53,7 @@ export const PathInput: React.FC<PathInputProps> = ({
     setValidation(prev => ({ ...prev, isValidating: true }));
 
     try {
-      const result = await validatePath(inputPath.trim());
+      const result = await projectApiService.validatePath(inputPath.trim());
       setValidation({
         isValid: result.isValid,
         message: result.error || (result.isValid ? 'パスが有効です' : undefined),
