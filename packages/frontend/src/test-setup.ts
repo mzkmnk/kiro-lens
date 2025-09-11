@@ -35,6 +35,3 @@ Object.defineProperty(document.body.style, "transform", {
     };
   },
 });
-
-// Vitest setup completed
-console.log("Vitest setup completed");
