@@ -46,25 +46,25 @@
   - 入力サニタイゼーション用のパターン定義
   - _要件: 7.1, 7.2_
 
-- [ ] 3. APIスキーマの実装
+- [x] 3. APIスキーマの実装
   - HTTPトランスポート層のスキーマを定義する
   - _要件: 2.1, 2.2_
 
-- [ ] 3.1 共通APIスキーマの実装
+- [x] 3.1 共通APIスキーマの実装
   - `packages/shared/src/schemas/api/common.ts`を作成
   - ApiResponseSchema、ApiErrorSchemaを実装
   - ResultSchema（Success/Error型）を実装
   - 型ガード関数（isApiSuccess、isApiError）を実装
   - _要件: 4.1, 4.2_
 
-- [ ] 3.2 ファイル関連APIスキーマの実装
+- [x] 3.2 ファイル関連APIスキーマの実装
   - `packages/shared/src/schemas/api/files.ts`を作成
   - ProjectFilesParamsSchemaをUUID形式で実装
   - FileTreeResponseSchemaを実装
   - ドメインスキーマとの適切な連携を確保
   - _要件: 2.1, 2.2, 4.1_
 
-- [ ] 3.3 プロジェクト関連APIスキーマの実装
+- [x] 3.3 プロジェクト関連APIスキーマの実装
   - `packages/shared/src/schemas/api/projects.ts`を作成
   - プロジェクト一覧、作成、削除、選択のスキーマを実装
   - パスバリデーション用のスキーマを実装
