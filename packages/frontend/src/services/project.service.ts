@@ -42,7 +42,7 @@ export class ProjectService {
     try {
       const response = await firstValueFrom(this.apiService.getProjects());
       this.projects.set([...response.projects]);
-    } catch (error) {
+    } catch (_error) {
       this.error.set("プロジェクトの読み込みに失敗しました");
       this.projects.set([]);
     } finally {
@@ -62,7 +62,7 @@ export class ProjectService {
       // プロジェクト一覧を再読み込み
       await this.loadProjects();
       return true;
-    } catch (error) {
+    } catch (_error) {
       this.error.set("プロジェクトの追加に失敗しました");
       return false;
     } finally {
@@ -88,7 +88,7 @@ export class ProjectService {
       // プロジェクト一覧を再読み込み
       await this.loadProjects();
       return true;
-    } catch (error) {
+    } catch (_error) {
       this.error.set("プロジェクトの削除に失敗しました");
       return false;
     } finally {
@@ -104,7 +104,7 @@ export class ProjectService {
 
     try {
       return await firstValueFrom(this.apiService.validatePath(path));
-    } catch (error) {
+    } catch (_error) {
       this.error.set("パスの検証に失敗しました");
       return { isValid: false, error: "パスの検証に失敗しました" };
     }
@@ -126,7 +126,7 @@ export class ProjectService {
       await firstValueFrom(this.apiService.selectProject(projectId));
       this.selectedProject.set(project);
       return true;
-    } catch (error) {
+    } catch (_error) {
       this.error.set("プロジェクトの選択に失敗しました");
       return false;
     }

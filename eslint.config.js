@@ -42,7 +42,7 @@ export default [
       ...tseslint.configs.recommended.rules,
       // 未使用変数の警告（アンダースコア始まりは除外）
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
@@ -99,15 +99,6 @@ export default [
           style: 'kebab-case',
         },
       ],
-      // 未使用変数の警告（アンダースコア始まりは除外）
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
     },
   },
 
@@ -132,15 +123,6 @@ export default [
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      // 未使用変数の警告（アンダースコア始まりは除外）
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
     },
   },
 

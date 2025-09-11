@@ -14,7 +14,13 @@ import { ProjectService } from "./project.service";
 
 describe("ProjectService", () => {
   let service: ProjectService;
-  let apiService: any;
+  let apiService: {
+    getProjects: ReturnType<typeof vi.fn>;
+    addProject: ReturnType<typeof vi.fn>;
+    removeProject: ReturnType<typeof vi.fn>;
+    validatePath: ReturnType<typeof vi.fn>;
+    selectProject: ReturnType<typeof vi.fn>;
+  };
 
   const mockProjects: ProjectInfo[] = [
     { id: "1", name: "Project 1", path: "/path/to/project1", isValid: true },
