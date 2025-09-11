@@ -13,7 +13,17 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@kiro-lens/shared": [
+        "../shared/src/index"
+      ],
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
