@@ -1,10 +1,6 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { getProjectFiles, FileTreeError } from '../services/fileTreeService.js';
-import type { FileItem, ApiResponse } from '@kiro-lens/shared';
-
-interface ProjectFilesParams {
-  id: string;
-}
+import { getProjectFiles, FileTreeError } from '../services/fileTreeService';
+import type { FileItem, ApiResponse, IdParams } from '@kiro-lens/shared';
 
 /**
  * プロジェクトIDのバリデーション
@@ -87,7 +83,7 @@ export async function filesRoutes(fastify: FastifyInstance) {
    * @param id - プロジェクトID
    * @returns ファイルツリー情報
    */
-  fastify.get<{ Params: ProjectFilesParams }>(
+  fastify.get<{ Params: IdParams }>(
     '/api/projects/:id/files',
     {
       schema: {
@@ -142,7 +138,7 @@ export async function filesRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    async (request: FastifyRequest<{ Params: ProjectFilesParams }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: IdParams }>, reply: FastifyReply) => {
       const startTime = Date.now();
 
       try {

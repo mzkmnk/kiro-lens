@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { basename, join } from 'path';
-import type { ProjectInfo, AppConfig } from '@kiro-lens/shared';
-import { loadConfig, saveConfig } from './configService.js';
+import type { ProjectInfo, AppConfig, ValidationResult } from '@kiro-lens/shared';
+import { loadConfig, saveConfig } from './configService';
 import {
   resolvePath,
   checkDirectoryExists,
@@ -21,18 +21,6 @@ export class ProjectError extends Error {
     super(message);
     this.name = 'ProjectError';
   }
-}
-
-/**
- * パス検証結果
- */
-export interface ValidationResult {
-  /** 検証が成功したかどうか */
-  readonly isValid: boolean;
-  /** エラーメッセージ（検証失敗時） */
-  readonly error?: string;
-  /** 検証されたパス（成功時） */
-  readonly validatedPath?: string;
 }
 
 /**

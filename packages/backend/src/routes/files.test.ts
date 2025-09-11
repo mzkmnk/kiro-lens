@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from 'vitest';
-import { createServer } from '../server.js';
+import { createServer } from '../server';
 import type { FastifyInstance } from 'fastify';
 
 describe('Files API', () => {

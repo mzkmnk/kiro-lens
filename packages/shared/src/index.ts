@@ -19,7 +19,11 @@ export type {
   ProjectListResponse,
   ValidationResult,
   FileTreeResponse,
+  ApiResult,
 } from './types/api';
+
+// API型ガード関数
+export { isValidationSuccess, isApiSuccess } from './types/api';
 
 // プロジェクト関連型定義
 export type { ProjectInfo, ProjectResponse } from './types/project';
@@ -29,6 +33,13 @@ export type { AppConfig, AppSettings, ConfigMetadata } from './types/config';
 
 // ファイルツリー関連型定義
 export type { FileItem } from './types/file-tree';
+
+// ファイルシステム関連型定義
+export type { FileSystemErrorType, DirectoryPermissions } from './types/filesystem';
+export { FileSystemError } from './types/filesystem';
+
+// ルートパラメータ関連型定義
+export type { IdParams } from './types/route-params';
 
 // 共通モックデータのエクスポート
 export * from './mocks';

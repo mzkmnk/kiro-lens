@@ -1,8 +1,8 @@
 import Fastify, { FastifyInstance } from 'fastify';
-import { corsPlugin } from './plugins/cors.js';
-import { healthRoutes } from './routes/health.js';
-import { projectRoutes } from './routes/project.js';
-import { filesRoutes } from './routes/files.js';
+import { corsPlugin } from './plugins/cors';
+import { healthRoutes } from './routes/health';
+import { projectRoutes } from './routes/project';
+import { filesRoutes } from './routes/files';
 
 export function createServer(): FastifyInstance {
   const fastify = Fastify({

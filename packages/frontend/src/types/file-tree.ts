@@ -1,11 +1,7 @@
-import { FileItem } from '@shared/types/file-tree';
+import type { FileItem } from '@kiro-lens/shared';
 
 /**
- * ファイルツリーに関する型定義
- */
-
-/**
- * ファイルツリーのプロパティ
+ * ファイルツリーコンポーネントのプロパティ
  */
 export interface FileTreeProps {
   /** 表示するファイルアイテムのリスト */
@@ -17,7 +13,7 @@ export interface FileTreeProps {
 }
 
 /**
- * ファイルツリーアイテムのプロパティ
+ * ファイルツリーアイテムコンポーネントのプロパティ
  */
 export interface FileTreeItemProps {
   /** 表示するファイルアイテム */

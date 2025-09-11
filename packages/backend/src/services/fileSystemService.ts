@@ -1,31 +1,6 @@
 import { promises as fs } from 'fs';
 import { join, dirname, basename } from 'path';
-
-/**
- * ファイルシステム操作エラー
- */
-export class FileSystemError extends Error {
-  constructor(
-    message: string,
-    public readonly code: string,
-    public readonly cause?: Error
-  ) {
-    super(message);
-    this.name = 'FileSystemError';
-  }
-}
-
-/**
- * ディレクトリ権限情報
- */
-export interface DirectoryPermissions {
-  /** 読み取り可能かどうか */
-  readonly readable: boolean;
-  /** 書き込み可能かどうか */
-  readonly writable: boolean;
-  /** 実行可能かどうか */
-  readonly executable: boolean;
-}
+import { DirectoryPermissions, FileSystemError } from '@kiro-lens/shared';
 
 /**
  * パス検証と正規化
