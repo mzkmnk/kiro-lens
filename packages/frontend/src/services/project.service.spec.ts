@@ -14,17 +14,27 @@ import { ProjectService } from "./project.service";
 
 describe("ProjectService", () => {
   let service: ProjectService;
-  let apiService: {
-    getProjects: ReturnType<typeof vi.fn>;
-    addProject: ReturnType<typeof vi.fn>;
-    removeProject: ReturnType<typeof vi.fn>;
-    validatePath: ReturnType<typeof vi.fn>;
-    selectProject: ReturnType<typeof vi.fn>;
-  };
+  let apiService: ApiService;
 
   const mockProjects: ProjectInfo[] = [
-    { id: "1", name: "Project 1", path: "/path/to/project1", isValid: true },
-    { id: "2", name: "Project 2", path: "/path/to/project2", isValid: true },
+    {
+      id: "1",
+      name: "Project 1",
+      path: "/path/to/project1",
+      kiroPath: "/path/to/project1/.kiro",
+      hasKiroDir: true,
+      isValid: true,
+      addedAt: "2025-01-01T00:00:00.000Z",
+    },
+    {
+      id: "2",
+      name: "Project 2",
+      path: "/path/to/project2",
+      kiroPath: "/path/to/project2/.kiro",
+      hasKiroDir: true,
+      isValid: true,
+      addedAt: "2025-01-01T00:00:00.000Z",
+    },
   ];
 
   beforeEach(() => {
@@ -46,7 +56,14 @@ describe("ProjectService", () => {
     });
 
     service = TestBed.inject(ProjectService);
-    apiService = TestBed.inject(ApiService);
+    apiService = vi.mocked(TestBed.inject(ApiService));
+
+    // モックメソッドの型アサーション
+    (apiService.getProjects as any) = vi.fn();
+    (apiService.addProject as any) = vi.fn();
+    (apiService.removeProject as any) = vi.fn();
+    (apiService.validatePath as any) = vi.fn();
+    (apiService.selectProject as any) = vi.fn();
   });
 
   describe("初期状態", () => {
@@ -98,7 +115,10 @@ describe("ProjectService", () => {
         id: "3",
         name: "New Project",
         path: "/new/project",
+        kiroPath: "/new/project/.kiro",
+        hasKiroDir: true,
         isValid: true,
+        addedAt: "2025-01-01T00:00:00.000Z",
       };
 
       apiService.addProject.mockReturnValue(
@@ -227,7 +247,15 @@ describe("ProjectService", () => {
     it("should compute validProjects correctly", () => {
       const mixedProjects = [
         ...mockProjects,
-        { id: "3", name: "Invalid Project", path: "/invalid", isValid: false },
+        {
+          id: "3",
+          name: "Invalid Project",
+          path: "/invalid",
+          kiroPath: "/invalid/.kiro",
+          hasKiroDir: false,
+          isValid: false,
+          addedAt: "2025-01-01T00:00:00.000Z",
+        },
       ];
       service.projects.set(mixedProjects);
 
@@ -239,7 +267,10 @@ describe("ProjectService", () => {
         id: "3",
         name: "Invalid Project",
         path: "/invalid",
+        kiroPath: "/invalid/.kiro",
+        hasKiroDir: false,
         isValid: false,
+        addedAt: "2025-01-01T00:00:00.000Z",
       };
       const mixedProjects = [...mockProjects, invalidProject];
       service.projects.set(mixedProjects);
