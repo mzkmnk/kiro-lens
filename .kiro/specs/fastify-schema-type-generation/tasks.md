@@ -86,24 +86,24 @@
   - 適切なre-exportの構造を実装
   - _要件: 2.1, 2.2, 5.1_
 
-- [ ] 5. バックエンドのTypeBox統合
+- [x] 5. バックエンドのTypeBox統合
   - 既存のFastifyルートをTypeBoxスキーマベースに移行する
   - _要件: 1.3, 3.1, 3.2_
 
-- [ ] 5.1 files.tsルートのTypeBox化
+- [x] 5.1 files.tsルートのTypeBox化
   - `packages/backend/src/routes/files.ts`を更新
   - ProjectFilesParamsSchemaとFileTreeResponseSchemaを使用
   - 既存のバリデーションロジックをTypeBoxに移行
   - エラーハンドリングをApiResponseSchemaに統一
   - _要件: 1.3, 3.1, 3.2, 4.1_
 
-- [ ] 5.2 エラーハンドリングプラグインの実装
+- [x] 5.2 エラーハンドリングプラグインの実装
   - `packages/backend/src/plugins/error-handler.ts`を作成
   - TypeBoxErrorの詳細なエラーハンドリングを実装
   - 統一されたエラーレスポンス形式を確保
   - _要件: 4.1, 4.2, 7.1_
 
-- [ ] 5.3 パフォーマンス最適化の実装
+- [x] 5.3 パフォーマンス最適化の実装
   - `packages/backend/src/config/typebox.ts`を作成
   - OptimizedValidatorクラスを実装
   - スキーマコンパイルとキャッシュ機能を追加

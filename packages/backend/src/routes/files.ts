@@ -1,16 +1,14 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyTypebox } from '../app';
 import { getProjectFiles, FileTreeError } from '../services/fileTreeService';
-import type { FileItem, ApiResponse, IdParams } from '@kiro-lens/shared';
+import {
+  ProjectFilesParamsSchema,
+  FileTreeResponseSchema,
+  ErrorResponseSchema,
+  type FileItem,
+  type ApiResponse,
+} from '@kiro-lens/shared';
 
-/**
- * プロジェクトIDのバリデーション
- *
- * @param id - 検証するプロジェクトID
- * @returns IDが有効かどうか（空文字や空白のみの文字列は無効）
- */
-function validateProjectId(id: string): boolean {
-  return id.trim().length > 0;
-}
+// TypeBoxスキーマによる自動バリデーションのため、手動バリデーション関数は不要
 
 /**
  * FileTreeErrorを適切なHTTPレスポンスに変換
@@ -24,7 +22,7 @@ function handleFileTreeError(error: FileTreeError): {
     error: {
       type: 'NOT_FOUND' as const,
       message,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
     },
   });
 
@@ -51,7 +49,7 @@ function handleFileTreeError(error: FileTreeError): {
           error: {
             type: 'PERMISSION_DENIED',
             message: 'Permission denied',
-            timestamp: new Date(),
+            timestamp: new Date().toISOString(),
           },
         },
       };
@@ -64,7 +62,7 @@ function handleFileTreeError(error: FileTreeError): {
           error: {
             type: 'INTERNAL_ERROR',
             message: 'Internal server error',
-            timestamp: new Date(),
+            timestamp: new Date().toISOString(),
           },
         },
       };
@@ -72,90 +70,41 @@ function handleFileTreeError(error: FileTreeError): {
 }
 
 /**
- * ファイルツリー関連のAPIルート
+ * ファイルツリー関連のAPIルート（TypeBoxスキーマベース）
  */
-export async function filesRoutes(fastify: FastifyInstance) {
+export async function filesRoutes(fastify: FastifyTypebox) {
   /**
    * GET /api/projects/:id/files - プロジェクトのファイルツリーを取得
    *
    * 指定されたプロジェクトの.kiro配下のファイル構造を取得します。
+   * TypeBoxスキーマによる自動バリデーションと型安全性を提供します。
    *
    * @param id - プロジェクトID
    * @returns ファイルツリー情報
    */
-  fastify.get<{ Params: IdParams }>(
+  fastify.get(
     '/api/projects/:id/files',
     {
       schema: {
-        params: {
-          type: 'object',
-          properties: {
-            id: { type: 'string', minLength: 1 },
-          },
-          required: ['id'],
-        },
+        params: ProjectFilesParamsSchema,
         response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              data: { type: 'array' },
-            },
-            required: ['success', 'data'],
-          },
-          400: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              error: {
-                type: 'object',
-                properties: {
-                  type: { type: 'string' },
-                  message: { type: 'string' },
-                  timestamp: { type: 'string' },
-                },
-                required: ['type', 'message', 'timestamp'],
-              },
-            },
-            required: ['success', 'error'],
-          },
-          404: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              error: {
-                type: 'object',
-                properties: {
-                  type: { type: 'string' },
-                  message: { type: 'string' },
-                  timestamp: { type: 'string' },
-                },
-                required: ['type', 'message', 'timestamp'],
-              },
-            },
-            required: ['success', 'error'],
-          },
+          200: FileTreeResponseSchema,
+          400: ErrorResponseSchema,
+          403: ErrorResponseSchema,
+          404: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
+        tags: ['files'],
+        summary: 'プロジェクトファイルツリー取得',
+        description: '指定されたプロジェクトの.kiro配下のファイル構造を取得します',
       },
     },
-    async (request: FastifyRequest<{ Params: IdParams }>, reply: FastifyReply) => {
+    async (request, reply) => {
       const startTime = Date.now();
 
       try {
+        // request.paramsは自動的にProjectFilesParams型として推論される
         const { id } = request.params;
-
-        // プロジェクトIDのバリデーション
-        if (!validateProjectId(id)) {
-          fastify.log.warn({ projectId: id }, 'Invalid project ID provided');
-          return reply.status(400).send({
-            success: false,
-            error: {
-              type: 'VALIDATION_ERROR',
-              message: 'Invalid project ID',
-              timestamp: new Date(),
-            },
-          });
-        }
 
         fastify.log.info({ projectId: id }, 'Fetching file tree for project');
 
@@ -168,9 +117,12 @@ export async function filesRoutes(fastify: FastifyInstance) {
           'File tree retrieved successfully'
         );
 
+        // レスポンスも型安全
         return reply.status(200).send({
           success: true,
-          data: files,
+          data: {
+            files,
+          },
         });
       } catch (error) {
         const duration = Date.now() - startTime;
@@ -206,7 +158,7 @@ export async function filesRoutes(fastify: FastifyInstance) {
           error: {
             type: 'INTERNAL_ERROR',
             message: 'Internal server error',
-            timestamp: new Date(),
+            timestamp: new Date().toISOString(),
           },
         });
       }

@@ -1,5 +1,6 @@
 import { createApp, type FastifyTypebox } from './app';
 import { corsPlugin } from './plugins/cors';
+import errorHandlerPlugin from './plugins/error-handler';
 import { healthRoutes } from './routes/health';
 import { projectRoutes } from './routes/project';
 import { filesRoutes } from './routes/files';
@@ -9,6 +10,7 @@ export function createServer(): FastifyTypebox {
 
   // プラグイン登録
   fastify.register(corsPlugin);
+  fastify.register(errorHandlerPlugin);
 
   // ルート登録
   fastify.register(healthRoutes);
