@@ -6,7 +6,7 @@
 
 ## 実装タスク
 
-- [ ] 1. 既存Reactフロントエンドの削除
+- [x] 1. 既存Reactフロントエンドの削除
   - packages/frontend ディレクトリの完全削除
   - package.json からフロントエンド関連スクリプトの削除
   - ルートpackage.json のワークスペース設定更新

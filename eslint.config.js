@@ -3,7 +3,7 @@
  *
  * ベストプラクティスに沿った最小限のルール設定
  * - JavaScript/TypeScript推奨ルールのみ
- * - React Hooksルール（フロントエンドのみ）
+
  * - globalsパッケージによる環境別グローバル変数設定
  * - Prettierとの競合回避
  */
@@ -12,7 +12,7 @@ import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 import prettierConfig from 'eslint-config-prettier';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
+
 import globals from 'globals';
 
 export default [
@@ -59,27 +59,7 @@ export default [
     },
   },
 
-  // Frontend専用（ブラウザ環境）
-  {
-    files: ['packages/frontend/**/*.{ts,tsx}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser, // ブラウザ専用のグローバル変数
-      },
-    },
-  },
 
-  // React Hooks（フロントエンドのみ）
-  {
-    files: ['packages/frontend/**/*.{ts,tsx}'],
-    plugins: {
-      'react-hooks': reactHooksPlugin,
-    },
-    rules: {
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-    },
-  },
 
   // 除外設定
   {
