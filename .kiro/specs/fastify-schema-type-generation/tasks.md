@@ -109,24 +109,24 @@
   - スキーマコンパイルとキャッシュ機能を追加
   - _要件: 6.1, 6.2_
 
-- [ ] 6. フロントエンドの型安全API統合
+- [x] 6. フロントエンドの型安全API統合
   - 既存のAPIクライアントをTypeBoxスキーマベースに置き換える
   - _要件: 2.1, 4.1, 5.1_
 
-- [ ] 6.1 TypedApiClientの実装
+- [x] 6.1 TypedApiClientの実装
   - `packages/frontend/src/services/typedApiClient.ts`を作成
   - TypedApiClientクラスを実装（ky基盤）
   - 型安全なHTTPメソッド（get、post、delete）を実装
   - 開発環境でのログ機能を統合
   - _要件: 2.1, 4.1, 5.1_
 
-- [ ] 6.2 ProjectApiServiceの実装
+- [x] 6.2 ProjectApiServiceの実装
   - ProjectApiServiceクラスを実装
   - getProjectFiles、getProjects等のメソッドを型安全に実装
   - エラーハンドリングをApiResponseSchemaベースに統一
   - _要件: 2.1, 4.1, 5.1_
 
-- [ ] 6.3 既存APIサービスの置き換え
+- [x] 6.3 既存APIサービスの置き換え
   - `packages/frontend/src/services/projectApi.ts`を削除
   - `packages/frontend/src/services/fileTreeApi.ts`を削除
   - `packages/frontend/src/services/httpClient.ts`を削除

@@ -1,16 +1,13 @@
-// プロジェクト管理API関数のエクスポート
-export { getProjects, addProject, removeProject, validatePath, selectProject } from './projectApi';
+// TypeBoxスキーマベースAPI関連のサービスをエクスポート
+export * from './typedApiClient';
+export * from './projectApiService';
 
-// ファイルツリーAPI関数のエクスポート
-export { getProjectFiles } from './fileTreeApi';
-
-// HTTPクライアントとエラーハンドラーのエクスポート
-export { default as httpClient, handleApiError } from './httpClient';
-
-// 型定義のエクスポート
+// 型定義のエクスポート（TypeBoxベース）
 export type {
   ProjectInfo,
   ApiResponse,
   ValidationResult,
   FileTreeResponse,
-} from '@kiro-lens/shared';
+  FileItem,
+  ApiError,
+} from '@kiro-lens/shared/types/generated';
