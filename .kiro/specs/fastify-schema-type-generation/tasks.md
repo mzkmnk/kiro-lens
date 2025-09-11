@@ -149,24 +149,24 @@
   - TypeScriptエラーの修正
   - _要件: 4.1, 4.2_
 
-- [ ] 8. テストの実装と更新
+- [x] 8. テストの実装と更新
   - TypeBoxスキーマのテストと既存テストの更新を行う
   - _要件: 4.1, 4.2, 7.3_
 
-- [ ] 8.1 スキーマテストの実装
+- [x] 8.1 スキーマテストの実装
   - `packages/shared/src/schemas/__tests__/`ディレクトリを作成
   - files.test.ts、projects.test.ts、common.test.tsを実装
   - Value.Checkを使用したスキーマバリデーションテスト
   - 有効・無効データのテストケースを網羅
   - _要件: 7.3, 7.4_
 
-- [ ] 8.2 バックエンドAPIテストの更新
+- [x] 8.2 バックエンドAPIテストの更新
   - `packages/backend/src/routes/files.test.ts`を更新
   - TypeBoxスキーマベースのテストに変更
   - レスポンス形式の検証を追加
   - _要件: 4.1, 4.2, 7.3_
 
-- [ ] 8.3 フロントエンドAPIテストの更新
+- [x] 8.3 フロントエンドAPIテストの更新
   - TypedApiClientとProjectApiServiceのテストを実装
   - モック設定を新しいAPIクライアントに対応
   - 型安全性のテストケースを追加
