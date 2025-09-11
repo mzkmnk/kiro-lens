@@ -33,7 +33,7 @@
   - モノレポ構成への統合
   - _要件: 4.3_
 
-- [ ] 5. Vitest実験的サポート設定
+- [x] 5. Vitest実験的サポート設定
   - Angular 20のVitest unit-test builder設定
   - vitest.config.ts作成
   - テストセットアップファイル作成
