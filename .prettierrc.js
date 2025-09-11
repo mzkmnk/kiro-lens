@@ -52,4 +52,16 @@ export default {
 
   // 埋め込み言語のフォーマット
   embeddedLanguageFormatting: 'auto',
+
+  // Angular HTML テンプレート用設定
+  overrides: [
+    {
+      files: '*.html',
+      options: {
+        parser: 'angular',
+        printWidth: 120, // HTMLテンプレートは少し長めに
+        htmlWhitespaceSensitivity: 'ignore', // Angularテンプレートの空白を無視
+      },
+    },
+  ],
 };

@@ -26,7 +26,7 @@
   - Noto Sans JP フォント設定
   - _要件: 3.1, 3.2, 3.3_
 
-- [ ] 4. 既存ワークスペース統合設定
+- [x] 4. 既存ワークスペース統合設定
   - 既存ESLint設定の拡張（Angular ESLint追加）
   - 既存Prettier設定の拡張（Angular対応）
   - package.jsonスクリプト更新
