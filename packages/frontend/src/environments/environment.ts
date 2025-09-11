@@ -1,8 +1,10 @@
 /**
- * 開発環境設定
+ * 本番環境設定
  */
 export const environment = {
-  production: false,
-  apiUrl: "http://localhost:3001/api",
-  enableMSW: false, // MSWはVitestでのみ使用
+  production: true,
+  apiUrl: "http://localhost:3001",
+  enableMSW: false,
+  logLevel: "error" as const,
+  version: "1.0.0",
 };

@@ -5,35 +5,65 @@
 import { Signal } from "@angular/core";
 
 /**
- * Angular Signalsベースの状態管理型定義
+ * Signalベースの状態管理用型定義
  */
 export interface SignalState<T> {
   readonly value: Signal<T>;
-  set: (value: T) => void;
-  update: (updater: (current: T) => T) => void;
+  readonly set: (value: T) => void;
+  readonly update: (updateFn: (current: T) => T) => void;
 }
 
 /**
- * Angular コンポーネントのプロパティ型定義
+ * コンポーネントの基本プロパティ
  */
-export interface ComponentProps {
-  [key: string]: unknown;
+export interface BaseComponentProps {
+  readonly id?: string;
+  readonly className?: string;
+  readonly disabled?: boolean;
 }
 
 /**
- * Angular サービスの基底インターフェース
+ * エラー状態管理用型定義
  */
-export interface BaseService {
-  readonly serviceName: string;
+export interface ErrorState {
+  readonly hasError: boolean;
+  readonly message?: string;
+  readonly code?: string;
 }
 
 /**
- * Angular HTTP エラーレスポンス型定義
+ * ローディング状態管理用型定義
  */
-export interface HttpErrorResponse {
-  error: unknown;
-  headers: Record<string, string>;
-  status: number;
-  statusText: string;
-  url: string | null;
+export interface LoadingState {
+  readonly isLoading: boolean;
+  readonly operation?: string;
+}
+
+/**
+ * フォーム状態管理用型定義
+ */
+export interface FormState<T> {
+  readonly value: T;
+  readonly isValid: boolean;
+  readonly isDirty: boolean;
+  readonly errors?: Record<string, string>;
+}
+
+/**
+ * リスト操作用型定義
+ */
+export interface ListOperations<T> {
+  readonly add: (item: T) => void;
+  readonly remove: (id: string) => void;
+  readonly update: (id: string, item: Partial<T>) => void;
+  readonly clear: () => void;
+}
+
+/**
+ * 選択状態管理用型定義
+ */
+export interface SelectionState<T> {
+  readonly selected: T | null;
+  readonly select: (item: T) => void;
+  readonly deselect: () => void;
 }

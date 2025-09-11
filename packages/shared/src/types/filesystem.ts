@@ -15,7 +15,7 @@ export class FileSystemError extends Error {
   constructor(
     message: string,
     public readonly code: FileSystemErrorType,
-    public readonly cause?: Error
+    public override readonly cause?: Error
   ) {
     super(message);
     this.name = 'FileSystemError';
