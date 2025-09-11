@@ -71,8 +71,7 @@ describe("ApiService", () => {
   describe("getProjects", () => {
     it("should return project list", () => {
       const mockResponse: ProjectListResponse = {
-        success: true,
-        data: [
+        projects: [
           {
             id: "1",
             name: "Project 1",
@@ -102,13 +101,13 @@ describe("ApiService", () => {
     it("should add new project", () => {
       const request: AddProjectRequest = { path: "/path/to/new/project" };
       const mockResponse = {
-        success: true,
-        data: {
+        project: {
           id: "3",
           name: "New Project",
           path: "/path/to/new/project",
           isValid: true,
         },
+        message: "Project added successfully",
       };
 
       service.addProject(request).subscribe((response) => {
@@ -178,23 +177,20 @@ describe("ApiService", () => {
     it("should return project files", () => {
       const projectId = "1";
       const mockResponse: FileTreeResponse = {
-        success: true,
-        data: {
-          files: [
-            {
-              name: "file1.txt",
-              path: "/path/file1.txt",
-              type: "file",
-              size: 100,
-            },
-            {
-              name: "folder1",
-              path: "/path/folder1",
-              type: "directory",
-              children: [],
-            },
-          ],
-        },
+        files: [
+          {
+            name: "file1.txt",
+            path: "/path/file1.txt",
+            type: "file",
+            size: 100,
+          },
+          {
+            name: "folder1",
+            path: "/path/folder1",
+            type: "directory",
+            children: [],
+          },
+        ],
       };
 
       service.getProjectFiles(projectId).subscribe((response) => {

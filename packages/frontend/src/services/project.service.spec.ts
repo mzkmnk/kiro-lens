@@ -61,8 +61,7 @@ describe("ProjectService", () => {
   describe("loadProjects", () => {
     it("should load projects successfully", async () => {
       const mockResponse: ProjectListResponse = {
-        success: true,
-        data: mockProjects,
+        projects: mockProjects,
       };
       apiService.getProjects.mockReturnValue(of(mockResponse));
 
@@ -97,10 +96,10 @@ describe("ProjectService", () => {
       };
 
       apiService.addProject.mockReturnValue(
-        of({ success: true, data: newProject }),
+        of({ project: newProject, message: "Project added successfully" }),
       );
       apiService.getProjects.mockReturnValue(
-        of({ success: true, data: [...mockProjects, newProject] }),
+        of({ projects: [...mockProjects, newProject] }),
       );
 
       const result = await service.addProject(request);
@@ -128,7 +127,7 @@ describe("ProjectService", () => {
       service.projects.set(mockProjects);
       apiService.removeProject.mockReturnValue(of({ success: true }));
       apiService.getProjects.mockReturnValue(
-        of({ success: true, data: [mockProjects[1]] }),
+        of({ projects: [mockProjects[1]] }),
       );
 
       const result = await service.removeProject("1");
@@ -170,7 +169,7 @@ describe("ProjectService", () => {
 
       expect(result).toEqual({
         isValid: false,
-        message: "パスの検証に失敗しました",
+        error: "パスの検証に失敗しました",
       });
       expect(service.error()).toBe("パスの検証に失敗しました");
     });

@@ -41,7 +41,7 @@ export class ProjectService {
 
     try {
       const response = await firstValueFrom(this.apiService.getProjects());
-      this.projects.set(response.data);
+      this.projects.set([...response.projects]);
     } catch (error) {
       this.error.set("プロジェクトの読み込みに失敗しました");
       this.projects.set([]);
@@ -106,7 +106,7 @@ export class ProjectService {
       return await firstValueFrom(this.apiService.validatePath(path));
     } catch (error) {
       this.error.set("パスの検証に失敗しました");
-      return { isValid: false, message: "パスの検証に失敗しました" };
+      return { isValid: false, error: "パスの検証に失敗しました" };
     }
   }
 
