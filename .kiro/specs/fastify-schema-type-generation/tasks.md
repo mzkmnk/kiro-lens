@@ -22,25 +22,25 @@
   - FastifyTypeboxカスタム型を定義
   - _要件: 1.1, 1.3_
 
-- [ ] 2. ドメインスキーマの実装
+- [x] 2. ドメインスキーマの実装
   - ビジネスロジックの核となるドメインスキーマを定義する
   - _要件: 2.1, 2.2_
 
-- [ ] 2.1 ファイルツリードメインスキーマの実装
+- [x] 2.1 ファイルツリードメインスキーマの実装
   - `packages/shared/src/schemas/domain/file-tree.ts`を作成
   - FileItemSchemaを再帰的定義で実装
   - 既存のFileItem型との互換性を確保
   - Static型エクスポートを追加
   - _要件: 2.1, 2.2_
 
-- [ ] 2.2 プロジェクトドメインスキーマの実装
+- [x] 2.2 プロジェクトドメインスキーマの実装
   - `packages/shared/src/schemas/domain/project.ts`を作成
   - ProjectInfoSchemaをUUID形式のIDで実装
   - バリデーション関連スキーマ（ValidationResultSchema、DirectoryPermissionsSchema）を実装
   - 既存の型定義との互換性を確保
   - _要件: 2.1, 2.2_
 
-- [ ] 2.3 セキュリティスキーマの実装
+- [x] 2.3 セキュリティスキーマの実装
   - `packages/shared/src/schemas/security/sanitization.ts`を作成
   - SecureStringSchema、SafePathSchema、ProjectIdSchemaを実装
   - 入力サニタイゼーション用のパターン定義
