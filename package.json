@@ -19,7 +19,12 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "quality": "concurrently \"pnpm run lint\" \"pnpm run format:check\"",
-    "quality:fix": "pnpm run lint:fix && pnpm run format"
+    "quality:fix": "pnpm run lint:fix && pnpm run format",
+    "type-check": "pnpm --filter=shared type-check && pnpm --filter=backend type-check && pnpm --filter=frontend type-check",
+    "validate:schemas": "pnpm --filter=shared test:schemas",
+    "dev:watch": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "dev:msw": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend:msw\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "postinstall": "pnpm run build:shared"
   },
   "keywords": [
     "kiro-ide",

@@ -20,7 +20,9 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:schemas": "vitest run --testPathPattern=\"schemas/__tests__\"",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "typescript": "^5.7.2",
