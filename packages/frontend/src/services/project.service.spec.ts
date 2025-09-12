@@ -38,32 +38,26 @@ describe("ProjectService", () => {
   ];
 
   beforeEach(() => {
-    const apiServiceMock = {
-      getProjects: vi.fn(),
-      addProject: vi.fn(),
-      removeProject: vi.fn(),
-      validatePath: vi.fn(),
-      selectProject: vi.fn(),
-    };
-
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         ProjectService,
-        { provide: ApiService, useValue: apiServiceMock },
+        {
+          provide: ApiService,
+          useValue: {
+            getProjects: vi.fn(),
+            addProject: vi.fn(),
+            removeProject: vi.fn(),
+            validatePath: vi.fn(),
+            selectProject: vi.fn(),
+          },
+        },
       ],
     });
 
     service = TestBed.inject(ProjectService);
-    apiService = vi.mocked(TestBed.inject(ApiService));
-
-    // モックメソッドの型アサーション
-    (apiService.getProjects as any) = vi.fn();
-    (apiService.addProject as any) = vi.fn();
-    (apiService.removeProject as any) = vi.fn();
-    (apiService.validatePath as any) = vi.fn();
-    (apiService.selectProject as any) = vi.fn();
+    apiService = TestBed.inject(ApiService);
   });
 
   describe("初期状態", () => {
@@ -86,7 +80,7 @@ describe("ProjectService", () => {
       const mockResponse: ProjectListResponse = {
         projects: mockProjects,
       };
-      apiService.getProjects.mockReturnValue(of(mockResponse));
+      vi.mocked(apiService.getProjects).mockReturnValue(of(mockResponse));
 
       await service.loadProjects();
 
@@ -98,7 +92,9 @@ describe("ProjectService", () => {
 
     it("should handle load projects error", async () => {
       const errorResponse = new Error("Load failed");
-      apiService.getProjects.mockReturnValue(throwError(() => errorResponse));
+      vi.mocked(apiService.getProjects).mockReturnValue(
+        throwError(() => errorResponse),
+      );
 
       await service.loadProjects();
 
@@ -121,23 +117,23 @@ describe("ProjectService", () => {
         addedAt: "2025-01-01T00:00:00.000Z",
       };
 
-      apiService.addProject.mockReturnValue(
+      vi.mocked(apiService.addProject).mockReturnValue(
         of({ project: newProject, message: "Project added successfully" }),
       );
-      apiService.getProjects.mockReturnValue(
+      vi.mocked(apiService.getProjects).mockReturnValue(
         of({ projects: [...mockProjects, newProject] }),
       );
 
       const result = await service.addProject(request);
 
       expect(result).toBe(true);
-      expect(apiService.addProject).toHaveBeenCalledWith(request);
-      expect(apiService.getProjects).toHaveBeenCalled();
+      expect(vi.mocked(apiService.addProject)).toHaveBeenCalledWith(request);
+      expect(vi.mocked(apiService.getProjects)).toHaveBeenCalled();
     });
 
     it("should handle add project error", async () => {
       const request: AddProjectRequest = { path: "/new/project" };
-      apiService.addProject.mockReturnValue(
+      vi.mocked(apiService.addProject).mockReturnValue(
         throwError(() => new Error("Add failed")),
       );
 
@@ -151,20 +147,22 @@ describe("ProjectService", () => {
   describe("removeProject", () => {
     it("should remove project successfully", async () => {
       service.projects.set(mockProjects);
-      apiService.removeProject.mockReturnValue(of({ success: true }));
-      apiService.getProjects.mockReturnValue(
+      vi.mocked(apiService.removeProject).mockReturnValue(
+        of({ success: true }),
+      );
+      vi.mocked(apiService.getProjects).mockReturnValue(
         of({ projects: [mockProjects[1]] }),
       );
 
       const result = await service.removeProject("1");
 
       expect(result).toBe(true);
-      expect(apiService.removeProject).toHaveBeenCalledWith("1");
-      expect(apiService.getProjects).toHaveBeenCalled();
+      expect(vi.mocked(apiService.removeProject)).toHaveBeenCalledWith("1");
+      expect(vi.mocked(apiService.getProjects)).toHaveBeenCalled();
     });
 
     it("should handle remove project error", async () => {
-      apiService.removeProject.mockReturnValue(
+      vi.mocked(apiService.removeProject).mockReturnValue(
         throwError(() => new Error("Remove failed")),
       );
 
@@ -178,16 +176,18 @@ describe("ProjectService", () => {
   describe("validatePath", () => {
     it("should validate path successfully", async () => {
       const validationResult: ValidationResult = { isValid: true };
-      apiService.validatePath.mockReturnValue(of(validationResult));
+      vi.mocked(apiService.validatePath).mockReturnValue(of(validationResult));
 
       const result = await service.validatePath("/valid/path");
 
       expect(result).toEqual(validationResult);
-      expect(apiService.validatePath).toHaveBeenCalledWith("/valid/path");
+      expect(vi.mocked(apiService.validatePath)).toHaveBeenCalledWith(
+        "/valid/path",
+      );
     });
 
     it("should handle validation error", async () => {
-      apiService.validatePath.mockReturnValue(
+      vi.mocked(apiService.validatePath).mockReturnValue(
         throwError(() => new Error("Validation failed")),
       );
 
@@ -205,18 +205,22 @@ describe("ProjectService", () => {
     it("should select project successfully", async () => {
       const project = mockProjects[0];
       service.projects.set(mockProjects);
-      apiService.selectProject.mockReturnValue(of({ success: true }));
+      vi.mocked(apiService.selectProject).mockReturnValue(
+        of({ success: true }),
+      );
 
       const result = await service.selectProject(project.id);
 
       expect(result).toBe(true);
       expect(service.selectedProject()).toEqual(project);
-      expect(apiService.selectProject).toHaveBeenCalledWith(project.id);
+      expect(vi.mocked(apiService.selectProject)).toHaveBeenCalledWith(
+        project.id,
+      );
     });
 
     it("should handle select project error", async () => {
       service.projects.set(mockProjects); // プロジェクトが存在する状態にする
-      apiService.selectProject.mockReturnValue(
+      vi.mocked(apiService.selectProject).mockReturnValue(
         throwError(() => new Error("Select failed")),
       );
 
