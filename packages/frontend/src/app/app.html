@@ -1,17 +1,43 @@
 <div class="min-h-screen bg-gray-50 font-noto-sans-jp">
-  <div class="container mx-auto p-8">
-    <h1 class="text-4xl font-bold text-gray-800 mb-8">
-      Kiro Lens - Angular 20
-    </h1>
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <ng-icon name="heroHome" class="text-blue-600" size="24"></ng-icon>
+          <h1 class="text-2xl font-bold text-gray-800">
+            {{ title() }}
+          </h1>
+          <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+            {{ version() }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
 
+  <!-- Main Content -->
+  <main class="flex-1">
+    <router-outlet />
+  </main>
+
+  <!-- Integration Test Section -->
+  <section class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- PrimeNG Card Test -->
+      <!-- ng-icons Test -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700">PrimeNG テスト</h2>
+        <div class="flex items-center space-x-2 mb-4">
+          <ng-icon name="heroFolder" class="text-blue-600" size="20"></ng-icon>
+          <h2 class="text-xl font-semibold text-gray-700">ng-icons テスト</h2>
+        </div>
         <p class="text-gray-600 mb-4">
-          PrimeNG コンポーネントが正常に動作しています。
+          ng-iconsライブラリが正常に動作しています。
         </p>
-        <i class="pi pi-check text-green-500 text-2xl"></i>
+        <div class="flex space-x-2">
+          <ng-icon name="heroHome" class="text-green-500" size="24"></ng-icon>
+          <ng-icon name="heroFolder" class="text-blue-500" size="24"></ng-icon>
+          <ng-icon name="heroDocumentText" class="text-purple-500" size="24"></ng-icon>
+        </div>
       </div>
 
       <!-- Tailwind CSS Test -->
@@ -38,7 +64,5 @@
         Angular 20 + PrimeNG + Tailwind CSS + ng-icons 統合完了
       </p>
     </div>
-  </div>
-
-  <router-outlet />
+  </section>
 </div>
