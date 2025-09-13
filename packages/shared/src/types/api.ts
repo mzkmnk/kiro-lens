@@ -1,7 +1,7 @@
 // API関連の型定義
 
-import type { ProjectInfo } from './project';
 import type { FileItem } from './file-tree';
+import type { ProjectInfo } from './project';
 
 /**
  * APIエラータイプ
@@ -104,7 +104,7 @@ export interface AddProjectResponse {
  */
 export interface ProjectListResponse {
   /** 管理対象のプロジェクト一覧 */
-  readonly projects: readonly ProjectInfo[];
+  readonly projects: ProjectInfo[];
   /** 現在選択中のプロジェクト */
   readonly currentProject?: ProjectInfo;
 }
