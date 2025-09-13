@@ -4,6 +4,8 @@
 
 @import "tailwindcss";
 
+@plugin "tailwindcss-primeui";
+
 /* PrimeIcons */
 @import "primeicons/primeicons.css";
 
