@@ -83,7 +83,7 @@
   - プロジェクト操作機能実装
   - _要件: 2.1, 2.2, 2.3, 2.4, 3.1_
 
-- [ ] 12. MainContentComponent実装
+- [x] 12. MainContentComponent実装
   - スタンドアロンコンポーネント作成
   - input()関数によるプロパティ受け取り
   - PrimeNG Card、Skeleton使用のレスポンシブデザイン
