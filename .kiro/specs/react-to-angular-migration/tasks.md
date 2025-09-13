@@ -97,7 +97,7 @@
   - PrimeNG Message、FloatLabel活用
   - _要件: 2.3_
 
-- [ ] 14. FileTreeService実装
+- [x] 14. FileTreeService実装
   - ファイルツリー管理サービス
   - Signalsベースの状態管理
   - APIとの連携機能
