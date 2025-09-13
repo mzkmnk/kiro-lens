@@ -1,7 +1,7 @@
 import type { FileItem } from '@kiro-lens/shared';
 import { promises as fs } from 'fs';
 import { join, relative, resolve } from 'path';
-import { getCurrentProject } from './projectService';
+import { getProjectById } from './projectService';
 const { readdir, stat } = fs;
 
 /**
@@ -174,30 +174,25 @@ async function readDirectoryRecursive(
  */
 export async function getProjectFiles(projectId: string): Promise<FileItem[]> {
   try {
-    // 現在のプロジェクト情報を取得
-    const currentProject = await getCurrentProject();
+    // 指定されたIDのプロジェクト情報を取得
+    const project = await getProjectById(projectId);
 
-    if (!currentProject) {
-      throw new FileTreeError('プロジェクトが見つかりません', 'PROJECT_NOT_FOUND');
-    }
-
-    // プロジェクトIDが一致するかチェック
-    if (currentProject.id !== projectId) {
-      throw new FileTreeError('指定されたプロジェクトが見つかりません', 'PROJECT_ID_MISMATCH');
+    if (!project) {
+      throw new FileTreeError('指定されたプロジェクトが見つかりません', 'PROJECT_NOT_FOUND');
     }
 
     // プロジェクトが有効かチェック
-    if (!currentProject.isValid) {
+    if (!project.isValid) {
       throw new FileTreeError('プロジェクトが無効です', 'PROJECT_INVALID');
     }
 
     // .kiroディレクトリが存在するかチェック
-    if (!currentProject.hasKiroDir) {
+    if (!project.hasKiroDir) {
       throw new FileTreeError('.kiroディレクトリが存在しません', 'KIRO_DIR_NOT_FOUND');
     }
 
     // .kiroディレクトリのファイル構造を取得
-    const kiroPath = currentProject.kiroPath;
+    const kiroPath = project.kiroPath;
     const files = await readDirectoryRecursive(kiroPath, kiroPath, projectId);
 
     return files;
