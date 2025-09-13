@@ -1,6 +1,6 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { getProjectFiles, FileTreeError } from '../services/fileTreeService';
-import type { FileItem, ApiResponse, IdParams } from '@kiro-lens/shared';
+import type { ApiResponse, FileItem, FileTreeResponse, IdParams } from '@kiro-lens/shared';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { FileTreeError, getProjectFiles } from '../services/fileTreeService';
 
 /**
  * プロジェクトIDのバリデーション
@@ -99,7 +99,13 @@ export async function filesRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               success: { type: 'boolean' },
-              data: { type: 'array' },
+              data: {
+                type: 'object',
+                properties: {
+                  files: { type: 'array' },
+                },
+                required: ['files'],
+              },
             },
             required: ['success', 'data'],
           },
@@ -168,10 +174,14 @@ export async function filesRoutes(fastify: FastifyInstance) {
           'File tree retrieved successfully'
         );
 
-        return reply.status(200).send({
+        const response: ApiResponse<FileTreeResponse> = {
           success: true,
-          data: files,
-        });
+          data: {
+            files,
+          },
+        };
+
+        return reply.status(200).send(response);
       } catch (error) {
         const duration = Date.now() - startTime;
 
