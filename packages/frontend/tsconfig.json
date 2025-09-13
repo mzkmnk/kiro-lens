@@ -17,12 +17,8 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@kiro-lens/shared": [
-        "../shared/src/index"
-      ],
-      "@/*": [
-        "src/*"
-      ]
+      "@kiro-lens/shared": ["../shared/src/index"],
+      "@/*": ["src/*"]
     }
   },
   "angularCompilerOptions": {

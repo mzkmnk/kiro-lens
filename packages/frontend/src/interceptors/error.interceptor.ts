@@ -1,5 +1,5 @@
-import { HttpErrorResponse, HttpInterceptorFn } from "@angular/common/http";
-import { catchError, throwError } from "rxjs";
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
 
 /**
  * HTTPエラーハンドリングインターセプター
@@ -34,17 +34,17 @@ function getErrorMessage(error: HttpErrorResponse): string {
 
   switch (error.status) {
     case 0:
-      return "ネットワークエラーが発生しました";
+      return 'ネットワークエラーが発生しました';
     case 400:
-      return "リクエストが無効です";
+      return 'リクエストが無効です';
     case 401:
-      return "認証が必要です";
+      return '認証が必要です';
     case 403:
-      return "アクセスが拒否されました";
+      return 'アクセスが拒否されました';
     case 404:
-      return "リソースが見つかりません";
+      return 'リソースが見つかりません';
     case 500:
-      return "サーバーエラーが発生しました";
+      return 'サーバーエラーが発生しました';
     default:
       return `エラーが発生しました (${error.status})`;
   }
