@@ -105,8 +105,6 @@ export interface AddProjectResponse {
 export interface ProjectListResponse {
   /** 管理対象のプロジェクト一覧 */
   readonly projects: ProjectInfo[];
-  /** 現在選択中のプロジェクト */
-  readonly currentProject?: ProjectInfo;
 }
 
 /**
