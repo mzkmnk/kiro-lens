@@ -1,68 +1,14 @@
 <div class="min-h-screen bg-gray-50 font-noto-sans-jp">
-  <!-- Header -->
-  <header class="bg-white shadow-sm border-b border-gray-200">
-    <div class="container mx-auto px-4 py-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <ng-icon name="heroHome" class="text-blue-600" size="24"></ng-icon>
-          <h1 class="text-2xl font-bold text-gray-800">
-            {{ title() }}
-          </h1>
-          <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-            {{ version() }}
-          </span>
-        </div>
-      </div>
+  <!-- ヘッダー -->
+  <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+    <div class="flex items-center gap-3">
+      <ng-icon name="heroHome" class="text-blue-600" size="24" />
+      <h1 class="text-xl font-semibold text-gray-900">Kiro Lens</h1>
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- メインコンテンツ -->
   <main class="flex-1">
     <router-outlet />
   </main>
-
-  <!-- Integration Test Section -->
-  <section class="container mx-auto px-4 py-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- ng-icons Test -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex items-center space-x-2 mb-4">
-          <ng-icon name="heroFolder" class="text-blue-600" size="20"></ng-icon>
-          <h2 class="text-xl font-semibold text-gray-700">ng-icons テスト</h2>
-        </div>
-        <p class="text-gray-600 mb-4">
-          ng-iconsライブラリが正常に動作しています。
-        </p>
-        <div class="flex space-x-2">
-          <ng-icon name="heroHome" class="text-green-500" size="24"></ng-icon>
-          <ng-icon name="heroFolder" class="text-blue-500" size="24"></ng-icon>
-          <ng-icon name="heroDocumentText" class="text-purple-500" size="24"></ng-icon>
-        </div>
-      </div>
-
-      <!-- Tailwind CSS Test -->
-      <div class="bg-blue-500 text-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-semibold mb-4">Tailwind CSS テスト</h2>
-        <p class="mb-4">Tailwind CSS 4が正常に動作しています。</p>
-        <div class="bg-blue-600 rounded p-2">
-          <span class="text-sm">ユーティリティクラス適用済み</span>
-        </div>
-      </div>
-
-      <!-- Font Test -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700">フォントテスト</h2>
-        <p class="text-gray-600 mb-2">
-          Noto Sans JP フォントが適用されています。
-        </p>
-        <p class="text-sm text-gray-500">日本語フォントの表示確認</p>
-      </div>
-    </div>
-
-    <div class="mt-8 text-center">
-      <p class="text-gray-600">
-        Angular 20 + PrimeNG + Tailwind CSS + ng-icons 統合完了
-      </p>
-    </div>
-  </section>
 </div>
