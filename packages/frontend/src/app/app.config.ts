@@ -2,14 +2,14 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
-} from "@angular/core";
-import { provideRouter } from "@angular/router";
+} from '@angular/core';
+import { provideRouter } from '@angular/router';
 
-import { providePrimeNG } from "primeng/config";
+import { providePrimeNG } from 'primeng/config';
 
-import { provideHttpClient } from "@angular/common/http";
-import { routes } from "./app.routes";
-import { Noir } from "./noir-theme";
+import { provideHttpClient } from '@angular/common/http';
+import { routes } from './app.routes';
+import { Noir } from './noir-theme';
 
 export const appConfig: ApplicationConfig = {
   providers: [

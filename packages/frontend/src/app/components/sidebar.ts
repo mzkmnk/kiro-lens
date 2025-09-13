@@ -13,10 +13,10 @@ import { ProjectsStore } from '../stores/projects-store';
           @for (project of projects(); track project.id) {
             <div
               class="px-3 py-2 text-sm text-gray-700 rounded-md cursor-pointer transition-colors"
-              [class.hover:bg-gray-100]="selectedProjectId() !== project.id"
-              [class.bg-gray-200]="selectedProjectId() === project.id"
-              [class.text-gray-900]="selectedProjectId() === project.id"
-              [class.font-medium]="selectedProjectId() === project.id"
+              [class.hover:bg-gray-100]="!isSelectedProject(project.id)"
+              [class.bg-gray-200]="isSelectedProject(project.id)"
+              [class.text-gray-900]="isSelectedProject(project.id)"
+              [class.font-medium]="isSelectedProject(project.id)"
               (click)="navigateToProject(project.id)"
             >
               {{ project.name }}
@@ -34,10 +34,14 @@ export class Sidebar {
 
   projects = this.projectsStore.projects;
 
-  selectedProjectId = this.projectsStore.selectedProjectId;
+  selectedProject = this.projectsStore.selectedProject;
+
+  isSelectedProject(projectId: string): boolean {
+    return projectId === this.selectedProject()?.id;
+  }
 
   navigateToProject(projectId: string) {
-    this.projectsStore.setSelectedProjectId(projectId);
+    this.projectsStore.setSelectedProject(projectId);
     this.router.navigate(['/dashboard', projectId]);
   }
 }

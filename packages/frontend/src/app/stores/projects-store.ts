@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { ProjectInfo } from '@kiro-lens/shared';
+import { AddProjectRequest, ProjectInfo } from '@kiro-lens/shared';
 import { tapResponse } from '@ngrx/operators';
 import {
   patchState,
@@ -16,7 +16,7 @@ import { ProjectsAPI } from '../api/projects.api';
 
 type ProjectsState = {
   projects: ProjectInfo[];
-  selectedProjectId: string | null;
+  selectedProject: ProjectInfo | null;
   isLoading: boolean;
 };
 
@@ -24,7 +24,7 @@ export const ProjectsStore = signalStore(
   { providedIn: 'root' },
   withState<ProjectsState>({
     projects: [],
-    selectedProjectId: null,
+    selectedProject: null,
     isLoading: false,
   }),
   withProps(() => ({
@@ -53,9 +53,45 @@ export const ProjectsStore = signalStore(
       ),
     ),
 
-    setSelectedProjectId: (projectId: string | null) => {
-      patchState(store, { selectedProjectId: projectId });
+    setSelectedProject: (projectId: string | null) => {
+      const selectedProject = store
+        .projects()
+        .find((project) => project.id === projectId);
+
+      if (selectedProject) {
+        patchState(store, { selectedProject });
+      }
     },
+
+    addProject: rxMethod<AddProjectRequest>(
+      pipe(
+        switchMap((req) => {
+          return projectsAPI.addProject(req).pipe(
+            tapResponse({
+              next: (res) => {
+                const data = res.data?.project;
+
+                if (data) {
+                  patchState(store, {
+                    projects: [...store.projects(), data],
+                    selectedProject: data,
+                  });
+                }
+
+                patchState(store, { isLoading: false });
+              },
+              error: (err) => {
+                // TODO: error handling
+
+                console.log(err);
+
+                patchState(store, { isLoading: false });
+              },
+            }),
+          );
+        }),
+      ),
+    ),
   })),
   withHooks({
     onInit({ router, ...store }) {
@@ -75,7 +111,7 @@ export const ProjectsStore = signalStore(
         ? (params as { id: string })['id']
         : null;
 
-      store.setSelectedProjectId(projectId);
+      store.setSelectedProject(projectId);
     },
   }),
 );
