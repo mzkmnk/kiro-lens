@@ -1,11 +1,13 @@
+/* M PLUS 1p フォント設定 */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@100;300;400;500;700;800;900&display=swap');
+
+
 @import "tailwindcss";
 
 /* PrimeIcons */
 @import "primeicons/primeicons.css";
 
-/* You can add global styles to this file, and also import other style files */
-
-/* Noto Sans JP フォント設定 */
-body {
-  font-family: 'Noto Sans JP', sans-serif;
+/* Tailwind CSS v4 フォント設定 */
+@theme {
+  --font-display: "M PLUS 1p", sans-serif;
 }

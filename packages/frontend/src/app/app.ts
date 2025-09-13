@@ -5,7 +5,7 @@ import { RouterOutlet } from "@angular/router";
   selector: "app-root",
   imports: [RouterOutlet],
   template: `
-    <div class="h-screen overflow-hidden">
+    <div class="h-screen overflow-hidden font-display">
       <router-outlet />
     </div>
   `,
