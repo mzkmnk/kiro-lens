@@ -6,6 +6,10 @@ export const routes: Routes = [
     loadComponent: () => import("./pages/dashboard").then((M) => M.dashbaord),
   },
   {
+    path: "dashboard/:id",
+    loadComponent: () => import("./pages/dashboard").then((M) => M.dashbaord),
+  },
+  {
     path: "**",
     redirectTo: "dashboard",
     pathMatch: "full",
