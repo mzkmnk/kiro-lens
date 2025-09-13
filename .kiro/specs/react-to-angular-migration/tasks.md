@@ -75,7 +75,7 @@
   - コンポーネントテスト作成
   - _要件: 2.1, 3.1, 3.2_
 
-- [ ] 11. ProjectSidebarComponent実装
+- [x] 11. ProjectSidebarComponent実装
   - スタンドアロンコンポーネント作成
   - ネイティブ制御フロー（@if, @for）使用
   - PrimeNG Tree、Button、Menu使用

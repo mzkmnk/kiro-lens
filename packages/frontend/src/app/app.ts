@@ -27,6 +27,6 @@ import {
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [provideIcons({ heroHome, heroFolder, heroDocument })],
+  providers: [provideIcons({ heroHome, heroFolder, heroDocument, heroCheck })],
 })
 export class App {}
