@@ -68,7 +68,7 @@
   - ng-icons統合テスト
   - _要件: 1.1, 1.2_
 
-- [ ] 10. DashboardComponent実装
+- [x] 10. DashboardComponent実装
   - スタンドアロンコンポーネント作成
   - Signalsベースの状態管理
   - PrimeNG Splitter、Panel使用のレスポンシブレイアウト

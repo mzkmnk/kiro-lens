@@ -21,30 +21,34 @@ import { ProjectService } from "../services/project.service";
       <!-- Header -->
       <header class="bg-white shadow-sm border-b border-gray-200 p-4">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-2 md:space-x-3">
             <ng-icon name="heroHome" class="text-blue-600" size="24"></ng-icon>
-            <h1 class="text-xl font-semibold text-gray-800">
+            <h1 class="text-lg md:text-xl font-semibold text-gray-800">
               {{ title() }}
             </h1>
-            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+            <span
+              class="hidden sm:inline text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded"
+            >
               v{{ version() }}
             </span>
           </div>
-          <div class="flex items-center space-x-2">
-            <span class="text-sm text-gray-600">
+          <div class="flex items-center space-x-1 md:space-x-2">
+            <span class="hidden md:inline text-sm text-gray-600">
               プロジェクト: {{ selectedProjectCount() }}
             </span>
             @if (hasKiroDir()) {
               <span
                 class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded"
               >
-                .kiro 検出済み
+                <span class="hidden sm:inline">.kiro 検出済み</span>
+                <span class="sm:hidden">検出済み</span>
               </span>
             } @else {
               <span
                 class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded"
               >
-                .kiro 未検出
+                <span class="hidden sm:inline">.kiro 未検出</span>
+                <span class="sm:hidden">未検出</span>
               </span>
             }
           </div>
@@ -55,17 +59,17 @@ import { ProjectService } from "../services/project.service";
       <main class="flex-1 overflow-hidden">
         <p-splitter
           [style]="{ height: '100%' }"
-          [panelSizes]="[25, 75]"
-          [minSizes]="[200, 400]"
+          [panelSizes]="panelSizes()"
+          [minSizes]="[200, 300]"
           layout="horizontal"
-          styleClass="h-full"
+          class="h-full"
         >
           <!-- Left Panel - Project Sidebar -->
           <ng-template pTemplate="panel">
             <p-panel
               header="プロジェクト管理"
               [toggleable]="false"
-              styleClass="h-full border-0 shadow-none"
+              class="h-full border-0 shadow-none"
             >
               <ng-template pTemplate="content">
                 <div class="p-4 h-full overflow-y-auto">
@@ -86,7 +90,7 @@ import { ProjectService } from "../services/project.service";
                           icon="pi pi-plus"
                           size="small"
                           (onClick)="onAddProject()"
-                          styleClass="w-full"
+                          class="w-full"
                         >
                         </p-button>
                       </div>
@@ -97,7 +101,7 @@ import { ProjectService } from "../services/project.service";
                           icon="pi pi-plus"
                           size="small"
                           (onClick)="onAddProject()"
-                          styleClass="w-full"
+                          class="w-full"
                         >
                         </p-button>
                       </div>
@@ -159,7 +163,7 @@ import { ProjectService } from "../services/project.service";
             <p-panel
               header="メインコンテンツ"
               [toggleable]="false"
-              styleClass="h-full border-0 shadow-none"
+              class="h-full border-0 shadow-none"
             >
               <ng-template pTemplate="content">
                 <div class="p-6 h-full overflow-y-auto">
@@ -233,6 +237,13 @@ export class DashboardComponent implements OnInit {
   protected readonly selectedProjectCount = computed(
     () => this.projects().length,
   );
+  protected readonly panelSizes = computed(() => {
+    // レスポンシブなパネルサイズ
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      return [35, 65]; // モバイル: サイドバーを少し広く
+    }
+    return [25, 75]; // デスクトップ: 標準サイズ
+  });
 
   async ngOnInit(): Promise<void> {
     await this.loadInitialData();
