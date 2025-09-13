@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import {
+  heroCheck,
   heroDocument,
   heroFolder,
   heroHome,
