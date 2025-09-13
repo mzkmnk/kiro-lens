@@ -41,7 +41,7 @@ export class Sidebar {
   }
 
   navigateToProject(projectId: string) {
-    this.projectsStore.setSelectedProject(projectId);
+    this.projectsStore.setSelectedProject({ projectId });
     this.router.navigate(['/dashboard', projectId]);
   }
 }

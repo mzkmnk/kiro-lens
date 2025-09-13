@@ -19,7 +19,6 @@ export const PROJECT_LIST_MOCK_DATA: ApiResponse<ProjectListResponse> = {
   success: true,
   data: {
     projects: MSW_MOCK_PROJECTS,
-    currentProject: MSW_MOCK_PROJECTS[0],
   },
 };
 

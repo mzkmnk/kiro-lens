@@ -11,8 +11,9 @@ import {
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap } from 'rxjs';
+import { pipe, switchMap, tap } from 'rxjs';
 import { ProjectsAPI } from '../api/projects.api';
+import { FileTreeStore } from './file-tree-store';
 
 type ProjectsState = {
   projects: ProjectInfo[];
@@ -29,9 +30,10 @@ export const ProjectsStore = signalStore(
   }),
   withProps(() => ({
     projectsAPI: inject(ProjectsAPI),
+    fileTreeStore: inject(FileTreeStore),
     router: inject(Router),
   })),
-  withMethods(({ projectsAPI, ...store }) => ({
+  withMethods(({ projectsAPI, fileTreeStore, ...store }) => ({
     getAllProjects: rxMethod(
       pipe(
         switchMap(() => {
@@ -53,15 +55,23 @@ export const ProjectsStore = signalStore(
       ),
     ),
 
-    setSelectedProject: (projectId: string | null) => {
-      const selectedProject = store
-        .projects()
-        .find((project) => project.id === projectId);
+    setSelectedProject: rxMethod<{ projectId: string | null }>(
+      pipe(
+        tap(({ projectId }) => {
+          const selectedProject = store
+            .projects()
+            .find((project) => project.id === projectId);
 
-      if (selectedProject) {
-        patchState(store, { selectedProject });
-      }
-    },
+          if (!selectedProject || !projectId) {
+            return;
+          }
+
+          patchState(store, { selectedProject });
+
+          fileTreeStore.getFileTree({ projectId });
+        }),
+      ),
+    ),
 
     addProject: rxMethod<AddProjectRequest>(
       pipe(
@@ -71,21 +81,21 @@ export const ProjectsStore = signalStore(
               next: (res) => {
                 const data = res.data?.project;
 
-                if (data) {
-                  patchState(store, {
-                    projects: [...store.projects(), data],
-                    selectedProject: data,
-                  });
+                if (!data) {
+                  patchState(store, { isLoading: false });
+                  return;
                 }
+                patchState(store, {
+                  projects: [...store.projects(), data],
+                  selectedProject: data,
+                });
 
                 patchState(store, { isLoading: false });
+
+                fileTreeStore.getFileTree({ projectId: data.id });
               },
-              error: (err) => {
+              error: () => {
                 // TODO: error handling
-
-                console.log(err);
-
-                patchState(store, { isLoading: false });
               },
             }),
           );
@@ -111,7 +121,7 @@ export const ProjectsStore = signalStore(
         ? (params as { id: string })['id']
         : null;
 
-      store.setSelectedProject(projectId);
+      store.setSelectedProject({ projectId });
     },
   }),
 );
