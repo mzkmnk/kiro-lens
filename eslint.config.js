@@ -3,16 +3,19 @@
  *
  * ベストプラクティスに沿った最小限のルール設定
  * - JavaScript/TypeScript推奨ルールのみ
- * - React Hooksルール（フロントエンドのみ）
+
  * - globalsパッケージによる環境別グローバル変数設定
  * - Prettierとの競合回避
  */
 
+import angular from '@angular-eslint/eslint-plugin';
+import angularTemplate from '@angular-eslint/eslint-plugin-template';
+import angularTemplateParser from '@angular-eslint/template-parser';
 import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 import prettierConfig from 'eslint-config-prettier';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
+
 import globals from 'globals';
 
 export default [
@@ -39,7 +42,7 @@ export default [
       ...tseslint.configs.recommended.rules,
       // 未使用変数の警告（アンダースコア始まりは除外）
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
@@ -59,25 +62,83 @@ export default [
     },
   },
 
-  // Frontend専用（ブラウザ環境）
+  // Angular Frontend専用（TypeScript）
   {
-    files: ['packages/frontend/**/*.{ts,tsx}'],
+    files: ['packages/frontend/**/*.ts'],
     languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        project: ['packages/frontend/tsconfig.app.json', 'packages/frontend/tsconfig.spec.json'],
+      },
       globals: {
         ...globals.browser, // ブラウザ専用のグローバル変数
       },
     },
-  },
-
-  // React Hooks（フロントエンドのみ）
-  {
-    files: ['packages/frontend/**/*.{ts,tsx}'],
     plugins: {
-      'react-hooks': reactHooksPlugin,
+      '@typescript-eslint': tseslint,
+      '@angular-eslint': angular,
     },
     rules: {
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      ...tseslint.configs.recommended.rules,
+      // Angular固有ルール
+      '@angular-eslint/directive-selector': [
+        'error',
+        {
+          type: 'attribute',
+          prefix: 'app',
+          style: 'camelCase',
+        },
+      ],
+      '@angular-eslint/component-selector': [
+        'error',
+        {
+          type: 'element',
+          prefix: 'app',
+          style: 'kebab-case',
+        },
+      ],
+    },
+  },
+
+  // Angular Frontend専用（テストファイル）
+  {
+    files: ['packages/frontend/**/*.spec.ts'],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        project: ['packages/frontend/tsconfig.spec.json'],
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.jasmine, // Jasmineテストフレームワークのグローバル変数
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
+      '@angular-eslint': angular,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+    },
+  },
+
+  // Angular Frontend専用（HTML Template）
+  {
+    files: ['packages/frontend/**/*.html'],
+    languageOptions: {
+      parser: angularTemplateParser,
+    },
+    plugins: {
+      '@angular-eslint/template': angularTemplate,
+    },
+    rules: {
+      // Angular Template固有ルール
+      '@angular-eslint/template/no-negated-async': 'error',
+      '@angular-eslint/template/use-track-by-function': 'error',
     },
   },
 
@@ -93,6 +154,7 @@ export default [
       'coverage/**',
       '**/*.config.{js,ts}',
       '.eslintcache',
+      'packages/frontend/.angular/**',
     ],
   },
 

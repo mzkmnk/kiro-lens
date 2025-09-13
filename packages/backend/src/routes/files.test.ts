@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach } from 'vitest';
-import { createServer } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { beforeEach, describe, expect, test } from 'vitest';
+import { createServer } from '../server';
 
 describe('Files API', () => {
   let app: FastifyInstance;
@@ -37,7 +37,7 @@ describe('Files API', () => {
       expect(body.error.message).toContain('Invalid project ID');
     });
 
-    test('レスポンス形式: ApiResponse<FileItem[]>形式を使用', async () => {
+    test('レスポンス形式: ApiResponse<FileTreeResponse>形式を使用', async () => {
       const response = await app.inject({
         method: 'GET',
         url: '/api/projects/test-project/files',
@@ -51,6 +51,8 @@ describe('Files API', () => {
 
       if (body.success) {
         expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('files');
+        expect(Array.isArray(body.data.files)).toBe(true);
       } else {
         expect(body).toHaveProperty('error');
         expect(body.error).toHaveProperty('message');

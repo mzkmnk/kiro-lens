@@ -1,0 +1,15 @@
+/* M PLUS 1p フォント設定 */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@100;300;400;500;700;800;900&display=swap');
+
+
+@import "tailwindcss";
+
+@plugin "tailwindcss-primeui";
+
+/* PrimeIcons */
+@import "primeicons/primeicons.css";
+
+/* Tailwind CSS v4 フォント設定 */
+@theme {
+  --font-display: "M PLUS 1p", sans-serif;
+}

@@ -308,46 +308,43 @@ export async function getAllProjects(): Promise<ProjectInfo[]> {
 }
 
 /**
- * 現在選択中のプロジェクトの取得
+ * 指定されたIDのプロジェクトを取得
  *
- * 設定で最後に選択されたプロジェクトを取得します。
+ * プロジェクト一覧から指定されたIDのプロジェクトを検索して返します。
  *
- * @returns 現在選択中のプロジェクト（選択されていない場合はnull）
+ * @param id - 取得するプロジェクトのID
+ * @returns 指定されたIDのプロジェクト（見つからない場合はnull）
+ * @throws {ProjectError} プロジェクトの取得に失敗した場合
  *
  * @example
  * ```typescript
- * const currentProject = await getCurrentProject();
- * if (currentProject) {
- *   console.log('現在のプロジェクト:', currentProject.name);
- * } else {
- *   console.log('プロジェクトが選択されていません');
+ * try {
+ *   const project = await getProjectById('project-id');
+ *   if (project) {
+ *     console.log('プロジェクトが見つかりました:', project.name);
+ *   } else {
+ *     console.log('プロジェクトが見つかりません');
+ *   }
+ * } catch (error) {
+ *   console.error('取得に失敗:', error.message);
  * }
  * ```
  */
-export async function getCurrentProject(): Promise<ProjectInfo | null> {
+export async function getProjectById(id: string): Promise<ProjectInfo | null> {
   try {
     const config = await loadConfig();
-
-    if (!config.settings.lastSelectedProject) {
-      return null;
-    }
-
-    const currentProject = config.projects.find(p => p.id === config.settings.lastSelectedProject);
-
-    return currentProject || null;
+    const project = config.projects.find(p => p.id === id);
+    return project || null;
   } catch (error) {
     if (error instanceof Error) {
       throw new ProjectError(
-        `現在のプロジェクトの取得に失敗しました: ${error.message}`,
-        'GET_CURRENT_FAILED',
+        `プロジェクトの取得に失敗しました: ${error.message}`,
+        'GET_PROJECT_FAILED',
         error
       );
     }
 
-    throw new ProjectError(
-      '現在のプロジェクトの取得中に不明なエラーが発生しました',
-      'UNKNOWN_ERROR'
-    );
+    throw new ProjectError('プロジェクトの取得中に不明なエラーが発生しました', 'UNKNOWN_ERROR');
   }
 }
 

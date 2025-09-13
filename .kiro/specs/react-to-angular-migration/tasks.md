@@ -6,76 +6,76 @@
 
 ## 実装タスク
 
-- [ ] 1. 既存Reactフロントエンドの削除
+- [x] 1. 既存Reactフロントエンドの削除
   - packages/frontend ディレクトリの完全削除
   - package.json からフロントエンド関連スクリプトの削除
   - ルートpackage.json のワークスペース設定更新
   - 既存の依存関係クリーンアップ
   - _要件: 1.1_
 
-- [ ] 2. Angular 20プロジェクト環境セットアップ
+- [x] 2. Angular 20プロジェクト環境セットアップ
   - 新しいAngularプロジェクト作成（スタンドアロンコンポーネント構成）
   - packages/frontend ディレクトリにAngularプロジェクト作成
   - Node.js 22対応確認
   - _要件: 1.1, 1.2, 1.3_
 
-- [ ] 3. 依存関係とUIライブラリのインストール
+- [x] 3. 依存関係とUIライブラリのインストール
   - PrimeNG 20.x インストール・設定
   - ng-icons ライブラリインストール・設定
   - Tailwind CSS 4.x Angular対応設定
   - Noto Sans JP フォント設定
   - _要件: 3.1, 3.2, 3.3_
 
-- [ ] 4. 既存ワークスペース統合設定
+- [x] 4. 既存ワークスペース統合設定
   - 既存ESLint設定の拡張（Angular ESLint追加）
   - 既存Prettier設定の拡張（Angular対応）
   - package.jsonスクリプト更新
   - モノレポ構成への統合
   - _要件: 4.3_
 
-- [ ] 5. Vitest実験的サポート設定
+- [x] 5. Vitest実験的サポート設定
   - Angular 20のVitest unit-test builder設定
   - vitest.config.ts作成
   - テストセットアップファイル作成
   - angular.json テスト設定更新
   - _要件: 4.2_
 
-- [ ] 6. 共通型定義の統合
+- [x] 6. 共通型定義の統合
   - @kiro-lens/shared パッケージとの連携設定
   - Angular固有型定義の作成
   - ng-icons用型定義の作成
   - 環境設定ファイル作成
   - _要件: 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 7. 基盤サービス実装（TDD）
+- [x] 7. 基盤サービス実装（TDD）
   - ApiService実装（HTTP通信、inject()使用）
   - エラーハンドリング（HTTP Interceptor）
   - 環境設定サービス
   - 全サービスのテスト作成
   - _要件: 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 8. ProjectService実装（Signals）
+- [x] 8. ProjectService実装（Signals）
   - Signalsベースの状態管理実装
   - computed()による派生状態
   - プロジェクト管理機能（追加・削除・選択）
   - テスト作成（Vitest）
   - _要件: 2.1, 2.2, 2.3, 2.4_
 
-- [ ] 9. AppComponent実装
+- [x] 9. AppComponent実装
   - スタンドアロンコンポーネント作成
   - OnPush変更検知戦略設定
   - 基本レイアウト実装
   - ng-icons統合テスト
   - _要件: 1.1, 1.2_
 
-- [ ] 10. DashboardComponent実装
+- [x] 10. DashboardComponent実装
   - スタンドアロンコンポーネント作成
   - Signalsベースの状態管理
   - PrimeNG Splitter、Panel使用のレスポンシブレイアウト
   - コンポーネントテスト作成
   - _要件: 2.1, 3.1, 3.2_
 
-- [ ] 11. ProjectSidebarComponent実装
+- [x] 11. ProjectSidebarComponent実装
   - スタンドアロンコンポーネント作成
   - ネイティブ制御フロー（@if, @for）使用
   - PrimeNG Tree、Button、Menu使用
@@ -83,21 +83,21 @@
   - プロジェクト操作機能実装
   - _要件: 2.1, 2.2, 2.3, 2.4, 3.1_
 
-- [ ] 12. MainContentComponent実装
+- [x] 12. MainContentComponent実装
   - スタンドアロンコンポーネント作成
   - input()関数によるプロパティ受け取り
   - PrimeNG Card、Skeleton使用のレスポンシブデザイン
   - コンテンツ表示機能
   - _要件: 2.1, 3.1, 3.2_
 
-- [ ] 13. PathInputComponent実装
+- [x] 13. PathInputComponent実装
   - スタンドアロンコンポーネント作成
   - Reactive Forms使用
   - パス入力・検証機能（PrimeNG InputText、Button使用）
   - PrimeNG Message、FloatLabel活用
   - _要件: 2.3_
 
-- [ ] 14. FileTreeService実装
+- [x] 14. FileTreeService実装
   - ファイルツリー管理サービス
   - Signalsベースの状態管理
   - APIとの連携機能

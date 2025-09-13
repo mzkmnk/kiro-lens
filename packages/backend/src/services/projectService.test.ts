@@ -12,7 +12,6 @@ import {
   addProject,
   removeProject,
   getAllProjects,
-  getCurrentProject,
   setCurrentProject,
   ProjectError,
 } from './projectService';
@@ -225,40 +224,6 @@ describe('ProjectService', () => {
       expect(result[0].isValid).toBe(false);
       expect(result[0].hasKiroDir).toBe(false);
       expect(mockConfigService.saveConfig).toHaveBeenCalled();
-    });
-  });
-
-  describe('getCurrentProject', () => {
-    test('現在選択中のプロジェクトを取得できる', async () => {
-      mockConfigService.loadConfig.mockResolvedValue(MOCK_CONFIG_WITH_SELECTED_PROJECT);
-
-      const result = await getCurrentProject();
-
-      expect(result).toEqual(MOCK_PROJECT);
-    });
-
-    test('プロジェクトが選択されていない場合はnullを返す', async () => {
-      mockConfigService.loadConfig.mockResolvedValue(MOCK_DEFAULT_CONFIG);
-
-      const result = await getCurrentProject();
-
-      expect(result).toBeNull();
-    });
-
-    test('選択されたプロジェクトが存在しない場合はnullを返す', async () => {
-      const configWithInvalidSelection: AppConfig = {
-        ...MOCK_DEFAULT_CONFIG,
-        settings: {
-          ...MOCK_DEFAULT_CONFIG.settings,
-          lastSelectedProject: 'nonexistent-id',
-        },
-      };
-
-      mockConfigService.loadConfig.mockResolvedValue(configWithInvalidSelection);
-
-      const result = await getCurrentProject();
-
-      expect(result).toBeNull();
     });
   });
 

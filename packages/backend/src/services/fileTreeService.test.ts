@@ -1,15 +1,15 @@
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import { MOCK_INVALID_PROJECT, MOCK_PROJECT } from '@kiro-lens/shared';
 import mockFs from 'mock-fs';
-import { MOCK_PROJECT, MOCK_INVALID_PROJECT } from '@kiro-lens/shared';
-import { getProjectFiles, FileTreeError } from './fileTreeService';
-import { getCurrentProject } from './projectService';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { FileTreeError, getProjectFiles } from './fileTreeService';
+import { getProjectById } from './projectService';
 
 // モック設定
 vi.mock('./projectService.js', () => ({
-  getCurrentProject: vi.fn(),
+  getProjectById: vi.fn(),
 }));
 
-const mockGetCurrentProject = vi.mocked(getCurrentProject);
+const mockGetProjectById = vi.mocked(getProjectById);
 
 describe('FileTreeService', () => {
   beforeEach(() => {
@@ -24,21 +24,19 @@ describe('FileTreeService', () => {
     test('プロジェクトが存在しない場合はエラーを投げる', async () => {
       // Arrange
       const projectId = 'non-existent-project';
-      mockGetCurrentProject.mockResolvedValue(null);
+      mockGetProjectById.mockResolvedValue(null);
 
       // Act & Assert
       await expect(getProjectFiles(projectId)).rejects.toThrow(FileTreeError);
-      await expect(getProjectFiles(projectId)).rejects.toThrow('プロジェクトが見つかりません');
+      await expect(getProjectFiles(projectId)).rejects.toThrow(
+        '指定されたプロジェクトが見つかりません'
+      );
     });
 
     test('プロジェクトIDが一致しない場合はエラーを投げる', async () => {
       // Arrange
       const projectId = 'different-project-id';
-      const mockProject = {
-        ...MOCK_PROJECT,
-        id: 'current-project-id',
-      };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(null);
 
       // Act & Assert
       await expect(getProjectFiles(projectId)).rejects.toThrow(FileTreeError);
@@ -54,7 +52,7 @@ describe('FileTreeService', () => {
         ...MOCK_INVALID_PROJECT,
         id: 'invalid-project',
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // Act & Assert
       await expect(getProjectFiles(projectId)).rejects.toThrow(FileTreeError);
@@ -72,7 +70,7 @@ describe('FileTreeService', () => {
         kiroPath: '/no/kiro/project/.kiro',
         hasKiroDir: false,
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // Act & Assert
       await expect(getProjectFiles(projectId)).rejects.toThrow(FileTreeError);
@@ -89,7 +87,7 @@ describe('FileTreeService', () => {
         path: '/permission/denied/project',
         kiroPath: '/permission/denied/project/.kiro',
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // mock-fsで権限エラーをシミュレート
       mockFs({
@@ -115,7 +113,7 @@ describe('FileTreeService', () => {
         path: '/empty/kiro/project',
         kiroPath: '/empty/kiro/project/.kiro',
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // mock-fsで空のディレクトリを作成
       mockFs({
@@ -139,7 +137,7 @@ describe('FileTreeService', () => {
         path: '/files/only/project',
         kiroPath: '/files/only/project/.kiro',
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // mock-fsでファイルのみのディレクトリを作成
       mockFs({
@@ -160,12 +158,16 @@ describe('FileTreeService', () => {
       expect(sortedResult[0]).toEqual({
         id: expect.stringMatching(/^files-only-project\/.kiro\/config\.json$/),
         name: 'config.json',
+        path: 'config.json',
         type: 'file',
+        size: expect.any(Number),
       });
       expect(sortedResult[1]).toEqual({
         id: expect.stringMatching(/^files-only-project\/.kiro\/README\.md$/),
         name: 'README.md',
+        path: 'README.md',
         type: 'file',
+        size: expect.any(Number),
       });
     });
 
@@ -179,7 +181,7 @@ describe('FileTreeService', () => {
         path: '/real/kiro/structure/project',
         kiroPath: '/real/kiro/structure/project/.kiro',
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // mock-fsで実際の.kiro構造を作成
       mockFs({
@@ -218,6 +220,7 @@ describe('FileTreeService', () => {
       expect(sortedResult[0]).toEqual({
         id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/specs$/),
         name: 'specs',
+        path: 'specs',
         type: 'folder',
         children: expect.arrayContaining([
           {
@@ -225,6 +228,7 @@ describe('FileTreeService', () => {
               /^real-kiro-structure-project\/.kiro\/specs\/file-tree-system$/
             ),
             name: 'file-tree-system',
+            path: 'specs/file-tree-system',
             type: 'folder',
             children: expect.arrayContaining([
               {
@@ -232,21 +236,27 @@ describe('FileTreeService', () => {
                   /^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/design\.md$/
                 ),
                 name: 'design.md',
+                path: 'specs/file-tree-system/design.md',
                 type: 'file',
+                size: expect.any(Number),
               },
               {
                 id: expect.stringMatching(
                   /^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/requirements\.md$/
                 ),
                 name: 'requirements.md',
+                path: 'specs/file-tree-system/requirements.md',
                 type: 'file',
+                size: expect.any(Number),
               },
               {
                 id: expect.stringMatching(
                   /^real-kiro-structure-project\/.kiro\/specs\/file-tree-system\/tasks\.md$/
                 ),
                 name: 'tasks.md',
+                path: 'specs/file-tree-system/tasks.md',
                 type: 'file',
+                size: expect.any(Number),
               },
             ]),
           },
@@ -255,6 +265,7 @@ describe('FileTreeService', () => {
               /^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation$/
             ),
             name: 'kiro-lens-foundation',
+            path: 'specs/kiro-lens-foundation',
             type: 'folder',
             children: expect.arrayContaining([
               {
@@ -262,21 +273,27 @@ describe('FileTreeService', () => {
                   /^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/design\.md$/
                 ),
                 name: 'design.md',
+                path: 'specs/kiro-lens-foundation/design.md',
                 type: 'file',
+                size: expect.any(Number),
               },
               {
                 id: expect.stringMatching(
                   /^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/requirements\.md$/
                 ),
                 name: 'requirements.md',
+                path: 'specs/kiro-lens-foundation/requirements.md',
                 type: 'file',
+                size: expect.any(Number),
               },
               {
                 id: expect.stringMatching(
                   /^real-kiro-structure-project\/.kiro\/specs\/kiro-lens-foundation\/tasks\.md$/
                 ),
                 name: 'tasks.md',
+                path: 'specs/kiro-lens-foundation/tasks.md',
                 type: 'file',
+                size: expect.any(Number),
               },
             ]),
           },
@@ -287,6 +304,7 @@ describe('FileTreeService', () => {
       expect(sortedResult[1]).toEqual({
         id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering$/),
         name: 'steering',
+        path: 'steering',
         type: 'folder',
         children: expect.arrayContaining([
           {
@@ -294,26 +312,34 @@ describe('FileTreeService', () => {
               /^real-kiro-structure-project\/.kiro\/steering\/behavior\.md$/
             ),
             name: 'behavior.md',
+            path: 'steering/behavior.md',
             type: 'file',
+            size: expect.any(Number),
           },
           {
             id: expect.stringMatching(
               /^real-kiro-structure-project\/.kiro\/steering\/product\.md$/
             ),
             name: 'product.md',
+            path: 'steering/product.md',
             type: 'file',
+            size: expect.any(Number),
           },
           {
             id: expect.stringMatching(
               /^real-kiro-structure-project\/.kiro\/steering\/structure\.md$/
             ),
             name: 'structure.md',
+            path: 'steering/structure.md',
             type: 'file',
+            size: expect.any(Number),
           },
           {
             id: expect.stringMatching(/^real-kiro-structure-project\/.kiro\/steering\/tech\.md$/),
             name: 'tech.md',
+            path: 'steering/tech.md',
             type: 'file',
+            size: expect.any(Number),
           },
         ]),
       });
@@ -329,7 +355,7 @@ describe('FileTreeService', () => {
         path: '/extended/kiro/structure/project',
         kiroPath: '/extended/kiro/structure/project/.kiro',
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // mock-fsで実際の.kiro構造に追加ファイルを含む構造を作成
       mockFs({
@@ -394,7 +420,7 @@ describe('FileTreeService', () => {
         path: '/full/kiro/structure/project',
         kiroPath: '/full/kiro/structure/project/.kiro',
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // mock-fsで実際の.kiro構造（3階層）を作成
       mockFs({
@@ -464,7 +490,7 @@ describe('FileTreeService', () => {
         path: '/filesystem/error/project',
         kiroPath: '/filesystem/error/project/.kiro',
       };
-      mockGetCurrentProject.mockResolvedValue(mockProject);
+      mockGetProjectById.mockResolvedValue(mockProject);
 
       // mock-fsで存在しないディレクトリを設定（ファイルシステムエラーをシミュレート）
       mockFs({

@@ -1,5 +1,5 @@
-import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { FastifyInstance } from 'fastify';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { createServer } from './server';
 
 describe('FastifyCORS設定', () => {
@@ -27,7 +27,7 @@ describe('FastifyCORS設定', () => {
       method: 'OPTIONS',
       url: '/api/health',
       headers: {
-        Origin: 'http://localhost:3000',
+        Origin: 'http://localhost:4200',
         'Access-Control-Request-Method': 'GET',
         'Access-Control-Request-Headers': 'Content-Type',
       },

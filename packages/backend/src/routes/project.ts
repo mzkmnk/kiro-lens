@@ -13,7 +13,6 @@ import {
   addProject,
   removeProject,
   getAllProjects,
-  getCurrentProject,
   setCurrentProject,
   validateProjectPath,
   ProjectError,
@@ -167,11 +166,9 @@ export async function projectRoutes(fastify: FastifyInstance, _options: FastifyP
   fastify.get('/api/projects', async (_request, reply) => {
     try {
       const projects = await getAllProjects();
-      const currentProject = await getCurrentProject();
 
       const response: ProjectListResponse = {
         projects,
-        currentProject: currentProject || undefined,
       };
 
       return createSuccessResponse(response);
