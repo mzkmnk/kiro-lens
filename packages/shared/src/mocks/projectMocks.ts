@@ -56,7 +56,7 @@ export const MOCK_INVALID_PROJECT: ProjectInfo = {
 /**
  * MSW用のモックプロジェクトデータ
  */
-export const MSW_MOCK_PROJECTS: readonly ProjectInfo[] = [
+export const MSW_MOCK_PROJECTS: ProjectInfo[] = [
   {
     id: '1',
     name: 'kiro-lens-foundation',
@@ -86,7 +86,7 @@ export const MSW_MOCK_PROJECTS: readonly ProjectInfo[] = [
     isValid: false,
     addedAt: '2024-01-03T00:00:00Z',
   },
-] as const;
+];
 
 /**
  * テスト用のプロジェクト一覧

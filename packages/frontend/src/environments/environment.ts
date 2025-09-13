@@ -3,7 +3,7 @@
  */
 export const environment = {
   production: true,
-  apiUrl: "http://localhost:3001",
+  apiUrl: 'http://localhost:3001',
   enableMSW: false,
-  version: "1.0.0",
+  version: '1.0.0',
 };

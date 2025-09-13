@@ -1,15 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  inject,
-  signal,
-} from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { Sidebar } from "../components/sidebar";
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Sidebar } from '../components/sidebar';
+import { ProjectsStore } from '../stores/projects-store';
 
 @Component({
-  selector: "app-dashboard",
+  selector: 'app-dashboard',
   imports: [Sidebar],
   template: `
     <div class="flex h-full">
@@ -42,16 +36,8 @@ import { Sidebar } from "../components/sidebar";
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class dashbaord implements OnInit {
-  private route = inject(ActivatedRoute);
+export class dashbaord {
+  private projectsStore = inject(ProjectsStore);
 
-  selectedProjectId = signal<string | null>(null);
-
-  ngOnInit() {
-    // ルートパラメータの変更を監視
-    this.route.paramMap.subscribe((params) => {
-      const id = params.get("id");
-      this.selectedProjectId.set(id);
-    });
-  }
+  selectedProjectId = this.projectsStore.selectedProjectId;
 }
