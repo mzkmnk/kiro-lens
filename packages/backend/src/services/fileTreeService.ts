@@ -1,7 +1,8 @@
-import { promises as fs } from 'fs';
-import { join, resolve, relative } from 'path';
 import type { FileItem } from '@kiro-lens/shared';
+import { promises as fs } from 'fs';
+import { join, relative, resolve } from 'path';
 import { getCurrentProject } from './projectService';
+const { readdir, stat } = fs;
 
 /**
  * ファイルツリー取得エラー
@@ -64,7 +65,7 @@ async function readDirectoryRecursive(
   }
 
   try {
-    const dirents = await fs.readdir(dirPath, { withFileTypes: true });
+    const dirents = await readdir(dirPath, { withFileTypes: true });
     const items: FileItem[] = [];
 
     // パフォーマンス: 大量ファイル対応（1000ファイル制限）
@@ -90,16 +91,30 @@ async function readDirectoryRecursive(
         items.push({
           id,
           name: dirent.name,
+          path: relativePath,
           type: 'folder',
           children,
         });
       } else {
         // ファイルの場合
-        items.push({
-          id,
-          name: dirent.name,
-          type: 'file',
-        });
+        try {
+          const stats = await stat(fullPath);
+          items.push({
+            id,
+            name: dirent.name,
+            path: relativePath,
+            type: 'file',
+            size: stats.size,
+          });
+        } catch {
+          // ファイル情報取得に失敗した場合はサイズなしで追加
+          items.push({
+            id,
+            name: dirent.name,
+            path: relativePath,
+            type: 'file',
+          });
+        }
       }
     }
 
