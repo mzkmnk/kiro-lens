@@ -90,7 +90,7 @@
   - コンテンツ表示機能
   - _要件: 2.1, 3.1, 3.2_
 
-- [ ] 13. PathInputComponent実装
+- [x] 13. PathInputComponent実装
   - スタンドアロンコンポーネント作成
   - Reactive Forms使用
   - パス入力・検証機能（PrimeNG InputText、Button使用）
