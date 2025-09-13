@@ -2,7 +2,6 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { FastifyInstance } from 'fastify';
 import { createServer } from '../server';
 import {
-  ProjectInfo,
   MOCK_API_PROJECT,
   MOCK_API_PROJECT_WITH_ACCESS,
   MOCK_PROJECT_LIST,
@@ -27,7 +26,7 @@ vi.mock('../services/projectService.js', () => ({
   addProject: vi.fn(),
   removeProject: vi.fn(),
   getAllProjects: vi.fn(),
-  getCurrentProject: vi.fn(),
+
   setCurrentProject: vi.fn(),
   validateProjectPath: vi.fn(),
 }));
@@ -121,10 +120,7 @@ describe('Project Routes', () => {
 
   describe('GET /api/projects', () => {
     test('プロジェクト一覧を取得できる', async () => {
-      const mockCurrentProject: ProjectInfo = MOCK_PROJECT_LIST[0];
-
       vi.mocked(projectService.getAllProjects).mockResolvedValue(MOCK_PROJECT_LIST);
-      vi.mocked(projectService.getCurrentProject).mockResolvedValue(mockCurrentProject);
 
       const response = await app.inject({
         method: 'GET',
@@ -135,7 +131,6 @@ describe('Project Routes', () => {
       const body = JSON.parse(response.body);
       expect(body.success).toBe(true);
       expect(body.data.projects).toEqual(MOCK_PROJECT_LIST);
-      expect(body.data.currentProject).toEqual(mockCurrentProject);
     });
   });
 
