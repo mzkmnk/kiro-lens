@@ -46,8 +46,9 @@ export type {
   FileContentRequest,
   FileContentResponse,
   FileMetadata,
-  FileContentError,
+  FileContentErrorType,
 } from './types/file-content';
+export { FileContentError } from './types/file-content';
 
 // 共通モックデータのエクスポート
 export * from './mocks';

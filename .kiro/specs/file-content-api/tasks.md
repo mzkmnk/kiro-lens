@@ -11,7 +11,7 @@
   - 既存のApiResponse形式と一貫性を保つ
   - _要件: 4.1, 4.2_
 
-- [ ] 2. FileContentServiceの実装（TDD）
+- [x] 2. FileContentServiceの実装（TDD）
   - ファイル内容取得機能の実装
   - 既存のisPathSafe()、getProjectById()関数の活用
   - エラーハンドリングの実装

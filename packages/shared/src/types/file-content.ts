@@ -35,7 +35,7 @@ export interface FileMetadata {
 /**
  * ファイル内容エラー型
  */
-export interface FileContentError {
+export interface FileContentErrorType {
   /** エラーコード */
   code:
     | 'FILE_NOT_FOUND'
@@ -49,4 +49,21 @@ export interface FileContentError {
   filePath?: string;
   /** エラーが発生したプロジェクトID */
   projectId?: string;
+}
+
+/**
+ * ファイル内容エラークラス
+ */
+export class FileContentError extends Error {
+  public readonly code: FileContentErrorType['code'];
+  public readonly filePath?: string;
+  public readonly projectId?: string;
+
+  constructor(error: FileContentErrorType) {
+    super(error.message);
+    this.name = 'FileContentError';
+    this.code = error.code;
+    this.filePath = error.filePath;
+    this.projectId = error.projectId;
+  }
 }
