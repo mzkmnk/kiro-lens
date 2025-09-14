@@ -3,6 +3,7 @@ import path from 'path';
 import { FileContentError } from '@kiro-lens/shared';
 import { getProjectById } from './projectService.js';
 import { isPathSafe } from './fileTreeService.js';
+import { isTextFile } from '../utils/fileTypeUtils.js';
 
 /**
  * ファイルコンテンツサービス
@@ -72,10 +73,28 @@ export class FileContentService {
     }
 
     try {
-      // ファイル内容を読み取り
-      const content = await fs.readFile(fullPath, 'utf-8');
+      // まずバイナリとして読み取り、テキストファイルかどうかを判定
+      const buffer = await fs.readFile(fullPath);
+
+      // テキストファイルかどうかを判定
+      if (!isTextFile(filePath, buffer)) {
+        throw new FileContentError({
+          code: 'READ_ERROR',
+          message: `ファイルはテキストファイルではありません: ${filePath}`,
+          filePath,
+          projectId,
+        });
+      }
+
+      // テキストファイルの場合はUTF-8として読み取り
+      const content = buffer.toString('utf-8');
       return content;
     } catch (error: unknown) {
+      // FileContentErrorの場合はそのまま再スロー
+      if (error instanceof FileContentError) {
+        throw error;
+      }
+
       throw new FileContentError({
         code: 'READ_ERROR',
         message: `ファイル読み取りエラー: ${filePath}`,
