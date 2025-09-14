@@ -26,7 +26,6 @@ export const FileTreeStore = signalStore(
     getFileTree: rxMethod<{ projectId: string }>(
       pipe(
         switchMap(({ projectId }) => {
-          console.log(store.projectFiles());
           if (Object.hasOwn(store.projectFiles(), projectId)) {
             return EMPTY;
           }
