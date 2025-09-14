@@ -17,7 +17,7 @@
   - エラーハンドリングの実装
   - _要件: 1.1, 1.2, 2.1, 2.2, 5.1, 5.2_
 
-- [ ] 3. APIエンドポイントの実装（TDD）
+- [x] 3. APIエンドポイントの実装（TDD）
   - POST /api/projects/:id/files/contentエンドポイントの追加
   - Fastifyスキーマ定義の実装
   - FileContentServiceとの統合

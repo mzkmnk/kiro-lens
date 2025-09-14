@@ -1,6 +1,15 @@
-import type { ApiResponse, FileItem, FileTreeResponse, IdParams } from '@kiro-lens/shared';
+import type {
+  ApiResponse,
+  FileItem,
+  FileTreeResponse,
+  IdParams,
+  FileContentRequest,
+  FileContentResponse,
+} from '@kiro-lens/shared';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { FileTreeError, getProjectFiles } from '../services/fileTreeService';
+import { FileContentService } from '../services/fileContentService';
+import { FileContentError } from '@kiro-lens/shared';
 
 /**
  * プロジェクトIDのバリデーション
@@ -72,9 +81,74 @@ function handleFileTreeError(error: FileTreeError): {
 }
 
 /**
+ * FileContentErrorを適切なHTTPレスポンスに変換
+ */
+function handleFileContentError(error: FileContentError): {
+  status: number;
+  response: ApiResponse<never>;
+} {
+  const createErrorResponse = (message: string) => ({
+    success: false as const,
+    error: {
+      type: 'FILE_ERROR' as const,
+      message,
+      timestamp: new Date(),
+    },
+  });
+
+  switch (error.code) {
+    case 'PROJECT_NOT_FOUND':
+      return {
+        status: 404,
+        response: createErrorResponse('Project not found'),
+      };
+
+    case 'FILE_NOT_FOUND':
+      return {
+        status: 404,
+        response: createErrorResponse('File not found'),
+      };
+
+    case 'INVALID_PATH':
+      return {
+        status: 400,
+        response: createErrorResponse('Invalid file path'),
+      };
+
+    case 'PERMISSION_DENIED':
+      return {
+        status: 403,
+        response: {
+          success: false,
+          error: {
+            type: 'PERMISSION_DENIED',
+            message: 'Permission denied',
+            timestamp: new Date(),
+          },
+        },
+      };
+
+    case 'READ_ERROR':
+    default:
+      return {
+        status: 500,
+        response: {
+          success: false,
+          error: {
+            type: 'INTERNAL_ERROR',
+            message: 'Internal server error',
+            timestamp: new Date(),
+          },
+        },
+      };
+  }
+}
+
+/**
  * ファイルツリー関連のAPIルート
  */
 export async function filesRoutes(fastify: FastifyInstance) {
+  const fileContentService = new FileContentService();
   /**
    * GET /api/projects/:id/files - プロジェクトのファイルツリーを取得
    *
@@ -209,6 +283,184 @@ export async function filesRoutes(fastify: FastifyInstance) {
             error: error instanceof Error ? error.message : String(error),
           },
           'Unexpected error during file tree retrieval'
+        );
+
+        return reply.status(500).send({
+          success: false,
+          error: {
+            type: 'INTERNAL_ERROR',
+            message: 'Internal server error',
+            timestamp: new Date(),
+          },
+        });
+      }
+    }
+  );
+
+  /**
+   * POST /api/projects/:id/files/content - ファイル内容を取得
+   *
+   * 指定されたプロジェクトの.kiro配下のファイル内容を取得します。
+   *
+   * @param id - プロジェクトID
+   * @param filePath - 取得したいファイルの相対パス
+   * @returns ファイル内容
+   */
+  fastify.post<{
+    Params: IdParams;
+    Body: FileContentRequest;
+  }>(
+    '/api/projects/:id/files/content',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', minLength: 1 },
+          },
+          required: ['id'],
+        },
+        body: {
+          type: 'object',
+          properties: {
+            filePath: { type: 'string' },
+          },
+          required: ['filePath'],
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  content: { type: 'string' },
+                },
+                required: ['content'],
+              },
+            },
+            required: ['success', 'data'],
+          },
+          400: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: {
+                type: 'object',
+                properties: {
+                  type: { type: 'string' },
+                  message: { type: 'string' },
+                  timestamp: { type: 'string' },
+                },
+                required: ['type', 'message', 'timestamp'],
+              },
+            },
+            required: ['success', 'error'],
+          },
+          404: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: {
+                type: 'object',
+                properties: {
+                  type: { type: 'string' },
+                  message: { type: 'string' },
+                  timestamp: { type: 'string' },
+                },
+                required: ['type', 'message', 'timestamp'],
+              },
+            },
+            required: ['success', 'error'],
+          },
+        },
+      },
+    },
+    async (
+      request: FastifyRequest<{ Params: IdParams; Body: FileContentRequest }>,
+      reply: FastifyReply
+    ) => {
+      const startTime = Date.now();
+
+      try {
+        const { id } = request.params;
+        const { filePath } = request.body;
+
+        // プロジェクトIDのバリデーション
+        if (!validateProjectId(id)) {
+          fastify.log.warn({ projectId: id }, 'Invalid project ID provided');
+          return reply.status(400).send({
+            success: false,
+            error: {
+              type: 'VALIDATION_ERROR',
+              message: 'Invalid project ID',
+              timestamp: new Date(),
+            },
+          });
+        }
+
+        // ファイルパスのバリデーション
+        if (!filePath || filePath.trim().length === 0) {
+          fastify.log.warn({ projectId: id, filePath }, 'Invalid file path provided');
+          return reply.status(400).send({
+            success: false,
+            error: {
+              type: 'VALIDATION_ERROR',
+              message: 'Invalid file path',
+              timestamp: new Date(),
+            },
+          });
+        }
+
+        fastify.log.info({ projectId: id, filePath }, 'Fetching file content');
+
+        // FileContentServiceを使用してファイル内容を取得
+        const content = await fileContentService.getFileContent(id, filePath);
+
+        const duration = Date.now() - startTime;
+        fastify.log.info(
+          { projectId: id, filePath, contentLength: content.length, duration },
+          'File content retrieved successfully'
+        );
+
+        const response: ApiResponse<FileContentResponse> = {
+          success: true,
+          data: {
+            content,
+          },
+        };
+
+        return reply.status(200).send(response);
+      } catch (error) {
+        const duration = Date.now() - startTime;
+
+        if (error instanceof FileContentError) {
+          const { status, response } = handleFileContentError(error);
+
+          fastify.log.warn(
+            {
+              projectId: request.params.id,
+              filePath: request.body?.filePath,
+              errorCode: error.code,
+              duration,
+              error: error.message,
+            },
+            'File content retrieval failed with known error'
+          );
+
+          return reply.status(status).send(response);
+        }
+
+        // 予期しないエラーの場合
+        fastify.log.error(
+          {
+            projectId: request.params.id,
+            filePath: request.body?.filePath,
+            duration,
+            error: error instanceof Error ? error.message : String(error),
+          },
+          'Unexpected error during file content retrieval'
         );
 
         return reply.status(500).send({
