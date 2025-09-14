@@ -46,7 +46,7 @@ export class FileContentService {
       await fs.access(fullPath, fs.constants.F_OK | fs.constants.R_OK);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        const nodeError = error as NodeJS.ErrnoException;
+        const nodeError = error as Error & { code?: string };
         if (nodeError.code === 'ENOENT') {
           throw new FileContentError({
             code: 'FILE_NOT_FOUND',

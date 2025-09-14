@@ -45,7 +45,6 @@ export type { IdParams } from './types/route-params';
 export type {
   FileContentRequest,
   FileContentResponse,
-  FileMetadata,
   FileContentErrorType,
 } from './types/file-content';
 export { FileContentError } from './types/file-content';

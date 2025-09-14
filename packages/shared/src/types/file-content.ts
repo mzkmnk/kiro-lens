@@ -16,20 +16,6 @@ export interface FileContentRequest {
 export interface FileContentResponse {
   /** ファイルの内容 */
   content: string;
-  /** 将来の拡張用メタデータ（現在は未使用） */
-  metadata?: FileMetadata;
-}
-
-/**
- * ファイルメタデータ型（将来使用）
- */
-export interface FileMetadata {
-  /** ファイルサイズ（バイト） */
-  size: number;
-  /** 最終更新日時 */
-  lastModified: string;
-  /** 文字エンコーディング */
-  encoding: string;
 }
 
 /**

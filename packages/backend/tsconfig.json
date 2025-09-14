@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
@@ -20,12 +22,24 @@
     "incremental": true,
     "sourceMap": true,
     "paths": {
-      "@shared/*": ["../shared/src/*"]
+      "@shared/*": [
+        "../shared/src/*"
+      ]
     },
-    "types": ["@types/mock-fs"]
+    "types": [
+      "node",
+      "@types/mock-fs"
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"],
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
   "references": [
     {
       "path": "../shared"
