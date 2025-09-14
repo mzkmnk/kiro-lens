@@ -1,10 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  heroChevronDown,
+  heroChevronRight,
+  heroFolder,
+  heroDocument,
+} from '@ng-icons/heroicons/outline';
 import { FileItem } from '@kiro-lens/shared';
 
 @Component({
   selector: 'app-file-tree-item',
-  imports: [CommonModule],
+  imports: [CommonModule, NgIconComponent],
+  providers: [
+    provideIcons({
+      heroChevronDown,
+      heroChevronRight,
+      heroFolder,
+      heroDocument,
+    }),
+  ],
   template: `
     <div>
       <!-- アイテム本体 -->
@@ -20,67 +35,25 @@ import { FileItem } from '@kiro-lens/shared';
           @if (hasChildren()) {
             @if (isExpanded()) {
               <!-- 下向き矢印（展開状態） -->
-              <svg
-                class="w-3 h-3"
-                width="12"
-                height="12"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
+              <ng-icon name="heroChevronDown" class="w-3 h-3 text-gray-600" />
             } @else {
               <!-- 右向き矢印（折りたたみ状態） -->
-              <svg
-                class="w-3 h-3"
-                width="12"
-                height="12"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
+              <ng-icon name="heroChevronRight" class="w-3 h-3 text-gray-600" />
             }
           }
         </div>
 
         <!-- ファイル/フォルダアイコン -->
         @if (item().type === 'folder') {
-          <svg
+          <ng-icon
+            name="heroFolder"
             class="w-4 h-4 mr-2 text-blue-500 flex-shrink-0"
-            width="16"
-            height="16"
-            style="min-width: 16px; min-height: 16px;"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-            ></path>
-          </svg>
+          />
         } @else {
-          <svg
+          <ng-icon
+            name="heroDocument"
             class="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"
-            width="16"
-            height="16"
-            style="min-width: 16px; min-height: 16px;"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
+          />
         }
 
         <!-- ファイル/フォルダ名 -->
