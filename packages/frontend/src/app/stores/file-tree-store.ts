@@ -7,18 +7,18 @@ import {
 } from '@ngrx/signals';
 import { FileItem } from '@kiro-lens/shared';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap } from 'rxjs';
+import { EMPTY, pipe, switchMap } from 'rxjs';
 import { inject } from '@angular/core';
 import { FilesAPI } from '../api/files.api';
 import { tapResponse } from '@ngrx/operators';
 
 type FileTreeState = {
-  files: FileItem[];
+  projectFiles: Record<string, FileItem[]>;
 };
 
 export const FileTreeStore = signalStore(
   { providedIn: 'root' },
-  withState<FileTreeState>({ files: [] }),
+  withState<FileTreeState>({ projectFiles: {} }),
   withProps(() => ({
     filesAPI: inject(FilesAPI),
   })),
@@ -26,6 +26,10 @@ export const FileTreeStore = signalStore(
     getFileTree: rxMethod<{ projectId: string }>(
       pipe(
         switchMap(({ projectId }) => {
+          if (Object.hasOwn(store.projectFiles(), projectId)) {
+            return EMPTY;
+          }
+
           return filesAPI.getFiles({ id: projectId }).pipe(
             tapResponse({
               next: ({ data }) => {
@@ -35,7 +39,12 @@ export const FileTreeStore = signalStore(
 
                 const { files } = data;
 
-                patchState(store, { files });
+                patchState(store, {
+                  projectFiles: {
+                    ...store.projectFiles(),
+                    [projectId]: files,
+                  },
+                });
               },
               error: (error) => {
                 console.log(error);
