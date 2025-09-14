@@ -16,61 +16,18 @@ import { FileTreeItemComponent } from './file-tree-item';
             <div>
               <!-- プロジェクト名 -->
               <div
-                class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-md cursor-pointer transition-colors"
+                class="px-3 py-2 text-sm text-gray-700 rounded-md cursor-pointer transition-colors"
                 [class.hover:bg-gray-100]="!isSelectedProject(project.id)"
                 [class.bg-gray-200]="isSelectedProject(project.id)"
                 [class.text-gray-900]="isSelectedProject(project.id)"
                 [class.font-medium]="isSelectedProject(project.id)"
+                (click)="navigateToProject(project.id)"
               >
-                <!-- 展開/折りたたみアイコン -->
-                <div
-                  class="w-4 h-4 mr-2 flex items-center justify-center flex-shrink-0"
-                  (click)="toggleProject(project.id); $event.stopPropagation()"
-                >
-                  @if (isProjectExpanded(project.id)) {
-                    <!-- 下向き矢印（展開状態） -->
-                    <svg
-                      class="w-3 h-3"
-                      width="12"
-                      height="12"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                      ></path>
-                    </svg>
-                  } @else {
-                    <!-- 右向き矢印（折りたたみ状態） -->
-                    <svg
-                      class="w-3 h-3"
-                      width="12"
-                      height="12"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd"
-                      ></path>
-                    </svg>
-                  }
-                </div>
-
-                <!-- プロジェクト名（クリックでナビゲート） -->
-                <span
-                  class="flex-1 truncate"
-                  (click)="navigateToProject(project.id)"
-                >
-                  {{ project.name }}
-                </span>
+                {{ project.name }}
               </div>
 
-              <!-- プロジェクトのファイルツリー（展開時のみ表示） -->
-              @if (isProjectExpanded(project.id)) {
+              <!-- プロジェクトのファイルツリー（選択時のみ表示） -->
+              @if (isSelectedProject(project.id)) {
                 @for (item of getProjectFiles(project.id); track item.id) {
                   <app-file-tree-item
                     [item]="item"
@@ -98,7 +55,6 @@ export class Sidebar {
 
   // ファイルツリー関連
   expandedItems = signal<Set<string>>(new Set());
-  expandedProjects = signal<Set<string>>(new Set());
 
   getProjectFiles(projectId: string) {
     const files = this.fileTreeStore.projectFiles()[projectId];
@@ -111,17 +67,7 @@ export class Sidebar {
       const project = this.selectedProject();
       if (project) {
         this.fileTreeStore.getFileTree({ projectId: project.id });
-        // 選択されたプロジェクトを自動的に展開
-        this.expandProject(project.id);
       }
-    });
-
-    // 展開されたプロジェクトのファイルツリーを取得
-    effect(() => {
-      const expandedProjects = this.expandedProjects();
-      expandedProjects.forEach((projectId) => {
-        this.fileTreeStore.getFileTree({ projectId });
-      });
     });
   }
 
@@ -149,29 +95,5 @@ export class Sidebar {
 
   isExpanded(itemId: string): boolean {
     return this.expandedItems().has(itemId);
-  }
-
-  isProjectExpanded(projectId: string): boolean {
-    return this.expandedProjects().has(projectId);
-  }
-
-  toggleProject(projectId: string): void {
-    const expanded = this.expandedProjects();
-    const newExpanded = new Set(expanded);
-
-    if (newExpanded.has(projectId)) {
-      newExpanded.delete(projectId);
-    } else {
-      newExpanded.add(projectId);
-    }
-
-    this.expandedProjects.set(newExpanded);
-  }
-
-  expandProject(projectId: string): void {
-    const expanded = this.expandedProjects();
-    const newExpanded = new Set(expanded);
-    newExpanded.add(projectId);
-    this.expandedProjects.set(newExpanded);
   }
 }
