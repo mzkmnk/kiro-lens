@@ -26,16 +26,14 @@ import { FileTreeItemComponent } from './file-tree-item';
                 {{ project.name }}
               </div>
 
-              <!-- プロジェクトのファイルツリー（選択時のみ表示） -->
-              @if (isSelectedProject(project.id)) {
-                @for (item of getProjectFiles(project.id); track item.id) {
-                  <app-file-tree-item
-                    [item]="item"
-                    [depth]="0"
-                    [expandedItems]="expandedItems()"
-                    (toggleExpanded)="toggleExpanded($event)"
-                  />
-                }
+              <!-- プロジェクトのファイルツリー -->
+              @for (item of getProjectFiles(project.id); track item.id) {
+                <app-file-tree-item
+                  [item]="item"
+                  [depth]="0"
+                  [expandedItems]="expandedItems()"
+                  (toggleExpanded)="toggleExpanded($event)"
+                />
               }
             </div>
           }
