@@ -1,6 +1,5 @@
 import { describe, test, expect } from 'vitest';
 import { FileContentService } from './fileContentService.js';
-import { FileContentError } from '@kiro-lens/shared';
 
 describe('FileContentService', () => {
   test('FileContentServiceクラスが正しくインスタンス化される', () => {
