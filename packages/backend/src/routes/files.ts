@@ -1,5 +1,6 @@
 import type {
   ApiResponse,
+  ApiErrorType,
   FileItem,
   FileTreeResponse,
   IdParams,
@@ -87,13 +88,13 @@ function handleFileContentError(error: FileContentError): {
   status: number;
   response: ApiResponse<never>;
 } {
-  const createErrorResponse = (type: string, message: string, details?: unknown) => ({
+  const createErrorResponse = (type: ApiErrorType, message: string, details?: unknown) => ({
     success: false as const,
     error: {
       type,
       message,
       timestamp: new Date(),
-      ...(details && { details }),
+      ...(details ? { details } : {}),
     },
   });
 
@@ -101,18 +102,16 @@ function handleFileContentError(error: FileContentError): {
     case 'PROJECT_NOT_FOUND':
       return {
         status: 404,
-        response: createErrorResponse(
-          'PROJECT_NOT_FOUND',
-          `Project '${error.projectId}' not found`,
-          { projectId: error.projectId }
-        ),
+        response: createErrorResponse('NOT_FOUND', `Project '${error.projectId}' not found`, {
+          projectId: error.projectId,
+        }),
       };
 
     case 'FILE_NOT_FOUND':
       return {
         status: 404,
         response: createErrorResponse(
-          'FILE_NOT_FOUND',
+          'NOT_FOUND',
           `File '${error.filePath}' not found in project '${error.projectId}'`,
           { projectId: error.projectId, filePath: error.filePath }
         ),
@@ -122,7 +121,7 @@ function handleFileContentError(error: FileContentError): {
       return {
         status: 400,
         response: createErrorResponse(
-          'INVALID_PATH',
+          'VALIDATION_ERROR',
           `Invalid file path: '${error.filePath}'. Path must be within .kiro directory`,
           { filePath: error.filePath }
         ),
@@ -143,7 +142,7 @@ function handleFileContentError(error: FileContentError): {
       return {
         status: 500,
         response: createErrorResponse(
-          'READ_ERROR',
+          'INTERNAL_ERROR',
           `Failed to read file '${error.filePath}' in project '${error.projectId}'`,
           { projectId: error.projectId, filePath: error.filePath }
         ),

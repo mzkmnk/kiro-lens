@@ -25,7 +25,7 @@ export class FileTreeError extends Error {
  * @param basePath - ベースパス
  * @returns 安全なパスかどうか
  */
-function isPathSafe(targetPath: string, basePath: string): boolean {
+export function isPathSafe(targetPath: string, basePath: string): boolean {
   const resolvedTarget = resolve(targetPath);
   const resolvedBase = resolve(basePath);
   const relativePath = relative(resolvedBase, resolvedTarget);
