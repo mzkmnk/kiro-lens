@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectsStore } from '../stores/projects-store';
 import { FileTreeStore } from '../stores/file-tree-store';
@@ -13,7 +13,7 @@ import { FileTreeItemComponent } from './file-tree-item';
       <div class="flex-1 overflow-y-auto px-4 py-3">
         <div class="space-y-1">
           @for (project of projects(); track project.id) {
-            <div>
+            <div class="flex gap-1 flex-col">
               <!-- プロジェクト名 -->
               <div
                 class="px-3 py-2 text-sm text-gray-700 rounded-md cursor-pointer transition-colors"
@@ -57,16 +57,6 @@ export class Sidebar {
   getProjectFiles(projectId: string) {
     const files = this.fileTreeStore.projectFiles()[projectId];
     return files || [];
-  }
-
-  constructor() {
-    // 選択されたプロジェクトが変更されたときにファイルツリーを取得
-    effect(() => {
-      const project = this.selectedProject();
-      if (project) {
-        this.fileTreeStore.getFileTree({ projectId: project.id });
-      }
-    });
   }
 
   isSelectedProject(projectId: string): boolean {
