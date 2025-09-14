@@ -87,12 +87,13 @@ function handleFileContentError(error: FileContentError): {
   status: number;
   response: ApiResponse<never>;
 } {
-  const createErrorResponse = (message: string) => ({
+  const createErrorResponse = (type: string, message: string, details?: unknown) => ({
     success: false as const,
     error: {
-      type: 'FILE_ERROR' as const,
+      type,
       message,
       timestamp: new Date(),
+      ...(details && { details }),
     },
   });
 
@@ -100,46 +101,52 @@ function handleFileContentError(error: FileContentError): {
     case 'PROJECT_NOT_FOUND':
       return {
         status: 404,
-        response: createErrorResponse('Project not found'),
+        response: createErrorResponse(
+          'PROJECT_NOT_FOUND',
+          `Project '${error.projectId}' not found`,
+          { projectId: error.projectId }
+        ),
       };
 
     case 'FILE_NOT_FOUND':
       return {
         status: 404,
-        response: createErrorResponse('File not found'),
+        response: createErrorResponse(
+          'FILE_NOT_FOUND',
+          `File '${error.filePath}' not found in project '${error.projectId}'`,
+          { projectId: error.projectId, filePath: error.filePath }
+        ),
       };
 
     case 'INVALID_PATH':
       return {
         status: 400,
-        response: createErrorResponse('Invalid file path'),
+        response: createErrorResponse(
+          'INVALID_PATH',
+          `Invalid file path: '${error.filePath}'. Path must be within .kiro directory`,
+          { filePath: error.filePath }
+        ),
       };
 
     case 'PERMISSION_DENIED':
       return {
         status: 403,
-        response: {
-          success: false,
-          error: {
-            type: 'PERMISSION_DENIED',
-            message: 'Permission denied',
-            timestamp: new Date(),
-          },
-        },
+        response: createErrorResponse(
+          'PERMISSION_DENIED',
+          `Permission denied for file '${error.filePath}' in project '${error.projectId}'`,
+          { projectId: error.projectId, filePath: error.filePath }
+        ),
       };
 
     case 'READ_ERROR':
     default:
       return {
         status: 500,
-        response: {
-          success: false,
-          error: {
-            type: 'INTERNAL_ERROR',
-            message: 'Internal server error',
-            timestamp: new Date(),
-          },
-        },
+        response: createErrorResponse(
+          'READ_ERROR',
+          `Failed to read file '${error.filePath}' in project '${error.projectId}'`,
+          { projectId: error.projectId, filePath: error.filePath }
+        ),
       };
   }
 }
@@ -413,14 +420,28 @@ export async function filesRoutes(fastify: FastifyInstance) {
           });
         }
 
-        fastify.log.info({ projectId: id, filePath }, 'Fetching file content');
+        fastify.log.info(
+          {
+            projectId: id,
+            filePath,
+            requestId: request.id,
+            userAgent: request.headers['user-agent'],
+          },
+          'Fetching file content'
+        );
 
         // FileContentServiceを使用してファイル内容を取得
         const content = await fileContentService.getFileContent(id, filePath);
 
         const duration = Date.now() - startTime;
         fastify.log.info(
-          { projectId: id, filePath, contentLength: content.length, duration },
+          {
+            projectId: id,
+            filePath,
+            contentLength: content.length,
+            duration,
+            requestId: request.id,
+          },
           'File content retrieved successfully'
         );
 
@@ -445,6 +466,8 @@ export async function filesRoutes(fastify: FastifyInstance) {
               errorCode: error.code,
               duration,
               error: error.message,
+              requestId: request.id,
+              userAgent: request.headers['user-agent'],
             },
             'File content retrieval failed with known error'
           );
@@ -459,6 +482,9 @@ export async function filesRoutes(fastify: FastifyInstance) {
             filePath: request.body?.filePath,
             duration,
             error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            requestId: request.id,
+            userAgent: request.headers['user-agent'],
           },
           'Unexpected error during file content retrieval'
         );
