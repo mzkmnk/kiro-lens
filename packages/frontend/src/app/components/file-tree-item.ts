@@ -29,10 +29,10 @@ import { FileItem } from '@kiro-lens/shared';
         (click)="onItemClick()"
       >
         <!-- 展開/折りたたみアイコンスペース（全アイテム共通の固定幅） -->
-        <div
-          class="w-4 h-4 mr-2 flex items-center justify-center flex-shrink-0"
-        >
-          @if (hasChildren()) {
+        @if (hasChildren()) {
+          <div
+            class="w-4 h-4 mr-2 flex items-center justify-center flex-shrink-0"
+          >
             @if (isExpanded()) {
               <!-- 下向き矢印（展開状態） -->
               <ng-icon
@@ -48,8 +48,8 @@ import { FileItem } from '@kiro-lens/shared';
                 [strokeWidth]="2.5"
               />
             }
-          }
-        </div>
+          </div>
+        }
 
         <!-- ファイル/フォルダアイコン -->
         @if (item().type === 'folder') {

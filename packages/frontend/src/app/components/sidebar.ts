@@ -30,7 +30,7 @@ import { FileTreeItemComponent } from './file-tree-item';
               @for (item of getProjectFiles(project.id); track item.id) {
                 <app-file-tree-item
                   [item]="item"
-                  [depth]="0"
+                  [depth]="1"
                   [expandedItems]="expandedItems()"
                   (toggleExpanded)="toggleExpanded($event)"
                 />
