@@ -41,6 +41,14 @@ export { FileSystemError } from './types/filesystem';
 // ルートパラメータ関連型定義
 export type { IdParams } from './types/route-params';
 
+// ファイルコンテンツ関連型定義
+export type {
+  FileContentRequest,
+  FileContentResponse,
+  FileMetadata,
+  FileContentError,
+} from './types/file-content';
+
 // 共通モックデータのエクスポート
 export * from './mocks';
 

@@ -6,7 +6,7 @@
 
 ## 実装タスク
 
-- [ ] 1. 共通型定義の作成
+- [x] 1. 共通型定義の作成
   - FileContentResponse、FileContentError、FileContentRequest型をsharedパッケージに追加
   - 既存のApiResponse形式と一貫性を保つ
   - _要件: 4.1, 4.2_
