@@ -177,8 +177,8 @@ describe('Files Routes - Integration Tests', () => {
 
       const body = JSON.parse(response.body);
       expect(body.success).toBe(false);
-      expect(body.error.type).toBe('FILE_ERROR');
-      expect(body.error.message).toContain('Project not found');
+      expect(body.error.type).toBe('PROJECT_NOT_FOUND');
+      expect(body.error.message).toContain('not found');
       expect(new Date(body.error.timestamp)).toBeInstanceOf(Date);
     });
   });
