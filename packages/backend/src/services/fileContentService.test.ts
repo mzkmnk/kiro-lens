@@ -1,7 +1,6 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, beforeEach } from 'vitest';
 import { FileContentService } from './fileContentService.js';
 import { MOCK_UUID } from '../test/constants.js';
-import { beforeEach } from 'node:test';
 
 // テスト用の定数
 const TEST_PROJECT_ID = MOCK_UUID;
