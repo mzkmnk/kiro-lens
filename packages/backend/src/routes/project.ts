@@ -48,17 +48,12 @@ async function getProjectInfo(): Promise<ProjectResponse> {
 /**
  * APIエラーレスポンスを作成する
  */
-function createErrorResponse(
-  type: ApiError['type'],
-  message: string,
-  details?: unknown
-): ApiResponse<never> {
+function createErrorResponse(type: ApiError['type'], message: string): ApiResponse<never> {
   return {
     success: false,
     error: {
       type,
       message,
-      details,
       timestamp: new Date(),
     },
   };

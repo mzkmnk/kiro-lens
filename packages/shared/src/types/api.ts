@@ -31,8 +31,6 @@ export interface ApiError {
   readonly type: ApiErrorType;
   /** ユーザー向けエラーメッセージ */
   readonly message: string;
-  /** エラー詳細情報（デバッグ用） */
-  readonly details?: unknown;
   /** エラー発生時刻 */
   readonly timestamp: Date;
 }

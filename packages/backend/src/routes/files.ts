@@ -88,13 +88,12 @@ function handleFileContentError(error: FileContentError): {
   status: number;
   response: ApiResponse<never>;
 } {
-  const createErrorResponse = (type: ApiErrorType, message: string, details?: unknown) => ({
+  const createErrorResponse = (type: ApiErrorType, message: string) => ({
     success: false as const,
     error: {
       type,
       message,
       timestamp: new Date(),
-      ...(details ? { details } : {}),
     },
   });
 
@@ -102,9 +101,7 @@ function handleFileContentError(error: FileContentError): {
     case 'PROJECT_NOT_FOUND':
       return {
         status: 404,
-        response: createErrorResponse('NOT_FOUND', `Project '${error.projectId}' not found`, {
-          projectId: error.projectId,
-        }),
+        response: createErrorResponse('NOT_FOUND', `Project '${error.projectId}' not found`),
       };
 
     case 'FILE_NOT_FOUND':
@@ -112,8 +109,7 @@ function handleFileContentError(error: FileContentError): {
         status: 404,
         response: createErrorResponse(
           'NOT_FOUND',
-          `File '${error.filePath}' not found in project '${error.projectId}'`,
-          { projectId: error.projectId, filePath: error.filePath }
+          `File '${error.filePath}' not found in project '${error.projectId}'`
         ),
       };
 
@@ -122,8 +118,7 @@ function handleFileContentError(error: FileContentError): {
         status: 400,
         response: createErrorResponse(
           'VALIDATION_ERROR',
-          `Invalid file path: '${error.filePath}'. Path must be within .kiro directory`,
-          { filePath: error.filePath }
+          `Invalid file path: '${error.filePath}'. Path must be within .kiro directory`
         ),
       };
 
@@ -132,8 +127,7 @@ function handleFileContentError(error: FileContentError): {
         status: 403,
         response: createErrorResponse(
           'PERMISSION_DENIED',
-          `Permission denied for file '${error.filePath}' in project '${error.projectId}'`,
-          { projectId: error.projectId, filePath: error.filePath }
+          `Permission denied for file '${error.filePath}' in project '${error.projectId}'`
         ),
       };
 
@@ -143,8 +137,7 @@ function handleFileContentError(error: FileContentError): {
         status: 500,
         response: createErrorResponse(
           'INTERNAL_ERROR',
-          `Failed to read file '${error.filePath}' in project '${error.projectId}'`,
-          { projectId: error.projectId, filePath: error.filePath }
+          `Failed to read file '${error.filePath}' in project '${error.projectId}'`
         ),
       };
   }
