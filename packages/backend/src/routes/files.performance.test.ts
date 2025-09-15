@@ -20,7 +20,7 @@ describe('Files Routes - Performance Tests', () => {
 
       const response = await app.inject({
         method: 'POST',
-        url: '/api/projects/test-project/files/content',
+        url: '/api/projects/550e8400-e29b-41d4-a716-446655440000/files/content',
         payload: { filePath: longFilePath },
       });
 
@@ -44,7 +44,7 @@ describe('Files Routes - Performance Tests', () => {
       const requests = Array.from({ length: concurrentRequests }, (_, i) =>
         app.inject({
           method: 'POST',
-          url: `/api/projects/test-project-${i}/files/content`,
+          url: `/api/projects/550e8400-e29b-41d4-a716-44665544000${i}/files/content`,
           payload: { filePath: `test-${i}.md` },
         })
       );
@@ -76,7 +76,7 @@ describe('Files Routes - Performance Tests', () => {
       for (let i = 0; i < requestCount; i++) {
         const response = await app.inject({
           method: 'POST',
-          url: `/api/projects/test-project-${i}/files/content`,
+          url: `/api/projects/550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}/files/content`,
           payload: { filePath: `test-${i}.md` },
         });
         responses.push(response);
@@ -103,7 +103,7 @@ describe('Files Routes - Performance Tests', () => {
       const requests = Array.from({ length: 50 }, (_, i) =>
         app.inject({
           method: 'POST',
-          url: `/api/projects/test-project-${i}/files/content`,
+          url: `/api/projects/550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}/files/content`,
           payload: { filePath: `test-${i}.md` },
         })
       );
@@ -136,13 +136,13 @@ describe('Files Routes - Performance Tests', () => {
         // 空のファイルパス
         app.inject({
           method: 'POST',
-          url: '/api/projects/test-project/files/content',
+          url: '/api/projects/550e8400-e29b-41d4-a716-446655440000/files/content',
           payload: { filePath: '' },
         }),
         // 不正なファイルパス
         app.inject({
           method: 'POST',
-          url: '/api/projects/test-project/files/content',
+          url: '/api/projects/550e8400-e29b-41d4-a716-446655440000/files/content',
           payload: { filePath: '../../../etc/passwd' },
         }),
       ];
@@ -166,7 +166,7 @@ describe('Files Routes - Performance Tests', () => {
     test('レスポンスサイズの確認', async () => {
       const response = await app.inject({
         method: 'POST',
-        url: '/api/projects/test-project/files/content',
+        url: '/api/projects/550e8400-e29b-41d4-a716-446655440000/files/content',
         payload: { filePath: 'test.md' },
       });
 
@@ -188,7 +188,7 @@ describe('Files Routes - Performance Tests', () => {
 
       const response = await app.inject({
         method: 'POST',
-        url: '/api/projects/test-project/files/content',
+        url: '/api/projects/550e8400-e29b-41d4-a716-446655440000/files/content',
         payload: { filePath: complexPath },
       });
 
