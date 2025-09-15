@@ -8,9 +8,9 @@ import {
   checkKiroDirectory,
   checkDirectoryPermissions,
   getPathSuggestions,
-  FileSystemError,
 } from './fileSystemService';
 import { MOCK_DIRECTORY_PERMISSIONS, MOCK_PATHS } from '../test/constants';
+import { FileSystemError } from '@kiro-lens/shared';
 
 describe('fileSystemService', () => {
   let tempDir: string;

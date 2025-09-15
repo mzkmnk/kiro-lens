@@ -7,7 +7,7 @@ import {
   checkDirectoryExists,
   checkKiroDirectory,
   checkDirectoryPermissions,
-} from './fileSystemService.js';
+} from './fileSystemService';
 
 /**
  * プロジェクト管理エラー

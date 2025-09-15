@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
-import { filesRoutes } from './files.js';
+import { filesRoutes } from './files';
 
 describe('Files Routes - Security Tests', () => {
   let app: FastifyInstance;

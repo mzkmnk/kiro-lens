@@ -16,7 +16,7 @@ import {
   setCurrentProject,
   validateProjectPath,
   ProjectError,
-} from '../services/projectService.js';
+} from '../services/projectService';
 
 /**
  * プロジェクト情報を取得する

@@ -1,9 +1,9 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { FileContentError } from '@kiro-lens/shared';
-import { getProjectById } from './projectService.js';
-import { isPathSafe } from './fileTreeService.js';
-import { isTextFile } from '../utils/fileTypeUtils.js';
+import { getProjectById } from './projectService';
+import { isPathSafe } from './fileTreeService';
+import { isTextFile } from '../utils/fileTypeUtils';
 
 /**
  * ファイルコンテンツサービス
