@@ -1,13 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroFolder } from '@ng-icons/heroicons/outline';
 import { ProjectsStore } from '../stores/projects-store';
 import { FileTreeStore } from '../stores/file-tree-store';
 import { FileTreeItemComponent } from './file-tree-item';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule, FileTreeItemComponent],
+  imports: [CommonModule, FileTreeItemComponent, NgIconComponent],
+  providers: [
+    provideIcons({
+      heroFolder,
+    }),
+  ],
   template: `
     <div class="w-72 border-r border-gray-200 h-full flex flex-col bg-gray-50">
       <div class="flex-1 overflow-y-auto px-4 py-3">
@@ -16,14 +23,19 @@ import { FileTreeItemComponent } from './file-tree-item';
             <div class="flex gap-1 flex-col">
               <!-- プロジェクト名 -->
               <div
-                class="px-3 py-2 text-sm text-gray-700 rounded-md cursor-pointer transition-colors"
-                [class.hover:bg-gray-100]="!isSelectedProject(project.id)"
-                [class.bg-gray-200]="isSelectedProject(project.id)"
-                [class.text-gray-900]="isSelectedProject(project.id)"
-                [class.font-medium]="isSelectedProject(project.id)"
+                class="flex items-center py-1 px-2 text-sm rounded cursor-pointer transition-colors text-gray-700 hover:bg-gray-100"
+                style="padding-left: 8px"
                 (click)="navigateToProject(project.id)"
               >
-                {{ project.name }}
+                <!-- プロジェクトアイコン -->
+                <ng-icon
+                  name="heroFolder"
+                  class="w-4 h-4 mr-2 flex-shrink-0"
+                  [strokeWidth]="2.5"
+                />
+
+                <!-- プロジェクト名 -->
+                <p class="truncate">{{ project.name }}</p>
               </div>
 
               <!-- プロジェクトのファイルツリー -->
@@ -32,7 +44,9 @@ import { FileTreeItemComponent } from './file-tree-item';
                   [item]="item"
                   [depth]="1"
                   [expandedItems]="expandedItems()"
+                  [selectedFileId]="selectedFileId()"
                   (toggleExpanded)="toggleExpanded($event)"
+                  (fileSelected)="onFileSelected($event)"
                 />
               }
             </div>
@@ -53,18 +67,16 @@ export class Sidebar {
 
   // ファイルツリー関連
   expandedItems = signal<Set<string>>(new Set());
+  selectedFileId = signal<string | null>(null);
 
   getProjectFiles(projectId: string) {
     const files = this.fileTreeStore.projectFiles()[projectId];
     return files || [];
   }
 
-  isSelectedProject(projectId: string): boolean {
-    return projectId === this.selectedProject()?.id;
-  }
-
   navigateToProject(projectId: string) {
     this.projectsStore.setSelectedProject({ projectId });
+    this.selectedFileId.set(null); // プロジェクト選択時はファイル選択をクリア
     this.router.navigate(['/dashboard', projectId]);
   }
 
@@ -79,6 +91,10 @@ export class Sidebar {
     }
 
     this.expandedItems.set(newExpanded);
+  }
+
+  onFileSelected(fileId: string): void {
+    this.selectedFileId.set(fileId);
   }
 
   isExpanded(itemId: string): boolean {

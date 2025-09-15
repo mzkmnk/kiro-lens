@@ -24,7 +24,12 @@ import { FileItem } from '@kiro-lens/shared';
     <div class="flex flex-col gap-1">
       <!-- アイテム本体 -->
       <div
-        class="flex items-center py-1 px-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer transition-colors"
+        class="flex items-center py-1 px-2 text-sm rounded cursor-pointer transition-colors"
+        [class.text-gray-700]="!isSelected()"
+        [class.hover:bg-gray-100]="!isSelected()"
+        [class.bg-gray-200]="isSelected()"
+        [class.text-gray-900]="isSelected()"
+        [class.font-medium]="isSelected()"
         [style.padding-left.px]="depth() * 16 + 8"
         (click)="onItemClick()"
       >
@@ -77,7 +82,9 @@ import { FileItem } from '@kiro-lens/shared';
             [item]="child"
             [depth]="depth() + 1"
             [expandedItems]="expandedItems()"
+            [selectedFileId]="selectedFileId()"
             (toggleExpanded)="toggleExpanded.emit($event)"
+            (fileSelected)="fileSelected.emit($event)"
           />
         }
       }
@@ -89,9 +96,11 @@ export class FileTreeItemComponent {
   item = input.required<FileItem>();
   depth = input.required<number>();
   expandedItems = input.required<Set<string>>();
+  selectedFileId = input.required<string | null>();
 
   // Output events
   toggleExpanded = output<string>();
+  fileSelected = output<string>();
 
   hasChildren(): boolean {
     const fileItem = this.item();
@@ -106,7 +115,15 @@ export class FileTreeItemComponent {
     return this.expandedItems().has(this.item().id);
   }
 
+  isSelected(): boolean {
+    return this.selectedFileId() === this.item().id;
+  }
+
   onItemClick(): void {
+    // ファイル/フォルダを選択状態にする
+    this.fileSelected.emit(this.item().id);
+
+    // フォルダの場合は展開/折りたたみも行う
     if (this.hasChildren()) {
       this.toggleExpanded.emit(this.item().id);
     }
