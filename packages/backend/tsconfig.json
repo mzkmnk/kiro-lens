@@ -22,7 +22,7 @@
     "paths": {
       "@shared/*": ["../shared/src/*"]
     },
-    "types": ["@types/mock-fs"]
+    "types": ["node", "@types/mock-fs"]
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"],

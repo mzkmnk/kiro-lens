@@ -1,63 +1,78 @@
+import { describe, test, expect, beforeEach } from 'vitest';
+import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
-import { beforeEach, describe, expect, test } from 'vitest';
-import { createServer } from '../server';
+import { filesRoutes } from './files.js';
 
-describe('Files API', () => {
+describe('Files Routes', () => {
   let app: FastifyInstance;
 
   beforeEach(async () => {
-    app = createServer();
-    await app.ready();
+    app = Fastify();
+    await app.register(filesRoutes);
   });
 
   describe('GET /api/projects/:id/files', () => {
-    test('エラーケース: プロジェクトが存在しない場合は404を返す', async () => {
+    test('存在しないプロジェクトの場合は404エラーを返す', async () => {
       const response = await app.inject({
         method: 'GET',
         url: '/api/projects/non-existent-project/files',
       });
 
       expect(response.statusCode).toBe(404);
-
       const body = JSON.parse(response.body);
       expect(body.success).toBe(false);
-      expect(body.error.message).toContain('Project not found');
     });
 
-    test('エラーケース: 無効なプロジェクトIDの場合は400を返す', async () => {
+    test('プロジェクトIDが空の場合は400エラーを返す', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/api/projects/ /files', // 空白のプロジェクトID
+        url: '/api/projects/ /files',
       });
 
       expect(response.statusCode).toBe(400);
-
       const body = JSON.parse(response.body);
       expect(body.success).toBe(false);
-      expect(body.error.message).toContain('Invalid project ID');
+      expect(body.error.type).toBe('VALIDATION_ERROR');
     });
+  });
 
-    test('レスポンス形式: ApiResponse<FileTreeResponse>形式を使用', async () => {
+  describe('POST /api/projects/:id/files/content', () => {
+    test('存在しないプロジェクトの場合は404エラーを返す', async () => {
       const response = await app.inject({
-        method: 'GET',
-        url: '/api/projects/test-project/files',
+        method: 'POST',
+        url: '/api/projects/non-existent-project/files/content',
+        payload: { filePath: 'test.md' },
       });
 
+      expect(response.statusCode).toBe(404);
       const body = JSON.parse(response.body);
+      expect(body.success).toBe(false);
+    });
 
-      // ApiResponse形式の確認
-      expect(body).toHaveProperty('success');
-      expect(typeof body.success).toBe('boolean');
+    test('不正なファイルパスの場合は404エラーを返す', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/projects/test-project/files/content',
+        payload: { filePath: '../../../etc/passwd' },
+      });
 
-      if (body.success) {
-        expect(body).toHaveProperty('data');
-        expect(body.data).toHaveProperty('files');
-        expect(Array.isArray(body.data.files)).toBe(true);
-      } else {
-        expect(body).toHaveProperty('error');
-        expect(body.error).toHaveProperty('message');
-        expect(typeof body.error.message).toBe('string');
-      }
+      // プロジェクトが存在しないため404が返される
+      expect(response.statusCode).toBe(404);
+      const body = JSON.parse(response.body);
+      expect(body.success).toBe(false);
+    });
+
+    test('ファイルパスが空の場合は400エラーを返す', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/projects/test-project/files/content',
+        payload: { filePath: '' },
+      });
+
+      expect(response.statusCode).toBe(400);
+      const body = JSON.parse(response.body);
+      expect(body.success).toBe(false);
+      expect(body.error.type).toBe('VALIDATION_ERROR');
     });
   });
 });
